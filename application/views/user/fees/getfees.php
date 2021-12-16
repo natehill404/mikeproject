@@ -495,7 +495,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 
       $("#select_all").change(function () {  //"select all" change 
         $('input:checkbox').not(this).prop('checked', this.checked);
-        // $(".checkbox").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
         function Popup(data, winload = false)

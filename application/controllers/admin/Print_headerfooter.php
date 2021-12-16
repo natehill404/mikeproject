@@ -27,21 +27,20 @@ class Print_headerfooter extends Admin_Controller {
             if ($_POST['type'] == 'staff_payslip') {
                 $this->form_validation->set_rules('message', $this->lang->line('message'), 'required|trim|xss_clean');
                 $message = 'message';
-            } else {
+            }else if ($_POST['type'] == 'online_admission_receipt') {
+                $this->form_validation->set_rules('admission_message', $this->lang->line('message'), 'required|trim|xss_clean');
+                $message = 'admission_message';
+            }
+             else {
                 $this->form_validation->set_rules('message1', $this->lang->line('message'), 'required|trim|xss_clean');
                 $message = 'message1';
             }
         }
 
-
-
-
-
-
         if ($this->form_validation->run() == FALSE) {
-            
+          
         } else {
-
+         
             if (isset($_FILES["header_image"]) && !empty($_FILES['header_image']['name'])) {
                 $fileInfo = pathinfo($_FILES["header_image"]["name"]);
                 $img_name = 'header_image.' . $fileInfo['extension'];
@@ -49,20 +48,27 @@ class Print_headerfooter extends Admin_Controller {
                 if ($_POST['type'] == 'student_receipt') {
 
                     $path = $this->setting_model->unlink_receiptheader();
-
                     $path1 = "uploads/print_headerfooter/student_receipt/" . $path;
                     $url = FCPATH . $path1;
-
                     if (file_exists($url)) {
                         unlink($url);
                     }
                     move_uploaded_file($_FILES["header_image"]["tmp_name"], "./uploads/print_headerfooter/student_receipt/" . $img_name);
-                } else {
+                } 
+                else if($_POST['type'] == 'online_admission_receipt') {                   
+                    $path = $this->setting_model->unlink_onlinereceiptheader();
+                    $path1 = "uploads/print_headerfooter/online_admission_receipt/" . $path;
+                    $url = FCPATH . $path1;
+                    if (file_exists($url)) {
+                        unlink($url);
+                    }
+                    move_uploaded_file($_FILES["header_image"]["tmp_name"], "./uploads/print_headerfooter/online_admission_receipt/" . $img_name);
+                }
+                else {
+                   
                     $path = $this->setting_model->unlink_payslipheader();
-
                     $path1 = "uploads/print_headerfooter/staff_payslip/" . $path;
                     $url = FCPATH . $path1;
-
                     if (file_exists($url)) {
                         unlink($url);
                     }
@@ -70,6 +76,7 @@ class Print_headerfooter extends Admin_Controller {
                 }
 
                 $data = array('print_type' => $_POST['type'], 'header_image' => $img_name, 'footer_content' => $_POST[$message], 'created_by' => $this->customlib->getStaffID());
+              
                 $this->setting_model->add_printheader($data);
             }
 
@@ -78,7 +85,7 @@ class Print_headerfooter extends Admin_Controller {
             $this->session->set_flashdata('msg', '<div class="alert alert-success text-left">' . $this->lang->line('success_message') . '</div>');
         }
 
-        redirect('admin/print_headerfooter');
+       redirect('admin/print_headerfooter');
     }
 
     public function handle_upload($str, $is_required) {

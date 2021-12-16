@@ -20,8 +20,6 @@ class Jazzcash extends Student_Controller {
         $data['params'] = $params;
         $data['setting'] = $this->setting;
         $data['api_error'] = array();
-        $student_fees_master_id = $params['student_fees_master_id'];
-        $fee_groups_feetype_id = $params['fee_groups_feetype_id'];
         $student_id = $params['student_id'];
         $total = number_format((float)($params['fine_amount_balance']+$params['total']), 2, '.', '');;
         $data['name'] = $params['name'];
@@ -29,6 +27,7 @@ class Jazzcash extends Student_Controller {
         $data['total'] = $total * 100;
         $data['amount'] = $total;
         $data['guardian_phone'] = $params['guardian_phone'];
+        $data['student_fees_master_array']=$data['params']['student_fees_master_array'];
         $this->load->view('student/jazzcash/jazzcash', $data);
     }
 
@@ -40,14 +39,10 @@ class Jazzcash extends Student_Controller {
         $data['params'] = $params;
         $data['setting'] = $this->setting;
         $data['api_error'] = array();
-        $student_fees_master_id = $params['student_fees_master_id'];
-        $fee_groups_feetype_id = $params['fee_groups_feetype_id'];
         $student_id = $params['student_id'];
-        $total = $params['total'];
         $data['name'] = $params['name'];
         $data['title'] = 'Student Fee';
         $data['return_url'] = base_url() . 'students/jazzcash/callback';
-        $data['total'] = $total;
         $data['pp_MerchantID'] = $this->api_config->api_secret_key;
         $data['pp_Password'] = $this->api_config->api_password;
         $data['currency_code'] = $params['invoice']->currency_name;
@@ -91,28 +86,39 @@ class Jazzcash extends Student_Controller {
 
         $params = $this->session->userdata('params');
         $data = array();
+
         if($_POST['pp_ResponseCode']=='000'){
         	$payment_id = $_POST['pp_TxnRefNo'];
-        $json_array = array(
-            'amount' => $params['total'],
-            'date' => date('Y-m-d'),
-            'amount_discount' => 0,
-            'amount_fine' => $params['fine_amount_balance'],
-            'description' => "Online fees deposit through JazzCash TXN ID: " . $payment_id,
-            'received_by' => '',
-            'payment_mode' => 'JazzCash',
-        );
+            $bulk_fees=array();
+            $params     = $this->session->userdata('params');
+         
+            foreach ($params['student_fees_master_array'] as $fee_key => $fee_value) {
+           
+             $json_array = array(
+                'amount'          =>  $fee_value['amount_balance'],
+                'date'            => date('Y-m-d'),
+                'amount_discount' => 0,
+                'amount_fine'     => $fee_value['fine_balance'],
+                'description'     => "Online fees deposit through Jazzcash TXN ID: " . $payment_id,
+                'received_by'     => '',
+                'payment_mode'    => 'Jazzcash',
+            );
  
-        $data = array(
-            'student_fees_master_id' => $params['student_fees_master_id'],
-            'fee_groups_feetype_id' => $params['fee_groups_feetype_id'],
-            'amount_detail' => $json_array
-        );
-
-        $send_to = $params['guardian_phone'];
-        $inserted_id = $this->studentfeemaster_model->fee_deposit($data, $send_to);
-         $invoice_detail = json_decode($inserted_id);
-            redirect(base_url("students/payment/successinvoice/" . $invoice_detail->invoice_id . "/" . $invoice_detail->sub_invoice_id));
+            $insert_fee_data = array(
+                'student_fees_master_id' => $fee_value['student_fees_master_id'],
+                'fee_groups_feetype_id'  => $fee_value['fee_groups_feetype_id'],
+                'amount_detail'          => $json_array,
+            );                 
+           $bulk_fees[]=$insert_fee_data;
+            //========
+            }
+            $send_to     = $params['guardian_phone'];
+            $inserted_id = $this->studentfeemaster_model->fee_deposit_bulk($bulk_fees, $send_to);
+            if ($inserted_id) {
+                  redirect(base_url("students/payment/successinvoice"));                     
+            } else {
+              redirect(base_url('students/payment/paymentfailed'));
+            }
         }elseif($_POST['pp_ResponseCode']=='112'){
         		 redirect(base_url("students/payment/paymentfailed"));
         }else{

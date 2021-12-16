@@ -49,6 +49,22 @@ class general_call_model extends MY_Model {
         }
     }
 
+    public function getcalllist($id = null) {
+        
+        if ($id != null) {
+            $this->datatables->where('general_calls.id', $id);
+        } else {
+            $this->datatables->orderable('general_calls.id');
+        }
+       
+         $this->datatables
+            ->select('general_calls.id,general_calls.name,general_calls.contact,general_calls.call_type,general_calls.follow_up_date,general_calls.date')
+            ->searchable('general_calls.name,general_calls.contact,general_calls.date,general_calls.follow_up_date,general_calls.call_type')
+            ->orderable('general_calls.name,general_calls.contact,general_calls.date,general_calls.follow_up_date,general_calls.call_type')
+            ->from('general_calls');
+            return $this->datatables->generate('json');
+    }
+
     function delete($id) {
         $this->db->trans_start(); # Starting Transaction
         $this->db->trans_strict(false); # See Note 01. If you wish can remove as well

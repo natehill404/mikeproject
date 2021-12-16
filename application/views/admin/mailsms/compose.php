@@ -1,26 +1,3 @@
-<style type="text/css">
-    .scrollit {
-        height:210px;
-        overflow-y:scroll;
-        list-style-type: none;
-    }
-    .dual-list .list-group {
-        margin-top: 8px;
-    }
-
-    .list-left li, .list-right li {
-        cursor: pointer;
-    }
-
-    .list-arrows {
-        padding-top: 100px;
-    }
-
-    .list-arrows button {
-        margin-bottom: 20px;
-    }
-</style>
-
 <script src="<?php echo base_url(); ?>backend/plugins/ckeditor/ckeditor.js"></script>
 <div class="content-wrapper">
     <section class="content-header">
@@ -39,8 +16,6 @@
                         <li><a href="#tab_class" data-toggle="tab"><?php echo $this->lang->line('class'); ?></a></li>
                         <li><a href="#tab_perticular" data-toggle="tab"><?php echo $this->lang->line('individual'); ?></a></li>
                         <li class="active"><a href="#tab_group" data-toggle="tab"><?php echo $this->lang->line('group'); ?></a></li>
-
-
                         <li class="pull-left header"> <?php echo $this->lang->line('send') . " " . $this->lang->line('email') ?></li>
                     </ul>
                     <div class="tab-content">
@@ -325,7 +300,6 @@
 
                                                     <?php
                                                     if (!empty($birthDaysList)) {
-                                                        // print_r($birthDaysList);
 
                                                         if (isset($birthDaysList['students'])) {
                                                             ?>

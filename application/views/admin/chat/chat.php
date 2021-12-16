@@ -52,7 +52,7 @@
                         <div class="message-input ">
                             <div class="wrap relative">
                                 <input type="text" placeholder="<?php echo $this->lang->line('write_your_message'); ?>..." class="chat_input" />
-                                <button class="submit input_submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                <button class="submit input_submit" disabled="disabled"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>
@@ -104,7 +104,20 @@
         timestamp++;
     }
 
+$(document).on('input','.chat_input',function(){
+  
+     if ($.trim($(this).val()) == '') {
+      
+        $('.input_submit').prop('disabled', true);
+    }else{
+       
+        $('.input_submit').prop('disabled', false);
+
+    }
+});
+
     $(document).on('click', '.input_submit', function (e) {
+      
         message = $(".message-input input").val();
         if ($.trim(message) == '') {
             return false;
@@ -274,6 +287,7 @@
 
     function newChatMessage() {
         message = htmlEncode($(".message-input input").val());
+        $('.input_submit').prop('disabled', true);
         if ($.trim(message) == '') {
             return false;
         }

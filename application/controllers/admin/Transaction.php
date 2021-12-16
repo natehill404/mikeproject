@@ -121,15 +121,12 @@ class Transaction extends Admin_Controller {
                         $student_total_fees = $this->studentfeemaster_model->getStudentFees($student_session_id);
 
                         if (!empty($student_total_fees)) {
-
-
                             $totalfee = 0;
                             $deposit = 0;
                             $discount = 0;
                             $balance = 0;
                             $fine = 0;
                             foreach ($student_total_fees as $student_total_fees_key => $student_total_fees_value) {
-
 
                                 if (!empty($student_total_fees_value->fees)) {
                                     foreach ($student_total_fees_value->fees as $each_fee_key => $each_fee_value) {

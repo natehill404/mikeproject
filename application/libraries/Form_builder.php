@@ -668,8 +668,7 @@ private $CI;
                     $input_html_string = form_input($this->elm_options);
                     break;
                 case 'form_captcha':
-                  $is_captcha = $this->CI->captchalib->generate_captcha()['image'];
-                  // $input_html_string =$is_captcha."<input type='text' name='".$this->elm_options['name']."' value='' id='".$this->elm_options['id']."' placeholder='".$this->elm_options['placeholder']."' validation='".$this->elm_options['validation']."' class='".$this->elm_options['class']."'>";
+                  $is_captcha = $this->CI->captchalib->generate_captcha()['image'];                
                $input_html_string ="<div class='row'>";
                $input_html_string .="<div class='col-lg-3 col-md-5 col-sm-5'>";
                $input_html_string .="<span id='captcha_image'>";

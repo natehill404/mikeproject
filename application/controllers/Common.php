@@ -65,8 +65,6 @@ class Common extends Public_Controller
             $parent_id              = $this->customlib->getUsersID();
             $data['studentclasses'] = $this->student_model->getParentChilds($parent_id);
         }
-
-        // $data['studentclasses'] = $this->studentsession_model->searchMultiClsSectionByStudent($student_detail['student_id']);
 		$data['sch_setting'] = $this->sch_setting_detail;
         $page = $this->load->view('partial/_studentSessionClasses', $data, true);
         echo json_encode(array('page' => $page));

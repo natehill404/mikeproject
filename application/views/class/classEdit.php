@@ -43,18 +43,6 @@
                                 }
                                 ?>
 
-                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">School</label><small class="req"> *</small>
-                                    
-                                        <select name="school" id="school" class="form-control">
-                                        <?php
-                                         foreach ($schoollist as $school) {?>
-                                            <option <?php if($school['id'] == $vehroute[0]->school){echo 'selected';} ?>  value="<?=$school['id'] ?>"><?=$school['house_name'] ?></option>
-                                        <?php } ?>
-                                     </select>
-                                    <span class="text-danger"><?php echo form_error('school'); ?></span>
-                                </div>
-
                                 <div class="form-group">
                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('class'); ?></label><small class="req"> *</small>
                                     <input autofocus="" id="class" name="class" placeholder="" type="text" class="form-control"  value="<?php echo set_value('class', $vehroute[0]->route_id); ?>" />
@@ -157,9 +145,7 @@
                                                 }
                                                 if ($this->rbac->hasPrivilege('class', 'can_delete')) {
                                                     ?>  
-                                                    <a data-placement="left" href="<?php echo base_url(); ?>classes/delete/<?php echo $vehroute->id; ?>"class="btn btn-default btn-xs"  data-toggle="tooltip" title="<?php echo $this->lang->line('delete'); ?>" onclick="return confirm('<?php echo $this->lang->line('delete_confirm') ?>');">
-                                                        <i class="fa fa-remove"></i>
-                                                    </a>
+                                               <a data-placement="left" href="<?php echo base_url(); ?>classes/delete/<?php echo $vehroute->id; ?>"class="btn btn-default btn-xs"  data-toggle="tooltip" title="<?php echo $this->lang->line('delete'); ?>" onclick="return confirm('<?php echo $this->lang->line('deleting_class'); ?>');">
                                                 <?php } ?>
                                             </td>
                                         </tr>

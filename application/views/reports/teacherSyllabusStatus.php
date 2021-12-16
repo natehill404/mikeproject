@@ -422,7 +422,6 @@ $language_name = $language["short_code"];
 
     function printDiv() {
 
-        // document.getElementById("noprint").style.display = "none";
         $("#visible").removeClass("hide");
         $(".pull-right").addClass("hide");
 

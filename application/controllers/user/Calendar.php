@@ -45,7 +45,7 @@ class Calendar extends Student_Controller
         $config['num_tag_open']    = '<li>';
         $config['num_tag_close']   = '</li>';
         $this->pagination->initialize($config);
-        $tasklist         = $this->calendar_model->getTask(10, $this->uri->segment(4), $userdata["id"], 0);
+        $tasklist         = $this->calendar_model->getTask($userdata["id"], 0, 10, $this->uri->segment(4));
         $data["tasklist"] = $tasklist;
         $data["title"]    = "Event Calendar";
         $this->load->view("layout/student/header.php");

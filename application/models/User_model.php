@@ -80,7 +80,7 @@ class User_model extends MY_Model {
 
     public function checkLoginParent($data) {
 
-        $sql = "SELECT users.*,students.admission_no,students.admission_no ,students.guardian_name, students.roll_no,students.admission_date,students.firstname,students.middlename, students.lastname,students.image,students.father_pic,students.mother_pic,students.guardian_pic,students.guardian_relation, students.mobileno, students.email ,students.state , students.city , students.pincode , students.religion, students.dob ,students.current_address, students.permanent_address FROM `users` INNER JOIN (select * from students) as students on students.parent_id= users.id left JOIN (select * from languages) as languages on languages.id= users.lang_id WHERE `username` = " . $this->db->escape($data['username']) . " AND `password` = " . $this->db->escape($data['password']) . " LIMIT 0,1";
+        $sql = "SELECT users.*,students.admission_no,students.admission_no ,students.guardian_name, students.roll_no,students.admission_date,students.firstname,students.middlename, students.lastname,students.image,students.father_pic,students.mother_pic,students.guardian_pic,students.guardian_relation, students.mobileno, students.email ,students.state , students.city , students.pincode , students.religion, students.dob ,students.current_address, students.permanent_address ,students.gender FROM `users` INNER JOIN (select * from students) as students on students.parent_id= users.id left JOIN (select * from languages) as languages on languages.id= users.lang_id WHERE `username` = " . $this->db->escape($data['username']) . " AND `password` = " . $this->db->escape($data['password']) . " LIMIT 0,1";
 
         $query = $this->db->query($sql);
 
@@ -436,6 +436,29 @@ class User_model extends MY_Model {
     public function getParentLoginDetails($student_id) {
 
         $sql = "SELECT users.* FROM `users` join students on students.parent_id = users.id WHERE students.id = " . $student_id;
+        $query = $this->db->query($sql);
+        return $query->row_array();
+    }
+	
+	public function student_information($users_id) {
+        $this->db->select('users.*,students.firstname,students.lastname,users.password,students.mobileno,students.email,students.guardian_phone,students.guardian_email');
+        $this->db->from('users');
+        $this->db->join('students', 'students.id = users.user_id');
+        $this->db->where('students.is_active', 'yes');
+        $this->db->where('users.user_id', $users_id);
+        $this->db->limit(1);
+        $query = $this->db->get();
+		
+        if ($query->num_rows() == 1) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+
+    public function get_studentdefaultClass($student_id){
+       
+        $sql = "SELECT class_sections.id from student_session join class_sections on class_sections.class_id=student_session.class_id and class_sections.section_id=student_session.section_id WHERE student_session.student_id=" . $student_id;
         $query = $this->db->query($sql);
         return $query->row_array();
     }

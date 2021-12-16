@@ -62,14 +62,14 @@
                                          <label class="col-sm-4"><?php echo $this->lang->line('allow')." ".$this->lang->line('editable')." ".$this->lang->line('form')." ".$this->lang->line('fields'); ?></label>
                                             <div class="col-sm-8">
                                                 <label class="radio-inline">
-                                                    <input type="radio" name="student_profile_edit" value="0" <?php
+                                                    <input type="radio" name="student_profile_edit" value="0" id="profile_no" class="enableprofile" <?php
                                                     if ($result->student_profile_edit == 0) {
                                                         echo "checked";
                                                     }
                                                     ?> ><?php echo $this->lang->line('disabled'); ?>
                                                 </label>
                                                 <label class="radio-inline">
-                                                    <input type="radio" name="student_profile_edit" value="1" <?php
+                                                    <input type="radio" name="student_profile_edit" value="1" id="profile_yes" class="enableprofile" <?php
                                                     if ($result->student_profile_edit == 1) {
                                                         echo "checked";
                                                     }
@@ -84,8 +84,13 @@
     </div>
   </div>
 </form>
-		<div class="box-header">		
-		<h3 class="box-title"><?php echo $this->lang->line('allowed_edit_form_fields_on_student_profile'); ?></h3></div>                                   
+		
+    <div id="tblclm">
+        <div class="form-group row"> 
+                            <div class="col-sm-10"> 
+                              <h4 class="box-title"><?php echo $this->lang->line('allowed_edit_form_fields_on_student_profile'); ?></h4>      
+                            </div>
+                        </div>                                      
                                     <div class="download_label"><?php echo $this->lang->line('allowed_edit_form_fields_on_student_profile'); ?></div>
                              <table class="table table-striped table-bordered table-hover example" cellspacing="0" width="100%">
                                 
@@ -98,11 +103,11 @@
                                 </thead>
                                 <tbody> 
                                 <?php  
-                               
+                                $sch_setting_array = json_decode(json_encode($sch_setting_detail), true);
                                                             if (!empty($fields)) {
                                                                 $hide=0;
                                 foreach ($fields as $fields_key => $fields_value) {
-                                    if (array_key_exists($fields_key,$sch_setting_detail))
+                                    if (array_key_exists($fields_key,$sch_setting_array))
                               {
                               
 
@@ -147,6 +152,7 @@
 
                                 </tbody>
                             </table>
+                            </div>
                             </div>
                     </div>
                 </div>
@@ -206,4 +212,33 @@ function findSelected($inserted_fields,$find){
     }
 
 
+</script>
+
+<script>
+    $(function(){
+        if ( $('#profile_yes').prop('checked')==true){
+         
+           $("#tblclm").css('display','block');
+         
+
+          }else{
+            
+            $("#tblclm").css('display','none');
+           
+          
+          }
+       
+    });
+ </script>
+ <script>
+    $(".enableprofile").click(function () {
+        var status=$(this). val();
+       if(status==1){
+       
+           $("#tblclm").css('display','block');
+          
+       }else{
+           $("#tblclm").css('display','none');
+       }
+    });
 </script>

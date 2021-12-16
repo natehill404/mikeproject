@@ -66,6 +66,19 @@ class Onlineexam_model extends MY_model
         }
     }
 
+    public function getexamlist()
+    {
+       
+         $this->datatables
+            ->select('onlineexam.*,(select count(*) from onlineexam_questions where onlineexam_questions.onlineexam_id=onlineexam.id ) as `total_ques`, (select count(*) from onlineexam_questions INNER JOIN questions on questions.id=onlineexam_questions.question_id where onlineexam_questions.onlineexam_id=onlineexam.id and questions.question_type="descriptive" ) as `total_descriptive_ques`')
+            ->searchable('onlineexam.exam,onlineexam.attempt,exam_from,exam_to,duration')
+             ->orderable('onlineexam.exam," ",total_ques,attempt,exam_from,exam_to,duration," "," " ')
+            ->sort('onlineexam.exam_from','desc')
+            ->from('onlineexam');
+       return $this->datatables->generate('json');
+
+    }
+
     public function insertExamQuestion($insert_data)
     {
         $this->db->trans_start(); # Starting Transaction
@@ -150,9 +163,9 @@ class Onlineexam_model extends MY_model
 
     }
 
-    public function searchAllOnlineExamStudents($onlineexam_id, $class_id = null, $section_id = null)
+    public function searchAllOnlineExamStudents($onlineexam_id, $class_id = null, $section_id = null,$is_attempted=null)
     {
-        $this->db->select('class_sections.id as class_section_id,classes.id AS `class_id`,student_session.id as student_session_id,students.id,classes.class,sections.id AS `section_id`,sections.section,students.id,students.admission_no , students.roll_no,students.admission_date,students.firstname,students.middlename,  students.lastname,students.image,    students.mobileno, students.email ,students.state ,   students.city , students.pincode ,     students.religion,     students.dob ,students.current_address,    students.permanent_address,IFNULL(students.category_id, 0) as `category_id`,IFNULL(categories.category, "") as `category`,students.adhar_no,students.samagra_id,students.bank_account_no,students.bank_name, students.ifsc_code , students.guardian_name , students.guardian_relation,students.guardian_phone,students.guardian_address,students.is_active ,students.created_at ,students.updated_at,students.father_name,students.rte,students.gender,IFNULL(onlineexam_students.id, 0) as onlineexam_student_id,IFNULL(onlineexam_students.student_session_id, 0) as onlineexam_student_session_id,IFNULL(onlineexam_students.rank, 0) as rank,onlineexam_students.is_attempted')->from('students');
+        $this->db->select('class_sections.id as class_section_id,classes.id AS `class_id`,student_session.id as student_session_id,students.id,classes.class,sections.id AS `section_id`,sections.section,students.id,students.admission_no , students.roll_no,students.admission_date,students.firstname,students.middlename,  students.lastname,students.image,    students.mobileno, students.email ,students.state ,   students.city , students.pincode ,     students.religion,     students.dob ,students.current_address,    students.permanent_address,IFNULL(students.category_id, 0) as `category_id`,IFNULL(categories.category, "") as `category`,students.adhar_no,students.samagra_id,students.bank_account_no,students.bank_name, students.ifsc_code , students.guardian_name , students.guardian_relation,students.guardian_phone,students.guardian_address,students.is_active ,students.created_at ,students.updated_at,students.father_name,students.rte,students.gender,IFNULL(onlineexam_students.id, 0) as onlineexam_student_id,IFNULL(onlineexam_students.student_session_id, 0) as onlineexam_student_session_id,IFNULL(onlineexam_students.rank, 0) as exam_rank,onlineexam_students.is_attempted')->from('students');
         $this->db->join('student_session', 'student_session.student_id = students.id');
         $this->db->join('classes', 'student_session.class_id = classes.id');
         $this->db->join('sections', 'sections.id = student_session.section_id');
@@ -166,6 +179,9 @@ class Onlineexam_model extends MY_model
         }
         if ($section_id != null) {
             $this->db->where('student_session.section_id', $section_id);
+        }
+        if ($is_attempted != null) {
+            $this->db->where('onlineexam_students.is_attempted', $is_attempted);
         }
         $this->db->order_by('onlineexam_students.rank', 'ASC');
         $this->db->order_by('onlineexam_students.is_attempted', 'DESC');
@@ -240,7 +256,6 @@ class Onlineexam_model extends MY_model
 
     public function updateExamResult($onlineexam_student_id)
     {
-
         $this->db->where('id', $onlineexam_student_id);
         $this->db->update('onlineexam_students', array('is_attempted' => 1));
     }
@@ -256,7 +271,6 @@ class Onlineexam_model extends MY_model
 
     public function getExamQuestions($id = null, $random_type = false)
     {
-
         $this->db->select('onlineexam_questions.*,questions.subject_id,questions.question,questions.opt_a,questions.opt_b,questions.opt_c,questions.opt_d,questions.opt_e,questions.correct,questions.question_type,questions.level,questions.class_id,questions.section_id')->from('onlineexam_questions');
         $this->db->join('questions', 'questions.id = onlineexam_questions.question_id');
         $this->db->where('onlineexam_questions.onlineexam_id', $id);
@@ -268,28 +282,27 @@ class Onlineexam_model extends MY_model
         $query = $this->db->get();
         return $query->result();
     }
-
     public function onlineexamReport($condition)
     {
+        $query = "SELECT onlineexam.*,(select count(*) from onlineexam_students WHERE onlineexam_students.onlineexam_id = onlineexam.id) as assign,(select count(*) from onlineexam_questions where onlineexam_questions.onlineexam_id=onlineexam.id) as questions FROM `onlineexam`  where " . $condition . " ";
 
-        // $this->db->select('*')->from('onlineexam')->where($condition);
-        // $query = $this->db->get();
-        // return $query->result();
-        $query = "SELECT onlineexam.*,(select count(*) from onlineexam_students WHERE onlineexam_students.onlineexam_id = onlineexam.id) as assign,(select count(*) from onlineexam_questions where onlineexam_questions.onlineexam_id=onlineexam.id) as questions FROM `onlineexam`  where " . $condition . " order by onlineexam.id asc";
-
-        $query = $this->db->query($query);
-        return $query->result();
-
+        $this->datatables->query($query)
+        ->searchable('onlineexam.exam,onlineexam.attempt,onlineexam.exam_from,onlineexam.exam_to,onlineexam.duration')
+        ->orderable('onlineexam.exam,onlineexam.attempt,onlineexam.exam_from,onlineexam.exam_to,onlineexam.duration,null,null,null') 
+        ->query_where_enable(TRUE)
+        ->sort('onlineexam.id','asc') ;
+        return $this->datatables->generate('json');
     }
 
     public function onlineexamatteptreport($condition)
     {
-
         $query = "SELECT student_session.id,students.admission_no,students.id as sid, CONCAT_WS(' ',firstname,middlename,lastname) as name,firstname,middlename,lastname,GROUP_CONCAT(onlineexam.id,'@',onlineexam.exam,'@',onlineexam.attempt,'@',onlineexam.exam_from,'@',onlineexam.exam_to,'@',onlineexam.duration,'@',onlineexam.passing_percentage,'@',onlineexam.is_active,'@',onlineexam.publish_result) as exams,GROUP_CONCAT(onlineexam_students.onlineexam_id) as attempt,`classes`.`id` AS `class_id`, `student_session`.`id` as `student_session_id`, `students`.`id`, `classes`.`class`, `sections`.`id` AS `section_id`, `sections`.`section`, `students`.`id`, `students`.`admission_no` FROM `student_session` INNER JOIN onlineexam_students on onlineexam_students.student_session_id=student_session.id INNER JOIN students on students.id=student_session.student_id JOIN `classes` ON `student_session`.`class_id` = `classes`.`id` JOIN `sections` ON `sections`.`id` = `student_session`.`section_id` LEFT JOIN `categories` ON `students`.`category_id` = `categories`.`id` INNER JOIN onlineexam on onlineexam_students.onlineexam_id=onlineexam.id WHERE  student_session.session_id=" . $this->db->escape($this->current_session) . " and students.is_active='yes' " . $condition . " group by students.id";
 
-        $query = $this->db->query($query);
-
-        return $query->result_array();
+        $this->datatables->query($query)
+        ->searchable('students.firstname,students.admission_no,classes.class,sections.section')
+        ->orderable('students.firstname,students.admission_no,classes.class,sections.section,null,null,null,null,null') 
+        ->query_where_enable(TRUE);
+        return $this->datatables->generate('json');  
     }
 
 

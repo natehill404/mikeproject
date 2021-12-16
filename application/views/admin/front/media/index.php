@@ -89,15 +89,14 @@
                                         <form method="post" action="#" id="fileupload">
                                             <div class="form-group">
                                                 <label><?php echo $this->lang->line('upload_your_file'); ?></label>
-                                                <div class="files">  
+                                                <div class="files" >  
                                                     <input type="file" name="files[]" class="form-control" id="file" multiple="">
                                                 </div>  
                                             </div>
                                         </form>
                                     </div>
                                 </div><!--./col-md-6-->
-                                <div class="col-md-6 col-sm-6">    
-                                    <!-- <h4>Upload Youtube Video --r</h4> -->
+                                <div class="col-md-6 col-sm-6">  
                                     <form action="<?php echo site_url('admin/front/media/addVideo'); ?>" id="video_form" method="POST" >
                                         <div class="form-group">
                                             <label for="video_url"><?php echo $this->lang->line('upload_youtube_video'); ?></label><small class="req"> *</small>
@@ -189,7 +188,14 @@
         });
         $('#detail').on('show.bs.modal', function (e) {
             var data = $(e.relatedTarget).data();
-            var media_content_path = "<a href='" + data.image + "' target='_blank'>" + data.image + "</a>";
+        if(data.media_type === 'image/png'||data.media_type === 'image/jpeg'|| data.media_type === 'image/jpeg'|| data.media_type === 'image/jpeg'|| data.media_type ==='image/gif'){
+         var media_content_path = "<a href='" + data.image + "' target='_blank'>" + data.image + "</a>";
+        }else{
+            var media_content_path = "<a href='" + data.source + "' target='_blank'>" + data.source + "</a>"; 
+        }
+       
+           
+           
             $('#modal_media_name').text("").text(data.media_name);
             $('#modal_media_path').html("").html(media_content_path);
             $('#modal_media_type').text("").text(data.media_type);
@@ -320,6 +326,7 @@
 
         // file selected
         $("#file").change(function () {
+			$('#media_div').html('<center><i class="fa fa-spinner fa-spin"></i></center>');
             var fd = new FormData();
             var fileInput = document.getElementById('file');
             var filePath = fileInput.value;
@@ -341,22 +348,23 @@
 
 // Sending AJAX request and upload file
     function uploadData(formdata) {
-        var urls = baseurl + "admin/front/media/addImage";
+        var urls = baseurl + "admin/front/media/addImage";		
+		
         $.ajax({
             url: urls,
             type: 'post',
             data: formdata,
             contentType: false,
             processData: false,
-			 // dataType: 'Json',
-            dataType: "html",
+			 dataType: 'JSON',
+            // dataType: "html",			
 			success: function (response) {
-			
-                if (response == '1') {
-                    successMsg('<?php echo $this->lang->line('success_message'); ?>');
+			console.log(response);
+                if (response.status == 0) {
+                    successMsg(response.msg);
                      load(1);
                 } else {
-                    errorMsg('<?php echo $this->lang->line('extension_not_allowed'); ?>');
+                    errorMsg(response.msg);
                 }
 
             },

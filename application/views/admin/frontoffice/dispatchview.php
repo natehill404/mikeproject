@@ -76,7 +76,7 @@
                         </div><!-- /.box-tools -->
                     </div><!-- /.box-header -->
                     <div class="box-body">
-                        <div class="download_label"><?php echo $this->lang->line('postal_dispatch'); ?><?php echo $this->lang->line('list'); ?></div>
+                        <div class="download_label"><?php echo $this->lang->line('postal_dispatch'); ?> <?php echo $this->lang->line('list'); ?></div>
                         <div class="mailbox-messages table-responsive">
                             <table class="table table-hover table-striped table-bordered example">
                                 <thead>
@@ -95,7 +95,7 @@
                                         <?php
                                     } else {
                                         foreach ($DispatchList as $key => $value) {
-                                            //print_r($value);
+                                          
                                             ?>
                                             <tr>
 
@@ -103,7 +103,7 @@
                                                 <td class="mailbox-name"><?php echo $value->reference_no; ?></td>
                                                 <td class="mailbox-name"> <?php echo $value->from_title; ?></td>
                                                 <td class="mailbox-name"> <?php echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->date)); ?></td>
-                                                <td class="mailbox-date pull-right">
+                                                <td class="mailbox-date pull-right white-space-nowrap">
                                                     <a data-placement="left" onclick="getRecord('<?php echo $value->id; ?>')" class="btn btn-default btn-xs" data-target="#receviedetails" data-toggle="modal" data-original-title="<?php echo $this->lang->line('view')?>">
                                                         <i class="fa fa-reorder"></i>
                                                     </a>

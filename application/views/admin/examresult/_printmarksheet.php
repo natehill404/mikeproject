@@ -3,7 +3,7 @@
         .pagebreak { page-break-before: always; } /* page-break-after works, as well */
     }
 </style>
-<?php
+<?php 
 if (empty($marksheet)) {
     ?>
     <div class="alert alter-info">
@@ -15,6 +15,8 @@ if (empty($marksheet)) {
     if ($marksheet['exam_connection'] == 0) {
         if (!empty($marksheet['students'])) {
             foreach ($marksheet['students'] as $student_key => $student_value) {
+
+				
                 $result_status = 1;
                 $absent_status = false;
                 $percentage_total = 0;
@@ -43,7 +45,7 @@ if (empty($marksheet)) {
                     .tablemain{position: relative;z-index: 1;border:1px solid #000; padding: 5px;}
                 </style>
                 <div style="margin: 0 auto; padding: 10px 5px 5px;position: relative; z-index: 0;">
-                    <?php
+                    <?php 
                     if ($template->background_img != "") {
                         ?> 
                         <img src="<?php echo base_url('uploads/marksheet/' . $template->background_img); ?>" class="tcmybg" width="100%" height="100%" />
@@ -132,7 +134,7 @@ if (empty($marksheet)) {
                             </td>
                         </tr>
                         <?php
-                        if ($template->is_admission_no || $template->is_roll_no || $template->is_photo) {
+                        if ($template->is_admission_no || $template->is_roll_no || $template->is_photo ) {
                             ?>
                             <tr>
                                 <td valign="top">
@@ -144,8 +146,8 @@ if (empty($marksheet)) {
                                             <td valign="top">
                                                 <table cellpadding="0" cellspacing="0" width="100%" class="denifittable">
                                                     <tr>
-                                                        <?php
-                                                        if ($template->is_admission_no) {
+                                                        <?php $row = '';
+                                                        if ($template->is_admission_no) { 
                                                             ?>
                                                             <th valign="top" style="text-align: center; text-transform: uppercase;">
                                                                 <?php echo $this->lang->line('admission_no') ?>
@@ -161,14 +163,16 @@ if (empty($marksheet)) {
                                                     </tr>
                                                     <tr>
                                                         <?php
-                                                        if ($template->is_admission_no) {
+                                                        if ($template->is_admission_no) { 
                                                             ?>
                                                             <td valign="" style="text-transform: uppercase;text-align: center;"><?php echo $student_value['admission_no']; ?></td>
                                                             <?php
                                                         }
                                                         if ($template->is_roll_no) {
+
+ $roll_no=($exam->use_exam_roll_no) ? $student_value['exam_roll_no']:$student_value['student_roll_no'];
                                                             ?>
-                                                            <td valign="" style="text-transform: uppercase;text-align: center;border-right:1px solid #999"><?php echo $student_value['exam_roll_no']; ?></td>
+                                                            <td valign="" style="text-transform: uppercase;text-align: center;border-right:1px solid #999"><?php echo $roll_no; ?></td>
                                                             <?php
                                                         }
                                                         ?>
@@ -223,6 +227,14 @@ if (empty($marksheet)) {
                                         </tr>
                                         <?php
                                     }
+                                      if ($template->is_dob) {
+                                        ?>
+                                        <tr>
+                                            <td valign="top" style="text-transform: uppercase; padding-bottom: 15px;"><?php echo $this->lang->line('date_of_birth'); ?><span style="padding-left: 30px; font-weight: bold;"><?php echo $this->customlib->dateformat($student_value['dob']); ?></span></td>
+                                        </tr>
+                                        <?php
+                                    }
+
                                     if ($template->is_class && $template->is_section) {
                                         ?>
                                         <tr>
@@ -252,6 +264,7 @@ if (empty($marksheet)) {
                                         <?php
                                     }
                                     ?>
+
                                     <?php
                                     if ($template->exam_center != "") {
                                         ?>
@@ -531,7 +544,7 @@ if (empty($marksheet)) {
                             if ($template->is_division) {
                                 ?>
                                 <tr>
-                                    <td valign="top" colspan="5" width="20%" style="font-weight: normal; text-align: left; border-top:0">
+                                    <td valign="top" colspan="5" width="20%" style="font-weight: normal; text-align: left; border-top:0;padding-top: 5px;">
                                         <?php echo $this->lang->line('division'); ?>
                                         <span style="border-left:0;text-align: left;font-weight: bold; padding-left: 30px;">
                                             <?php
@@ -550,7 +563,22 @@ if (empty($marksheet)) {
                                 </tr>
                                 <?php
                             }
+
+                             if ($template->is_teacher_remark) {
+                                ?>
+                                 <tr>
+                            <td valign="top" colspan="5" width="20%" style="font-weight: normal; text-align: left; border-top:0; padding-top: 5px;"> <?php echo $this->lang->line('teacher_remark'); ?>
+                                        <span style="border-left:0;text-align: left;font-weight: bold; padding-left: 30px;">
+                                       <?php echo $student_value['teacher_remark']; ?>
+                                        </span>
+                                    </td>
+                            </tr>
+                                <?php
+                            }
+
+
                             ?>
+                           
                             <tr>
                                 <td valign="top" style="font-weight: bold; padding-left: 30px; padding-top: 10px;"><?php echo $template->date; ?></td>
                             </tr>
@@ -746,8 +774,9 @@ if (empty($marksheet)) {
                                                         <?php
                                                     }
                                                     if ($template->is_roll_no) {
+                                                          $roll_no=($exam->use_exam_roll_no)?$student_value['exam_result']['exam_roll_no_' . $exam->id]:$student_value['student_roll_no'];
                                                         ?>
-                                                        <td valign="" style="text-transform: uppercase;text-align: center;border-right:1px solid #999">   <?php echo $student_value['exam_result']['exam_roll_no_' . $exam->id]; ?>
+                                                        <td valign="" style="text-transform: uppercase;text-align: center;border-right:1px solid #999">   <?php echo $roll_no; ?>
                                                         </td>
                                                         <?php
                                                     }
@@ -803,7 +832,27 @@ if (empty($marksheet)) {
                                     </tr>
                                     <?php
                                 }
-                                ?>
+								if ($template->is_class && $template->is_section) {
+                                        ?>
+                                        <tr>
+                                            <td valign="top" style="text-transform: uppercase; padding-bottom: 15px;"><?php echo $this->lang->line('class'); ?><span style="padding-left: 30px; font-weight: bold;"><?php echo $student_value['class'] . " (" . $student_value['section'] . ")"; ?> </span></td>
+                                        </tr>
+                                        <?php
+                                    } elseif ($template->is_class) {
+                                        ?>
+                                        <tr>
+                                            <td valign="top" style="text-transform: uppercase; padding-bottom: 15px;"><?php echo $this->lang->line('class'); ?><span style="padding-left: 30px; font-weight: bold;"><?php echo $student_value['class']; ?> </span></td>
+                                        </tr>
+                                        <?php
+                                    } elseif ($template->is_section) {
+                                        ?>
+                                        <tr>
+                                            <td valign="top" style="text-transform: uppercase; padding-bottom: 15px;"><?php echo $this->lang->line('section'); ?><span style="padding-left: 30px; font-weight: bold;"><?php echo $student_value['section']; ?> </span></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                    ?>
+                                
                                 <?php
                                 if ($template->school_name != "") {
                                     ?>
@@ -814,7 +863,7 @@ if (empty($marksheet)) {
                                 }
                                 ?>
                                 <tr>
-                                    <td valign="top" style="text-transform: uppercase; padding-top: 15px; padding-bottom: 20px;" ><?php echo $this->lang->line('exam') . " " . $this->lang->line('center') ?><span style="text-transform: uppercase; padding-top: 15px; font-weight: bold; padding-bottom: 20px; padding-left: 30px;"><?php echo $template->exam_center; ?></span></td>
+                                    <td valign="top" style="text-transform: uppercase; padding-bottom: 20px;" ><?php echo $this->lang->line('exam') . " " . $this->lang->line('center') ?><span style="text-transform: uppercase; padding-top: 15px; font-weight: bold; padding-bottom: 20px; padding-left: 30px;"><?php echo $template->exam_center; ?></span></td>
                                 </tr>
                                 <?php
                                 if ($template->content != "") {
@@ -1083,6 +1132,19 @@ if (empty($marksheet)) {
                                 </tr>
                                 <?php
                             }
+                           if ($template->is_teacher_remark) {
+                                ?>
+                                 <tr>
+                            <td valign="top" colspan="5" width="20%" style="font-weight: normal; text-align: left; border-top:0"> <?php echo $this->lang->line('teacher_remark'); ?>
+                                        <span style="border-left:0;text-align: left;font-weight: bold; padding-left: 30px;">
+                                       <?php echo $student_value['teacher_remark']; ?>
+                                        </span>
+                                    </td>
+                            </tr>
+                                <?php
+                            }
+
+
                             ?>
                             <tr>
                                 <td valign="top" style="font-weight: bold; padding-left: 30px; padding-top: 10px;"><?php echo $template->date; ?></td>

@@ -1,34 +1,47 @@
 <?php
-
-if (!defined('BASEPATH')) {
+if (!defined('BASEPATH'))
     exit('No direct script access allowed');
-}
-require_once APPPATH . 'third_party/afrikatalking/vendor/autoload.php';
-   use AfricasTalking\SDK\AfricasTalking;
+  
 class Africastalking_lib {
 
-    public function __construct() {
-        $this->CI = &get_instance();
+    private $_CI;
+    var $from; //your AUTH_KEY here
+    var $api_key; //your senderId here
+    var $api_username;
+    function __construct($params) {
+ 
+    	$this->from=$params['from'];
+    	$this->api_key=$params['api_key'];
+        $this->api_username=$params['api_username'];
+        $this->_CI = & get_instance();
+        $this->session_name = $this->_CI->setting_model->getCurrentSessionName();
+    } 
+   
+    function sendSMS($to, $message) {
+      
+         $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://api.africastalking.com/version1/messaging');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "username=".$this->api_username."&to=".$to."&message=".$message."&from=".$this->from);
 
+            $headers = array();
+            $headers[] = 'Accept: application/json';
+            $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+            $headers[] = 'Apikey:'.$this->api_key;
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+            }
+            
+            curl_close($ch);
+            
+       return $result;
     }
 
-    public function get() {
-        $username = "mcworks@hotmail.com";// use 'sandbox' for development in the test environment
-        $apiKey   = '9e7d1591768904fe3924f1729f3453eae61be394f20b132938410043079bc292'; // use your sandbox app API key for development in the test environment
-        $AT = new AfricasTalking($username, $apiKey);
 
-
-// Get one of the services
-$payments      = $AT->payments();
-$response = $payments->mobileCheckout(array(
-        "productName" => "Iphone7",
-        "phoneNumber" => '+256-323200603',
-        "currencyCode" => 'KES',
-        "amount" => '100'
-    ));
-  // header("Content-Type: application/json; charset=UTF-8");
-   echo "<pre>"; print_r($payments); echo "</pre>";die;
-//$payments->mobileCheckout(array('productName'=>'sachin','providerChannel'=>'','phoneNumber'=>'','currencyCode'=>'','amount'=>100,'metadata'=>array()), array('idempotencyKey'=>''));
-    }
 
 }
+?>

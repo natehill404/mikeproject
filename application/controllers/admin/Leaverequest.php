@@ -102,18 +102,13 @@ class Leaverequest extends Admin_Controller {
     function leaveRecord() {
 
         $id = $this->input->post("id");
-
         $result = $this->staff_model->getLeaveRecord($id);
-
-        //$leave_from1 = date($this->customlib->getSchoolDateFormat(), $this->customlib->datetostrtotime($result->leave_from));
         $leave_from = date("m/d/Y", strtotime($result->leave_from));
         $result->leavefrom = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($result->leave_from));
         $result->date = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($result->date));
-        //$leave_to1 = date($this->customlib->getSchoolDateFormat(), $this->customlib->datetostrtotime($result->leave_to));
         $leave_to = date("m/d/Y", strtotime($result->leave_to));
         $result->leaveto = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($result->leave_to));
         $result->days = $this->dateDifference($leave_from, $leave_to);
-
         echo json_encode($result);
     }
 
@@ -142,7 +137,8 @@ class Leaverequest extends Admin_Controller {
         $this->form_validation->set_rules('role', $this->lang->line('role'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('empname', $this->lang->line('name'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('applieddate', $this->lang->line('applied_date'), 'trim|required|xss_clean');
-          $this->form_validation->set_rules('leave_to_date', $this->lang->line('leave')." ".$this->lang->line('to')." ".$this->lang->line('date'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('leave_from_date', $this->lang->line('leave')." ".$this->lang->line('from')." ".$this->lang->line('date'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('leave_to_date', $this->lang->line('leave')." ".$this->lang->line('to')." ".$this->lang->line('date'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('leave_type', $this->lang->line('available') . " " . $this->lang->line('leave'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('leave_type', $this->lang->line('leave') . " " . $this->lang->line('type'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('userfile', $this->lang->line('file'), 'callback_handle_upload[userfile]');
@@ -155,6 +151,8 @@ class Leaverequest extends Admin_Controller {
                 'applieddate' => form_error('applieddate'),
                 'leavedates' => form_error('leavedates'),
                 'leave_type' => form_error('leave_type'),
+                'leave_from_date' => form_error('leave_from_date'),
+                'leave_to_date' => form_error('leave_to_date'),
             );
 
             $array = array('status' => 'fail', 'error' => $msg, 'message' => '');
@@ -242,6 +240,7 @@ class Leaverequest extends Admin_Controller {
                 'leave_from_date' => form_error('leave_from_date'),
                 'leave_to_date' => form_error('leave_to_date'),
                 'leave_type' => form_error('leave_type'),
+				'userfile' => form_error('userfile'),
             );
 
             $array = array('status' => 'fail', 'error' => $msg, 'message' => '');

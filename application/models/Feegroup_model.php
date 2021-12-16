@@ -37,7 +37,7 @@ class Feegroup_model extends MY_Model {
         $this->db->where('id', $id);
         $this->db->where('is_system', 0);
         $this->db->delete('fee_groups');
-        $message = DELETE_RECORD_CONSTANT . " On  fee groups id " . $id;
+        $message = DELETE_RECORD_CONSTANT . " On  fee group id " . $id;
         $action = "Delete";
         $record_id = $id;
         $this->log($message, $record_id, $action);
@@ -66,19 +66,18 @@ class Feegroup_model extends MY_Model {
         if (isset($data['id'])) {
             $this->db->where('id', $data['id']);
             $this->db->update('fee_groups', $data);
-            $message = UPDATE_RECORD_CONSTANT . " On  fee groups id " . $data['id'];
+            $message = UPDATE_RECORD_CONSTANT . " On  fee group id " . $data['id'];
             $action = "Update";
             $record_id = $id = $data['id'];
             $this->log($message, $record_id, $action);
         } else {
             $this->db->insert('fee_groups', $data);
             $id = $this->db->insert_id();
-            $message = INSERT_RECORD_CONSTANT . " On  fee groups id " . $id;
+            $message = INSERT_RECORD_CONSTANT . " On  fee group id " . $id;
             $action = "Insert";
             $record_id = $id;
             $this->log($message, $record_id, $action);
 
-            //return $id;
         }
       
         //======================Code End==============================

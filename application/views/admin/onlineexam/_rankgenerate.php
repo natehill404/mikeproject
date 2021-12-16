@@ -140,7 +140,7 @@ foreach ($array_rank as $rank_key => $rank_value) {
                         <td><?php echo $student['category']; ?></td>
                     <?php } ?>
                     <td class="pull-right"><?php echo $student['gender']; ?></td>
-                    <td class="pull-right"><?php echo $student['rank']; ?></td>
+                    <td class="pull-right"><?php echo $student['exam_rank']; ?></td>
 
                 </tr>
                 <?php

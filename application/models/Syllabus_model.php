@@ -32,7 +32,7 @@ class syllabus_model extends CI_Model {
 
     public function get_studentsyllabus($data) {
 
-        $sql = "SELECT class_sections.id as class_section_id,subject_group_class_sections.id as subject_group_class_section_id FROM `class_sections` inner join subject_group_class_sections on subject_group_class_sections.class_section_id=class_sections.id WHERE `class_id`=" . $this->db->escape($data->class_id) . " and `section_id`=" . $this->db->escape($data->section_id);
+        $sql = "SELECT class_sections.id as class_section_id,subject_group_class_sections.id as subject_group_class_section_id FROM `class_sections` inner join subject_group_class_sections on subject_group_class_sections.class_section_id=class_sections.id WHERE `subject_group_class_sections`.`session_id`=".$this->current_session." and  `class_id`=" . $this->db->escape($data->class_id) . " and `section_id`=" . $this->db->escape($data->section_id);
 
         $query = $this->db->query($sql);
         return $query->result();

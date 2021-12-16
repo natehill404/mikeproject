@@ -1,4 +1,4 @@
-<div class="content-wrapper" style="min-height: 348px;">
+<div class="content-wrapper">
     <section class="content-header">
         <h1>
             <i class="fa fa-ioxhost"></i> <?php echo $this->lang->line('front_office'); ?></h1>
@@ -150,7 +150,7 @@ if (empty($visitor_list)) {
                                                 <td class="mailbox-name"> <?php echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value['date'])); ?></td>
                                                 <td class="mailbox-name"> <?php echo $value['in_time']; ?></td>
                                                 <td class="mailbox-name"> <?php echo $value['out_time']; ?></td>
-                                                <td class="mailbox-date pull-right">
+                                                <td class="mailbox-date pull-right white-space-nowrap">
                                                     <a data-placement="left"  onclick="getRecord(<?php echo $value['id']; ?>)" class="btn btn-default btn-xs" data-target="#visitordetails" data-toggle="modal"  title="<?php echo $this->lang->line('view'); ?>"><i class="fa fa-reorder"></i></a>
                                                     <?php if ($value['image'] !== "") {?>
                                                         <a data-placement="left" href="<?php echo base_url(); ?>admin/visitors/download/<?php echo $value['image']; ?>" class="btn btn-default btn-xs" data-toggle="tooltip" title="" data-original-title="<?php echo $this->lang->line('download'); ?>">

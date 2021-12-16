@@ -169,7 +169,7 @@
                                     <input type="hidden" name="class_id" value="<?php echo $class_id; ?>">
                                     <input type="hidden" name="section_id" value="<?php echo $section_id; ?>">
                                     <input type="hidden" name="date" value="<?php echo $date; ?>">
-                                    <div class="download_label"><?php echo $this->lang->line('attendance'); ?> <?php echo $this->lang->line('list') . "<br>";
+                                    <div class="download_label"><?php echo $this->lang->line('attendance'); ?> <?php echo $this->lang->line('list') . " ";
                             $this->customlib->get_postmessage();
                                     ?></div>
                                     <div class="table-responsive">    

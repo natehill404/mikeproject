@@ -78,7 +78,7 @@ if ($question_status == 0) {
                                             <input type="radio" name="radio<?php echo $counter; ?>" value="true" autocomplete="off">TRUE
                                         </label>
                                           <label>
-                                            <input type="radio" name="radio<?php echo $counter; ?>" value="true" autocomplete="off">FALSE
+                                            <input type="radio" name="radio<?php echo $counter; ?>" value="false" autocomplete="off">FALSE
                                         </label>
                          <?php
                             }elseif ($question_value->question_type == "multichoice") {
@@ -100,6 +100,10 @@ if ($question_status == 0) {
                                 }
                             }elseif ($question_value->question_type == "descriptive") {
                             ?>
+                            <div class="form-group">
+    <span for="attachment<?php echo $counter;?>">Attachment</span>
+    <input type="file" class="filestyle form-control exam_attachment" name="attachment<?php echo $counter; ?>" id="attachment<?php echo $counter;?>">
+  </div>
                             <div class="form-group">
                               <span for="answer"><?php echo $this->lang->line('answer')?>: </span>
                               <textarea class="form-control ckeditor" rows="20" id="answer_<?php echo $counter; ?>" name="answer<?php echo $counter; ?>" ></textarea>

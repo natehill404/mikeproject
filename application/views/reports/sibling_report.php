@@ -17,7 +17,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                         <h3 class="box-title"><i class="fa fa-search"></i> <?php echo $this->lang->line('select_criteria'); ?></h3>
                     </div>
 
-                    <form role="form" action="<?php echo site_url('report/sibling_report') ?>" method="post" class="">
+                    <form role="form" action="<?php echo site_url('report/sibling_report') ?>" method="post" class="" id="class_search_form"  >
                         <div class="box-body row">
                             <?php echo $this->customlib->getCSRF(); ?>
                             <div class="col-sm-6 col-md-3">
@@ -38,7 +38,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 }
                                                 ?>
                                     </select>
-                                    <span class="text-danger"><?php echo form_error('class_id'); ?></span>
+                                    <span class="text-danger" id="error_class_id"></span>
                                 </div>
                             </div>
 
@@ -59,7 +59,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             }
                                             ?>
                                     </select>
-                                    <span class="text-danger"><?php echo form_error('section_id'); ?></span>
+                                   <span class="text-danger" id="error_section_id"></span>
                                 </div>
                             </div>
 
@@ -78,6 +78,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                             <h3 class="box-title titlefix"><i class="fa fa-money"> </i> <?php echo $this->lang->line('sibling') . " " . $this->lang->line('report'); ?></h3>
                         </div>
                         <div class="box-body table-responsive">
+                            
                             <div class="download_label"><?php echo $this->lang->line('sibling') . " " . $this->lang->line('report');$this->customlib->get_postmessage();
                                             ?></div>
                             <table class="table table-striped table-bordered table-hover example">
@@ -101,7 +102,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php if (empty($resultlist)) {  //print_r($resultlist);die;  ?>
+                                    <?php if (empty($resultlist)) {    ?>
                                         <?php
                                     } else {
                                         $count = 1;
@@ -211,4 +212,3 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
         });
     });
 </script>
-

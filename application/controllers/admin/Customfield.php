@@ -41,7 +41,14 @@ class Customfield extends Admin_Controller {
                 'visible_on_table' => isset($_POST['display_tbl']) ? $_POST['display_tbl'] : "",
             );
 
-            $this->customfield_model->add($data);
+             $this->customfield_model->add($data);
+            
+
+           
+
+            /* code for adding custom fields in system field also */
+            
+
             $this->session->set_flashdata('msg', '<div class="alert alert-success text-left">' . $this->lang->line('success_message') . '</div>');
             redirect('admin/customfield/index');
         }

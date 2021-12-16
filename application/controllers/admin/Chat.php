@@ -155,7 +155,7 @@ class Chat extends Admin_Controller {
             $chat_user_id = $chat_user->id;
         }
         $data['sch_setting']= $this->sch_setting_detail;
-        $data['chat_user'] = $this->chatuser_model->searchForUser($keyword, $chat_user_id, 'staff', $staff_id);
+        $data['chat_user'] = $this->chatuser_model->searchForUser($keyword, $chat_user_id, $staff_id, 'staff');
         $userlist = $this->load->view('admin/chat/_partialSearchUser', $data, true);
         $array = array('status' => '1', 'error' => '', 'page' => $userlist);
 
@@ -262,7 +262,7 @@ class Chat extends Admin_Controller {
             );
 
             //===================
-            $new_user_record = $this->chatuser_model->addNewUser($first_entry, $insert_data, 'staff', $staff_id, $insert_message);
+            $new_user_record = $this->chatuser_model->addNewUser($first_entry, $insert_data, $staff_id, $insert_message, 'staff');
             $json_record = json_decode($new_user_record);
             //==================
             $new_user = $this->chatuser_model->getChatUserDetail($json_record->new_user_id);

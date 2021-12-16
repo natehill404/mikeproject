@@ -37,7 +37,7 @@
                                         <div class="col-md-2 col-xs-6 systatus">
                                             <b><?php echo $value['lebel'] ?></b> 
                                             <div class="chart ptt10">
-                                                <canvas id="<?php echo $value['id'] ?>" class="" style="width: 100%; height: 100%;"></canvas>
+                                                <canvas id="<?php echo $value['graph_id'] ?>" class="" style="width: 100%; height: 100%;"></canvas>
                                             </div>
                                             <span class="label lbcolor"><?php echo $this->lang->line('complete') . " " . $value['complete'] . " %"; ?></span>
                                         </div>
@@ -181,7 +181,7 @@
             }
         ];
 
-        var DoughnutTextInsideChart = new Chart($('#<?php echo $value['id'] ?>')[0].getContext('2d')).DoughnutTextInside(data, {
+        var DoughnutTextInsideChart = new Chart($('#<?php echo $value['graph_id'] ?>')[0].getContext('2d')).DoughnutTextInside(data, {
             responsive: true
         });
 <?php } ?>
@@ -381,8 +381,7 @@
 
         for (j = 0; j < tab.rows.length; j++)
         {
-            tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";
-            //tab_text=tab_text+"</tr>";
+            tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";            
         }
 
         tab_text = tab_text + "</table>";

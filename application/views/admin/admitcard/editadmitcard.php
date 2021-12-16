@@ -220,7 +220,7 @@ if ($this->rbac->hasPrivilege('design_admit_card', 'can_edit')) {
                                                         <i class="fa fa-picture-o fa-3x" aria-hidden="true"></i>
                                                     <?php }?>
                                                 </td>
-                                                <td class="mailbox-date text-right no-print">
+                                                <td class="mailbox-date text-right no-print white-space-nowrap">
                                                     <a id="<?php echo $certificate->id ?>" class="btn btn-default btn-xs view_data" title="<?php echo $this->lang->line('view'); ?>">
                                                         <i class="fa fa-reorder"></i>
                                                     </a>

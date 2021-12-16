@@ -375,8 +375,8 @@ class Paymentsettings extends Admin_Controller {
       
         $this->form_validation->set_error_delimiters('', '');
 
-        $this->form_validation->set_rules('jazzcash_pp_MerchantID', 'pp_MerchantID --r', 'trim|required|xss_clean');
-         $this->form_validation->set_rules('jazzcash_pp_Password', 'pp_Password --r', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('jazzcash_pp_MerchantID', $this->lang->line('pp_MerchantID'), 'trim|required|xss_clean');
+         $this->form_validation->set_rules('jazzcash_pp_Password', $this->lang->line('pp_password'), 'trim|required|xss_clean');
 
 
 
@@ -403,8 +403,8 @@ class Paymentsettings extends Admin_Controller {
     public function billplz() {
       
         $this->form_validation->set_error_delimiters('', '');
-        $this->form_validation->set_rules('billplz_api_key', 'api_key --r', 'trim|required|xss_clean');
-        $this->form_validation->set_rules('billplz_customer_service_email', 'customer_service_email --r', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('billplz_api_key', $this->lang->line('api_key'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('billplz_customer_service_email', $this->lang->line('customer_service_email'), 'trim|required|xss_clean');
 
         if ($this->form_validation->run()) {
 
@@ -422,6 +422,35 @@ class Paymentsettings extends Admin_Controller {
             $data = array(
                 'billplz_api_key' => form_error('billplz_api_key'),
                 'billplz_customer_service_email' => form_error('billplz_customer_service_email'),
+            );
+
+            echo json_encode(array('st' => 1, 'msg' => $data));
+        }
+    }
+
+    public function sslcommerz() {
+        
+      
+        $this->form_validation->set_error_delimiters('', '');
+        $this->form_validation->set_rules('sslcommerz_api_key', $this->lang->line('sslcommerz_api_key'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('sslcommerz_store_password', $this->lang->line('sslcommerz_store_password'), 'trim|required|xss_clean');
+
+        if ($this->form_validation->run()) {
+
+            $data = array(
+                'api_password' => $this->input->post('sslcommerz_store_password'),
+                 'api_publishable_key' => $this->input->post('sslcommerz_api_key'),
+                'payment_type' => 'sslcommerz',
+            );
+
+            $this->paymentsetting_model->add($data);
+            echo json_encode(array('st' => 0, 'msg' => $this->lang->line('update_message')));
+
+        } else {
+
+            $data = array(
+                'sslcommerz_store_password' => form_error('sslcommerz_store_password'),
+                'sslcommerz_api_key' => form_error('sslcommerz_api_key'),
             );
 
             echo json_encode(array('st' => 1, 'msg' => $data));

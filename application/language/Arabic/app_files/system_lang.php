@@ -1584,3 +1584,113 @@ $lang['android_app_purchase_code_already_registered'] ="تم تسجيل رمز �
 $lang['please_check'] ="يرجى المراجعة";
 $lang['for_latest_version_update'] ="لتحديث أحدث إصدار.";
 $lang['awaited'] ="منتظر";
+
+#version 6.3.0 
+
+$lang['accept'] ="قبول";
+$lang['add_staff_certificates'] ="اضافة شهادات موظفين";
+$lang['admit_card_roll_no'] ="دخول بطاقة رول لا";
+$lang['africastalking'] ="أفريكاس";
+$lang['africastalking_apikey'] ="AfricanasTalking ApiKey";
+$lang['africastalking_short_code'] ="AfricanasTalking Short Code";
+$lang['africastalking_username'] ="افريكاس توكينج اسم المستخدم";
+$lang['audit_trail_delete'] ="هل أنت متأكد من أنك تريد حذف سجلات Audit Trail بعد حذفك لن تتمكن من التراجع عن هذه السجلات؟";
+$lang['balance_fees_statement'] ="بيان رسوم الرصيد";
+$lang['basic_details'] ="تفاصيل أساسية";
+$lang['bulk_delete'] ="حذف مجمع";
+$lang['bulk_mail'] ="البريد بالجملة";
+$lang['certificate_type'] ="نوع الشهادة";
+$lang['change_background'] ="غير الخلفية";
+$lang['check_your_form_status'] ="تحقق من حالة النموذج الخاص بك";
+$lang['class_section_report'] ="تقرير الفصل والقسم";
+$lang['clear_audit_trail_record'] ="مسح سجل أثر المراجعة";
+$lang['clear_userlog_record'] ="مسح سجل سجل المستخدم";
+$lang['collected_by'] ="جمع بواسطة";
+$lang['collection_date'] ="تاريخ التحصيل";
+$lang['collection_list'] ="قائمة المجموعة";
+$lang['cookie_consent'] ="الموافقة على ملفات تعريف الارتباط";
+$lang['daily_collection_report'] ="تقرير المجموعة اليومية";
+$lang['date'] ="تاريخ";
+$lang['do_you_still_want_to_enroll_it'] ="هل مازلت تريد تسجيله؟";
+$lang['edit_and_save'] ="تحرير وحفظ";
+$lang['edit_staff_certificates'] ="تحرير شهادات الموظفين";
+$lang['enter_your_reference_number'] ="أدخل الرقم المرجعي الخاص بك";
+$lang['exam_group'] ="مجموعة الامتحانات";
+$lang['exam_subject_list'] ="قائمة مواضيع الامتحان";
+$lang['for_further_communication'] ="لمزيد من التواصل";
+$lang['form_has_been_submitted_successfully'] ="تم تقديم النموذج بنجاح .. !!";
+$lang['form_status'] ="حالة النموذج";
+$lang['horizontal'] ="أفقي";
+$lang['i_agree_to_the_terms_and_conditions'] ="أوافق على الشروط";
+$lang['if_upload_multiple_document'] ="لتحميل مستند متعدد ، قم بضغطه في ملف واحد ثم قم بتحميله";
+$lang['instructions'] ="تعليمات";
+$lang['inv_no'] ="رقم الفاتورة";
+$lang['invalid_payment_amount'] ="مبلغ الدفع غير صالح";
+$lang['invalid_refence_number_or_date_of_birth'] ="رقم المرجع أو تاريخ الميلاد غير صالح";
+$lang['keyword'] ="الكلمة الرئيسية";
+$lang['login_credentials_send'] ="إرسال بيانات اعتماد تسجيل الدخول";
+$lang['marks_max'] ="ماركس (ماكس)";
+$lang['marks_min'] ="علامات (دقيقة)";
+$lang['nexmo'] ="نيكسمو";
+$lang['nexmo_api_key'] ="مفتاح Nexmo Api";
+$lang['nexmo_api_secret'] ="سر Nexmo Api";
+$lang['nexmo_registered_phone_number'] ="رقم هاتف Nexmo المسجل";
+$lang['not_submitted'] ="لم يتم التقديم";
+$lang['notification_type'] ="نوع إعلام";
+$lang['online_admission'] ="القبول عبر الإنترنت";
+$lang['online_admission_fees_submission'] ="تقديم رسوم القبول عبر الإنترنت";
+$lang['online_admission_fields_setting'] ="إعداد حقول القبول عبر الإنترنت";
+$lang['online_admission_form_details'] ="تفاصيل نموذج القبول عبر الإنترنت";
+$lang['online_admission_form_fees'] ="رسوم استمارة التقديم عبر الإنترنت";
+$lang['online_admission_form_fields'] ="حقول نموذج القبول عبر الإنترنت";
+$lang['online_admission_form_setting'] ="إعداد نموذج القبول عبر الإنترنت";
+$lang['online_admission_form_submission'] ="تقديم استمارة القبول عبر الإنترنت";
+$lang['online_admission_instructions'] ="تعليمات القبول عبر الإنترنت";
+$lang['online_admission_payment_option'] ="خيار الدفع للقبول عبر الإنترنت";
+$lang['online_admission_receipt'] ="إيصال القبول عبر الإنترنت";
+$lang['online_admission_setting'] ="إعداد القبول عبر الإنترنت";
+$lang['parent_detail'] ="تفاصيل الوالدين";
+$lang['payment_details'] ="بيانات الدفع";
+$lang['payment_failed'] ="عملية الدفع فشلت";
+$lang['payment_gateway_for_bangladesh'] ="بوابة الدفع لبنجلاديش";
+$lang['payment_mode'] ="طريقة الدفع";
+$lang['payment_status'] ="حالة السداد";
+$lang['profile_roll_no'] ="الملف الشخصي لا";
+$lang['question_marks'] ="علامات استفهام";
+$lang['registered_from_number'] ="مسجل / من رقم";
+$lang['remark'] ="ملاحظة";
+$lang['review_entered_details_and_status'] ="مراجعة التفاصيل المدخلة والحالة";
+$lang['room_no'] ="غرفة لا";
+$lang['s_no'] ="S. لا.";
+$lang['select_your_date_of_birth'] ="اختر تاريخ ميلادك";
+$lang['sms_test'] ="اختبار الرسائل القصيرة";
+$lang['sslcommerz'] ="SSLCommerz";
+$lang['sslcommerz_api_key'] ="مفتاح SSLCommerz Api";
+$lang['sslcommerz_store_password'] ="SSLCommerz Store كلمة مرور";
+$lang['staff_certificate'] ="شهادة موظفين";
+$lang['staff_certificate_list'] ="قائمة شهادات الموظفين";
+$lang['store_id'] ="معرف المتجر";
+$lang['store_password'] ="تخزين كلمة المرور";
+$lang['student_list'] ="قائمة الطلاب";
+$lang['submitted'] ="قدمت";
+$lang['success'] ="نجاح";
+$lang['terms_conditions'] ="البنود و الظروف";
+$lang['test_email'] ="البريد الإلكتروني اختبار";
+$lang['thank_you_for_payment'] ="شكرا لك على الدفع";
+$lang['thank_you_for_your_complain'] ="شكرا لك على شكواك";
+$lang['thanks_for_contacting_us'] ="شكرا لإتصالك بنا";
+$lang['thanks_for_registration_please_note_your_reference_number'] ="شكرا للتسجيل. يرجى ملاحظة الرقم المرجعي الخاص بك";
+$lang['this_field_is_required_only_for_indian_sms_gateway'] ="هذا الحقل مطلوب فقط لبوابة الرسائل القصيرة الهندية";
+$lang['total_amount'] ="المبلغ الإجمالي";
+$lang['total_transactions'] ="إجمالي المعاملات";
+$lang['transaction_id'] ="رقم المعاملة";
+$lang['try_again'] ="حاول مرة أخري";
+$lang['user_log_delete'] ="هل أنت متأكد أنك تريد حذف &quot;سجل المستخدم&quot; بعد الحذف ، فلن تتمكن من التراجع عن هذه السجلات؟";
+$lang['vertical'] ="عمودي";
+$lang['vertical_certificate'] ="الشهادة العمودية";
+$lang['view_collection'] ="عرض المجموعة";
+$lang['you_are_already_enrolled_please_contact_to_school_administrator'] ="تم تسجيلك. يرجى الاتصال بمدير المدرسة .... !!!";
+$lang['your_online_admission_fees_is_successfully_submitted'] ="تم تقديم رسوم القبول الخاصة بك عبر الإنترنت بنجاح.";
+$lang['your_transaction_has_failed_due_to_some_technical_error'] ="فشلت معاملتك بسبب خطأ فني.";
+$lang['deleting_class'] ="سيؤدي حذف هذا الفصل أيضًا إلى حذف جميع الطلاب ضمن هذا الفصل ، لذا كن حذرًا لأن هذا الإجراء لا يمكن التراجع عنه";
+$lang['this_field_is_reqiured_only_for_indian_sms_gateway'] ="هذا الحقل مطلوب فقط لبوابة الرسائل القصيرة الهندية";

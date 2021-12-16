@@ -233,27 +233,19 @@
                         <div class="row">                           
                             <div class="col-xs-6 text-left">
                                 <br/>
-                                <div class="col-xs-3 text-left">
-                                    <?php if ($image_url) { ?>
-                                    
-                                        <img class="" src="<?php echo $image_url; ?>" alt="User profile picture" height="150" width="150">
-                                    <?php } ?>
-                                </div>
-                                <div class="col-xs-9 text-left">
-                                    <address>
-                                        <strong><?php
-                                            echo $this->customlib->getFullName($feeList->firstname, $feeList->middlename, $feeList->lastname, $sch_setting->middlename, $sch_setting->lastname);
-                                            ?></strong><br>
+                                <address>
+                                    <strong><?php
+                                   echo $this->customlib->getFullName($feeList->firstname,$feeList->middlename,$feeList->lastname,$sch_setting->middlename,$sch_setting->lastname);
+                                      ?></strong><?php echo " (".$feeList->admission_no.")"; ?> <br>
 
-                                        
-                                        <?php echo $this->lang->line('class'); ?>: <?php echo $feeList->class . " (" . $feeList->section . ")"; ?>
-                                    </address>
-                                </div>
+                                    <?php echo $this->lang->line('father_name'); ?>: <?php echo $feeList->father_name; ?><br>
+                                    <?php echo $this->lang->line('class'); ?>: <?php echo $feeList->class . " (" . $feeList->section . ")"; ?>
+                                </address>
                             </div>
                             <div class="col-xs-6 text-right">
                                 <br/>
                                 <address>
-                                    <strong>Date: <?php
+                                    <strong><?php echo $this->lang->line('date') ; ?>: <?php
                                         $date = date('d-m-Y');
 
                                         echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($date));
@@ -420,10 +412,12 @@
                 </div>
                 <div class="row header ">
                     <div class="col-sm-12">
-                        <?php ?>
+                        <?php
+                        ?>
 
                         <?php $this->setting_model->get_receiptfooter(); ?>
-                        <?php ?>
+                        <?php
+                        ?>
                     </div>
 
                 </div>  
@@ -440,7 +434,8 @@
                                     <?php ?>
 
                                     <img  src="<?php echo base_url(); ?>/uploads/print_headerfooter/student_receipt/<?php $this->setting_model->get_receiptheader(); ?>" style="height: 100px;width: 100%;">
-                                    <?php ?>
+                                    <?php
+                                    ?>
                                 </div>
 
                             </div>
@@ -461,7 +456,7 @@
                                     <address>
                                         <strong><?php echo $feeList->firstname . " " . $feeList->lastname . " (" . $feeList->admission_no . ")"; ?></strong><br>
 
-                                        
+                                        <?php echo $this->lang->line('father_name'); ?>: <?php echo $feeList->father_name; ?><br>
                                         <?php echo $this->lang->line('class'); ?>: <?php echo $feeList->class . " (" . $feeList->section . ")"; ?>
                                     </address>
                                 </div>

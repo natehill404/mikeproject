@@ -1,3 +1,4 @@
+<script src="<?php echo base_url() ?>backend/plugins/ckeditor/plugins/ckeditor_wiris/integration/WIRISplugins.js?viewer=image"></script>
 <div class="content-wrapper">
     <section class="content-header">
         <h1><i class="fa fa-bus"></i> <?php echo $this->lang->line('question'); ?></h1>

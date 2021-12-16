@@ -1,7 +1,7 @@
 <?php
 $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 ?>
-<div class="content-wrapper" style="min-height: 946px;">   
+<div class="content-wrapper">   
     <section class="content-header">
         <h1>
             <i class="fa fa-money"></i> <?php echo $this->lang->line('fees_collection'); ?></h1>
@@ -128,7 +128,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                     <?php
                                                     foreach ($feegroupList as $feegroup) {
                                                         ?>
-                                                        <h4>
+                                                        <h4 class="mt2">
                                                             <input type="hidden" name="fee_session_groups" value="<?php echo $feegroup->id; ?>">
                                                             <a href="#" data-toggle="popover" class="detail_popover"><?php echo $feegroup->group_name; ?></a>
                                                         </h4>

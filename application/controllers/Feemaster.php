@@ -48,11 +48,12 @@ class Feemaster extends Admin_Controller
         $data['classlist']       = $class;
         $feecategory             = $this->feecategory_model->get(null, 'asc');
         $data['feecategorylist'] = $feecategory;
+        
         $this->load->view('layout/header', $data);
         $this->load->view('feemaster/feemasterList', $data);
         $this->load->view('layout/footer', $data);
     }
-
+ 
     public function view($id)
     {
         $data['title']     = 'Fees Master List';

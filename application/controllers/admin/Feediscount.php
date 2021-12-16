@@ -157,7 +157,7 @@ class Feediscount extends Admin_Controller {
     }
 
     function applydiscount() {
-        if (!$this->rbac->hasPrivilege('fees_discount_assign', 'can_add')) {
+        if (!$this->rbac->hasPrivilege('fees_discount_assign', 'can_view')) {
             access_denied();
         }
         $this->form_validation->set_rules('discount_payment_id', $this->lang->line('fees_payment_id'), 'required|trim|xss_clean');

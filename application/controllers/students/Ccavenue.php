@@ -19,9 +19,10 @@ class Ccavenue extends Student_Controller {
         $this->session->set_userdata('sub_menu', 'book/index');
         $data['params']         = $this->session->userdata('params');
         $data['setting']        = $this->setting;
-        $data['payment_detail'] = $data['params']['payment_detail'];
+        
+        $data['student_fees_master_array']=$data['params']['student_fees_master_array'];
         $this->load->view('student/ccavenue', $data);
-    }
+    } 
 
     public function pay()
     {
@@ -78,32 +79,37 @@ class Ccavenue extends Student_Controller {
 
                     $tracking_id = $status['tracking_id'];
                     $bank_ref_no = $status['bank_ref_no'];
+                    $bulk_fees=array();
+            
+         
+            foreach ($params['student_fees_master_array'] as $fee_key => $fee_value) {
+           
+             $json_array = array(
+                'amount'          =>  $fee_value['amount_balance'],
+                'date'            => date('Y-m-d'),
+                'amount_discount' => 0,
+                'amount_fine'     => $fee_value['fine_balance'],
+                'description'     => "Online fees deposit through CCAvenue. TXN ID: " . $tracking_id . " Bank Ref. No.: " . $bank_ref_no,
+                'received_by'     => '',
+                'payment_mode'    => 'CCAvenue',
+            );
 
-                    $json_array = array(
-                        'amount'          => $params['total'],
-                        'date'            => date('Y-m-d'),
-                        'amount_discount' => 0,
-                        'amount_fine'     => $params['fine_amount_balance'],
-                        'description'     => "Online fees deposit through CCAvenue. TXN ID: " . $tracking_id . " Bank Ref. No.: " . $bank_ref_no,
-                        'received_by'     => '',
-                        'payment_mode'    => 'CCAvenue',
-                    );
+            $insert_fee_data = array(
+                'student_fees_master_id' => $fee_value['student_fees_master_id'],
+                'fee_groups_feetype_id'  => $fee_value['fee_groups_feetype_id'],
+                'amount_detail'          => $json_array,
+            );                 
+           $bulk_fees[]=$insert_fee_data;
+            //========
+            }
+            $send_to     = $params['guardian_phone'];
+            $inserted_id = $this->studentfeemaster_model->fee_deposit_bulk($bulk_fees, $send_to);
+            if ($inserted_id) {
+                  redirect(base_url("students/payment/successinvoice"));                     
+            } else {
+              redirect(base_url('students/payment/paymentfailed'));
+            }
 
-                    $data = array(
-                        'student_fees_master_id' => $params['student_fees_master_id'],
-                        'fee_groups_feetype_id'  => $params['fee_groups_feetype_id'],
-                        'amount_detail'          => $json_array,
-                    );
-
-                    $send_to     = $params['guardian_phone'];
-                    $inserted_id = $this->studentfeemaster_model->fee_deposit($data, $send_to);
-
-                    if ($inserted_id) {
-                        $invoice_detail = json_decode($inserted_id);
-                        redirect(base_url("students/payment/successinvoice/" . $invoice_detail->invoice_id . "/" . $invoice_detail->sub_invoice_id));
-                    } else {
-
-                    }
                 } else if ($status['order_status'] === "Aborted") {
                     echo "<br>We will keep you posted regarding the status of your order through e-mail";
 

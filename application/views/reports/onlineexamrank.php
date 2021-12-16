@@ -191,7 +191,13 @@ if (isset($student_data)) {
                                         <th><?php echo $this->lang->line('student') ?></th>
                                         <th><?php echo $this->lang->line('admission_no') ?></th>
                                         <th><?php echo $this->lang->line('class'); ?></th>
+                                        <?php
+                                            if ($sch_setting->father_name) {
+                                        ?>
                                         <th><?php echo $this->lang->line('father_name'); ?></th>
+                                        <?php 
+                                            }
+                                        ?>
                                         <th><?php echo $this->lang->line('exam_submitted')?></th>
         <th><?php echo $this->lang->line('total') . " " . $this->lang->line('question') ?></th>
         <th> <?php echo $this->lang->line('descriptive'); ?></th>
@@ -270,7 +276,7 @@ if (empty($student_data)) {
 
             ?>
                 <tr>
-                    <td class="pull-right"><?php echo $student['rank']; ?></td>
+                    <td class="pull-right"><?php echo $student['exam_rank']; ?></td>
                     <td><?php echo $this->customlib->getFullName($student['firstname'], $student['middlename'], $student['lastname'], $sch_setting->middlename, $sch_setting->lastname); ?></td>
                     <td><?php echo $student['admission_no']; ?></td>
 

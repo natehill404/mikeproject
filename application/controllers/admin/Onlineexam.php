@@ -21,6 +21,7 @@ class Onlineexam extends Admin_Controller
         if (!$this->rbac->hasPrivilege('online_examination', 'can_view')) {
             access_denied();
         }
+        $data=array();
         $this->session->set_userdata('top_menu', 'Online_Examinations');
         $this->session->set_userdata('sub_menu', 'Online_Examinations/Onlineexam');
         $questionList           = $this->onlineexam_model->get();
@@ -35,6 +36,106 @@ class Onlineexam extends Admin_Controller
         $this->load->view('layout/header', $data);
         $this->load->view('admin/onlineexam/index', $data);
         $this->load->view('layout/footer', $data);
+    }
+
+    public function getexamlist()
+    {
+        $questionList           = $this->onlineexam_model->getexamlist();
+        
+		$subject_result         = $this->subject_model->get();
+        $subjectlist   	= $subject_result;
+        $questionOpt            = $this->customlib->getQuesOption();
+        $questionOpt    = $questionOpt;
+        $question_type  = $this->config->item('question_type');
+        $question_level = $this->config->item('question_level');
+        $classList      = $this->class_model->get();
+        $m       = json_decode($questionList);
+
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data = array();
+        if (!empty($m->data)) {
+            foreach ($m->data as $key => $subject_value) {
+                $assign   = '';
+                $addquestion_btn='';
+                $editbtn = '';
+                $deletebtn = '' ;
+                $question_list='';
+                $set_enable=false;
+                if((($subject_value->publish_result == 0) && (strtotime($subject_value->exam_to) >= strtotime(date('Y-m-d H:i:s')))) && (($subject_value->auto_publish_date == "0000-00-00" || $subject_value->auto_publish_date == "" || $subject_value->auto_publish_date == NULL)  || strtotime($subject_value->auto_publish_date) >= strtotime(date('Y-m-d H:i:s')))){
+                    $set_enable=true;
+                }
+                $title="<a href='#' data-toggle='popover' class='detail_popover'>".$subject_value->exam."</a>" ;
+
+                   if ($subject_value->description == "") {
+                        $description= "<div class='fee_detail_popover' style='display: none'><p class='text text-danger'>".$this->lang->line('no_description')."</div></p>" ;
+                   }else{
+                     $description= "<div class='fee_detail_popover' style='display: none'><p class='text text-danger'>".$subject_value->description."</div></p>" ;
+                   }
+                   if($subject_value->is_quiz){
+                    $is_quiz= "<i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>" ;
+                   }else{
+                    $is_quiz= "<i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>" ;
+                   }
+                   $descriptive_ques= $subject_value->total_ques."<br /><span>(". $this->lang->line('descriptive').':'. $subject_value->total_descriptive_ques.")</span>" ;
+                    if($subject_value->is_active == 1){ 
+                        $is_active="<i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>" ;
+                    } else{
+                        $is_active="<i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>" ;
+                    }  
+                    if($subject_value->publish_result == 1){
+                        $publish_result= "<i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>" ;
+                    }else{
+                        $publish_result= "<i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>" ;
+                    }
+                    if($this->rbac->hasPrivilege('online_assign_view_student', 'can_view') && $set_enable ){
+
+                      $assign = "<a href=".base_url().'admin/onlineexam/assign/'.$subject_value->id." data-toggle='tooltip' class='btn btn-default btn-xs' title=".$this->lang->line('assign / view')."  ><i class='fa fa-tag'></i></a>";
+                    }
+                    if ($this->rbac->hasPrivilege('add_questions_in_exam', 'can_view')) {
+                       $addquestion_btn=" <button type='button' class='btn btn-default btn-xs' data-recordid=".$subject_value->id." data-is_quiz=".$subject_value->is_quiz." data-toggle='modal' data-target='#myQuestionModal' title=".$this->lang->line('add') . " " . $this->lang->line('question')." ><i class='fa fa-question-circle'></i></button>" ;
+                    }
+                    if ($this->rbac->hasPrivilege('online_examination', 'can_edit')) {
+                        $editbtn=" <button type='button' data-toggle='tooltip' class='btn btn-default btn-xs question-btn-edit' data-recordid=".$subject_value->id."  title=".$this->lang->line('edit')."  ><i class='fa fa fa-pencil'></i></button>" ;
+                    }
+                    if ($this->rbac->hasPrivilege('online_examination', 'can_delete')) {
+                        $deletebtn=" <a href=".base_url().'admin/onlineexam/delete/'.$subject_value->id." class='btn btn-default btn-xs' data-toggle='tooltip'  title=".$this->lang->line('delete')." '  onclick='return confirm(" . '"' . $this->lang->line('delete_confirm') . '"' . "  )' ><i class='fa fa fa-remove'></i></a>" ;
+                    }
+
+                    if ($this->rbac->hasPrivilege('add_questions_in_exam', 'can_view')) {
+
+                        $question_list="<button class='btn btn-default btn-xs exam_ques_list' data-toggle='tooltip' data-recordid=".$subject_value->id."    data-loading-text='<i class=" . '" fa fa-spinner fa-spin"' . "  ></i>' title='".$this->lang->line('exam_questions_list')."' ><i class='fa fa-file-text-o'></i></button>"." " ;
+
+                         $question_list.="<a href=".base_url().'admin/onlineexam/evalution/'.$subject_value->id." class='btn btn-default btn-xs' data-toggle='tooltip' title='".$this->lang->line('exam_evalution')."'>  <i class='fa fa-newspaper-o'></i></a>"." " ;
+
+                         if($subject_value->publish_result || ($subject_value->auto_publish_date != "0000-00-00" && $subject_value->auto_publish_date != "" && $subject_value->auto_publish_date != NULL && (strtotime($subject_value->auto_publish_date) <= strtotime(date('Y-m-d H:i:s'))))){
+
+                          $question_list.= "<button class='btn btn-default btn-xs generate_rank' data-exam-title=".$subject_value->exam." data-recordid=".$subject_value->id." data-toggle='tooltip' title=".$this->lang->line('generate_rank')." ><i class='fa fa-list-alt'></i></button> " ;
+                         }
+
+                    }
+
+                $row       = array();
+                $row[]     = $title.$description;
+                $row[]     = $is_quiz ; 
+                $row[]     = $descriptive_ques;
+                $row[]     = $subject_value->attempt ;
+                $row[]     = $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_from, false);
+                $row[]     = $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_to, false);
+                $row[]     = $subject_value->duration;
+                $row[]     = $is_active ;
+                $row[]     = $publish_result;
+                $row[]     = $assign." ".$addquestion_btn." ".$editbtn." ".$question_list." ".$deletebtn ;
+                $dt_data[] = $row;
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
     }
 
     public function evalution($id)
@@ -508,7 +609,7 @@ class Onlineexam extends Admin_Controller
     public function rankgenerate()
     {
       $examid=$this->input->post('examid');
-      $student_data=$this->onlineexam_model->searchAllOnlineExamStudents($examid);
+      $student_data=$this->onlineexam_model->searchAllOnlineExamStudents($examid,null,null,1);
       $student_question_array=array();
         if(!empty($student_data)){
         foreach ($student_data as $student_key => $student_value) {            
@@ -532,7 +633,7 @@ class Onlineexam extends Admin_Controller
         $this->form_validation->set_rules('exam_from', $this->lang->line('exam') . " " . $this->lang->line('from'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('exam_to', $this->lang->line('exam') . " " . $this->lang->line('to'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('duration', $this->lang->line('duration'), 'trim|required|callback_validate_duration');
-        $this->form_validation->set_rules('description', $this->lang->line('description'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('description', $this->lang->line('description'), 'trim|required');
         $this->form_validation->set_rules('passing_percentage', $this->lang->line('percentage'), 'trim|required|xss_clean');
         if ($this->form_validation->run() == false) {
             $msg = array(
@@ -609,8 +710,6 @@ class Onlineexam extends Admin_Controller
             $this->onlineexam_model->add($insert_data);
             if($id!=0){
                 $exam_notification=$this->onlineexam_model->get_msnstatusByexam_id($id);
-               
-
                 if ($is_active == 1 && $exam_notification['publish_exam_notification']==0) {
 
                 $sender_details = array(
@@ -671,7 +770,8 @@ class Onlineexam extends Admin_Controller
 
     public function delete($id)
     {
-
+        
+            
         $this->onlineexam_model->remove($id);
         redirect('admin/onlineexam', 'refresh');
     }
@@ -719,7 +819,7 @@ class Onlineexam extends Admin_Controller
 
         $this->form_validation->set_rules('onlineexam_student_result_id', $this->lang->line('exam'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('fill_mark', $this->lang->line('marks'), 'trim|xss_clean|callback_validate_marks');
-        $this->form_validation->set_rules('question_marks', 'question_marks--r', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('question_marks', $this->lang->line('question_marks'), 'trim|required|xss_clean');
 
         if ($this->form_validation->run() == false) {
 
@@ -788,8 +888,8 @@ class Onlineexam extends Admin_Controller
 
         $this->form_validation->set_rules('question_id', $this->lang->line('exam'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('onlineexam_id', $this->lang->line('attempt'), 'trim|required|xss_clean');
-        $this->form_validation->set_rules('ques_mark', 'marks --r', 'trim|required|xss_clean');
-        $this->form_validation->set_rules('ques_neg_mark', 'neg marks --r', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('ques_mark', $this->lang->line('marks'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('ques_neg_mark', $this->lang->line('negative_marks'), 'trim|required|xss_clean');
 
         if ($this->form_validation->run() == false) {
 
@@ -847,33 +947,11 @@ class Onlineexam extends Admin_Controller
         $class               = $this->class_model->get();
         $data['classlist']   = $class;
         $data['sch_setting'] = $this->sch_setting_detail;
-        $this->form_validation->set_rules('exam_id', $this->lang->line('exam'), 'trim|required|xss_clean');
-        $this->form_validation->set_rules('class_id', $this->lang->line('class'), 'trim|required|xss_clean');
-        $this->form_validation->set_rules('section_id', $this->lang->line('section'), 'trim|required|xss_clean');
-
-        if ($this->form_validation->run() == false) {
-
-            $this->load->view('layout/header', $data);
-            $this->load->view('admin/onlineexam/report', $data);
-            $this->load->view('layout/footer', $data);
-
-        } else {
-
-            if ($this->input->server('REQUEST_METHOD') == "POST") {
-
-                $exam_id         = $this->input->post('exam_id');
-                $class_id        = $this->input->post('class_id');
-                $section_id      = $this->input->post('section_id');
-                $results         = $this->onlineexamresult_model->getStudentByExam($exam_id, $class_id, $section_id);
-                $data['results'] = $results;
-               
-
-            }
-
-            $this->load->view('layout/header', $data);
-            $this->load->view('admin/onlineexam/report', $data);
-            $this->load->view('layout/footer', $data);
-        }
+   
+        $this->load->view('layout/header', $data);
+        $this->load->view('admin/onlineexam/report', $data);
+        $this->load->view('layout/footer', $data);
+       
     }
 
     public function getstudentresult()
@@ -919,6 +997,86 @@ class Onlineexam extends Admin_Controller
 
         $questionList = $this->load->view('admin/onlineexam/_getexamquestions', $data, true);
         echo json_encode(array('status' => 1, 'result' => $questionList, 'exam' => $exam));
+    }
+    
+    public function downloadattachment($doc)
+    {
+        $this->load->helper('download');
+        $filepath = "./uploads/onlinexam_images/" . $doc;
+        $data     = file_get_contents($filepath);
+        $name     = $doc;
+        force_download($name, $data);
+    }
+
+    public function searchloginvalidation()
+    {
+        $class_id       = $this->input->post('class_id');
+        $section_id     = $this->input->post('section_id');
+        $exam_id     = $this->input->post('exam_id');
+
+        $this->form_validation->set_rules('class_id', $this->lang->line('class'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('section_id', $this->lang->line('section'), 'trim|required|xss_clean');
+         $this->form_validation->set_rules('exam_id', $this->lang->line('exam'), 'trim|required|xss_clean');
+
+        if ($this->form_validation->run() == false) { 
+            $error = array();
+            
+            $error['class_id'] = form_error('class_id');
+            $error['section_id'] = form_error('section_id');
+             $error['exam_id'] = form_error('exam_id');
+            $array = array('status' => 0, 'error' => $error);
+            echo json_encode($array);
+        } else {
+
+            $params      = array('class_id' => $class_id, 'section_id' => $section_id, 'exam_id'=>$exam_id);
+            $array       = array('status' => 1, 'error' => '', 'params' => $params);
+            echo json_encode($array);
+        }
+    }
+
+    public function dtreportlist()
+    {
+        
+        $exam_id         = $this->input->post('exam_id');
+        $class_id        = $this->input->post('class_id');
+        $section_id      = $this->input->post('section_id');
+        $sch_setting = $this->sch_setting_detail;
+        $results         = $this->onlineexamresult_model->getStudentByExam($exam_id, $class_id, $section_id);
+        $resultlist      = json_decode($results);
+        $dt_data=array();
+        
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $resultlist_key => $student) { 
+
+
+                $attempt_bn="";$action="";
+                $viewbtn = "<a  href='".base_url()."student/view/".$student->id."'>".$this->customlib->getFullName($student->firstname,$student->middlename,$student->lastname,$sch_setting->middlename,$sch_setting->lastname)."</a>";
+                if($student->is_attempted){
+                    $attempt_btn= " <i class='fa fa-check-square-o'></i><span style='display:none'>".$this->lang->line('yes')."</span>" ;
+                }else{
+                     $attempt_btn= " <i class='fa fa-remove'></i><span style='display:none'>".$this->lang->line('no')."</span>" ;
+                }
+                 $action="<button type='button' class='btn btn-info btn-xs student_result' data-toggle='tooltip' id='load' data-recordid=".$student->onlineexam_student_id." data-student_session_id=".$student->student_session_id." data-examid=".$student->exam_id." data-loading-text='<i class=fa fa-spinner fa-spin></i>'   ><i class='fa fa-eye'></i></button>" ;
+             
+                $row   = array();
+                $row[] = $student->admission_no ;
+                $row[] = $viewbtn ;
+                $row[] = $student->class . "(" . $student->section . ")" ;
+                $row[] = $student->attempt ;
+                $row[] = $student->attempt - $student->total_counter;
+                $row[] = $attempt_btn;
+                $row[] = $action;
+                $dt_data[] = $row;  
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data); 
     }
 
 }

@@ -422,7 +422,7 @@ class Language extends Admin_Controller {
 
   
     function update_520() {
-
+//(,,)
         $language_result =$this->db->select('*')->from('languages')->where_in('id',array(""))->get()->result_array();
 
         foreach ($language_result as $value11) {
@@ -430,14 +430,14 @@ class Language extends Admin_Controller {
             $data = array();
             $final_data = array();
             $lang_pharses = array();
- 
+            $sort_array="";
             $language_pharses = array(array('key' => 'create', 'pharses' => 'create'));
             if (file_exists(FCPATH . "application/language/English/app_files/system_lang.php")) {
 
                 $file_content = file(FCPATH . "application/language/English/app_files/system_lang.php");
                 $newdata = $file_content;
 
-                for ($i = 1610; $i < 1613; $i++) {
+                for ($i = 1722; $i < 1724; $i++) {
                     $exp = explode("=", $newdata[$i]);
                     $key = $exp[0];
                     $pharses = '';
@@ -445,9 +445,11 @@ class Language extends Admin_Controller {
                         $pharses = $exp[1];
                     }
                     $lang_pharses[$key] = $pharses;
+                    
+
                 }
-            }
-  
+            } 
+            
             $convert_from = 'en'; //change from langauge
             $convert_to = $value11['short_code']; //change to langauge
             $text = "";
@@ -504,9 +506,10 @@ class Language extends Admin_Controller {
         if (is_dir(FCPATH . "application/language/" . $language)) {
             $my_file = FCPATH . "application/language/" . $language . "/app_files/system_lang.php";
             $handle = fopen($my_file, 'a') or die('Cannot open file:  ' . $my_file);
-             fwrite($handle, ""."\n");
-            // fwrite($handle, "#version 6.2.0 " . "\n");
-            // fwrite($handle, ""."\n");
+             // fwrite($handle, ""."\n");
+             // fwrite($handle, "" . "\n");
+             // fwrite($handle, "#version 6.3.0 " . "\n");
+             // fwrite($handle, ""."\n");
             $i = 0;
 
             foreach ($writedata as $fkey => $fvalue) {

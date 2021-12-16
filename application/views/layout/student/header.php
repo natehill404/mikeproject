@@ -20,7 +20,7 @@
             <!-- Bootstrap 3.3.5 RTL -->
             <link rel="stylesheet" href="<?php echo base_url(); ?>backend/rtl/bootstrap-rtl/css/bootstrap-rtl.min.css"/>  
             <!-- Theme RTL style -->
-            <link rel="stylesheet" href="<?php echo base_url(); ?>backend/rtl/dist/css/AdminLTE-rtl.min.css" />
+            <link rel="stylesheet" href="<?php echo base_url(); ?>backend/rtl/dist/css/admin-rtl.min.css" />
             <link rel="stylesheet" href="<?php echo base_url(); ?>backend/rtl/dist/css/ss-rtlmain.css">
             <link rel="stylesheet" href="<?php echo base_url(); ?>backend/rtl/dist/css/skins/_all-skins-rtl.min.css" />
 
@@ -278,6 +278,16 @@ if($this->studentmodule_lib->hasActive('multi_class')){
                             <?php
                         }
                         ?>
+						
+						
+						<?php
+                       if($this->module_lib->hasModule('online_course') && $this->studentmodule_lib->hasActive('online_course') && $this->auth->addonchk('ssoclc',false)){                    
+                       ?>
+							<li class="<?php echo set_topmenu('user/studentcourse'); ?>"><a href="<?php echo base_url(); ?>user/studentcourse"><i class="fa fa-file-video-o ftlayer"></i> <span><?php echo $this->lang->line('online_course'); ?></span></a></li>
+							
+						<?php } ?>  
+						
+						
                                <?php
                        if($this->module_lib->hasModule('zoom_live_classes') && $this->studentmodule_lib->hasActive('live_classes') && $this->auth->addonchk('sszlc',false)){                     
                             ?>

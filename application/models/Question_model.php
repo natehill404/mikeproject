@@ -6,7 +6,11 @@ if (!defined('BASEPATH')) {
 
 class Question_model extends MY_model
 {
-
+    public function __construct()
+    {
+        parent::__construct();
+        $this->sch_setting_detail = $this->setting_model->getSetting();
+    }
     public function add($data)
     {
         $this->db->trans_start(); # Starting Transaction
@@ -59,35 +63,19 @@ class Question_model extends MY_model
     public function get($id = null)
     {
         $userdata = $this->customlib->getUserData();
-        $role_id = $userdata["role_id"];
-        $carray = array();
-        $class_section_id=array();
-        if (isset($role_id) && ($userdata["role_id"] == 2) && ($userdata["class_teacher"] == "yes")) {
-            if ($userdata["class_teacher"] == 'yes') {
+        $role_id  = $userdata["role_id"];
 
-                $classlist = $this->teacher_model->get_teacherrestricted_mode($userdata["id"]);
-            }
-            foreach ($classlist as $key => $value) {
-                $class_section=$this->teacher_model->get_teacherrestricted_modesections($userdata["id"], $value['id']);
-                $class_section_id[]=$class_section[0]['id'];
-            }
-        }
-        
         $this->db->select('questions.*,subjects.name,classes.class as `class_name`,sections.section as `section_name`')->from('questions');
 
         $this->db->join('subjects', 'subjects.id = questions.subject_id');
-        $this->db->join('classes', 'classes.id = questions.class_id','left');
-        $this->db->join('sections', 'sections.id = questions.section_id','left');
-        if(!empty($class_section_id)){
-             $this->db->where_in('questions.class_section_id', $class_section_id);
-        }
+        $this->db->join('classes', 'classes.id = questions.class_id', 'left');
+        $this->db->join('sections', 'sections.id = questions.section_id', 'left');
+
         if ($id != null) {
             $this->db->where('questions.id', $id);
         } else {
             $this->db->order_by('questions.id');
         }
-
-        
 
         $query = $this->db->get();
         if ($id != null) {
@@ -95,53 +83,64 @@ class Question_model extends MY_model
         } else {
             return $query->result();
         }
-        
+
     }
 
-        public function getall($limit = null, $offset = null)
+    public function getall($limit = null, $offset = null)
     {
-       $this->db->select('questions.*,subjects.name,classes.class as `class_name`,sections.section as `section_name`')->from('questions');
+        $this->db->select('questions.*,subjects.name,classes.class as `class_name`,sections.section as `section_name`')->from('questions');
         $this->db->join('subjects', 'subjects.id = questions.subject_id');
-        $this->db->join('classes', 'classes.id = questions.class_id','left');
-        $this->db->join('sections', 'sections.id = questions.section_id','left');
+        $this->db->join('classes', 'classes.id = questions.class_id', 'left');
+        $this->db->join('sections', 'sections.id = questions.section_id', 'left');
         $this->db->limit($limit, $offset);
         $this->db->order_by('questions.id');
         $query = $this->db->get();
         return $query->result();
-    } 
+    }
 
-     public function getAllRecord() {
+    public function getAllRecord()
+    {
         $userdata = $this->customlib->getUserData();
-        $role_id = $userdata["role_id"];
-        
-           $this->datatables
-                ->select('questions.*,subjects.name,classes.class as `class_name`,sections.section as `section_name`')
-                ->join('subjects', 'subjects.id = questions.subject_id')
-                ->join('classes', 'classes.id = questions.class_id','left')
-                ->join('sections', 'sections.id = questions.section_id','left')
-                ->searchable('questions.id,subjects.name,questions.question_type,questions.level,questions.question,classes.class')
-                ->orderable('questions.id,subjects.name,questions.question_type,questions.level,questions.question,classes.class')
-                ->from('questions');
-                if(isset($role_id) && ($userdata["role_id"] == 2) && ($userdata["class_teacher"] == "yes")){
-                   $carray = array();
-        $class_list=array();
-       
-            if ($userdata["class_teacher"] == 'yes') {
+        $role_id  = $userdata["role_id"];
 
-                $carray = $this->teacher_model->get_teacherrestricted_mode($userdata["id"]);
-            }
- 
+        if ($role_id == 2) {
+            $my_section = array();
+            if ($this->sch_setting_detail->class_teacher == 'yes' && $this->sch_setting_detail->my_question == '1') {
+                $my_class = $this->class_model->get();
 
-        foreach ($carray as $key => $value) {
-          $class_list[]=$value['id'];
-        } 
-        if(!empty($class_list)){
-             $this->datatables->where_in('questions.class_id',$class_list);
-        }
-        
+                foreach ($my_class as $class_key => $class_value) {
+                    $my_class_id[] = $class_value['id'];
                 }
-        
-              
+                $this->datatables->where_in('questions.class_id', $my_class_id);
+
+            } elseif ($this->sch_setting_detail->class_teacher == 'yes' && $this->sch_setting_detail->my_question == '0') {
+
+                $my_class = $this->class_model->get();
+                foreach ($my_class as $class_key => $class_value) {
+
+                    $my_class_id[] = $class_value['id'];
+
+                }
+
+                $this->datatables->where_in('questions.class_id', $my_class_id);
+                $this->datatables->where('questions.staff_id', $this->customlib->getStaffID());
+
+            } elseif ($this->sch_setting_detail->class_teacher == 'no' && $this->sch_setting_detail->my_question == '1') {
+
+                $this->datatables->where('questions.staff_id', $this->customlib->getStaffID());
+
+            }
+
+        }
+
+        $this->datatables->select('questions.*,subjects.name,classes.class as `class_name`,sections.section as `section_name`');
+        $this->datatables->join('subjects', 'subjects.id = questions.subject_id');
+        $this->datatables->join('classes', 'classes.id = questions.class_id', 'left');
+        $this->datatables->join('sections', 'sections.id = questions.section_id', 'left');
+
+        $this->datatables->searchable('questions.id,subjects.name,questions.question_type,questions.level,questions.question,classes.class');
+        $this->datatables->orderable('questions.id,subjects.name,questions.question_type,questions.level,questions.question,classes.class');
+        $this->datatables->from('questions');
         return $this->datatables->generate('json');
     }
 
@@ -176,9 +175,16 @@ class Question_model extends MY_model
 
     }
 
+    public function bulkdelete($question_array)
+    {
+
+        $this->db->where_in('id', $question_array);
+        $this->db->delete('questions');
+
+    }
+
     public function add_option($data)
     {
-       
 
         $this->db->trans_start(); # Starting Transaction
         $this->db->trans_strict(false); # See Note 01. If you wish can remove as well
@@ -191,17 +197,17 @@ class Question_model extends MY_model
             $action    = "Update";
             $record_id = $data['id'];
             $this->log($message, $record_id, $action);
-            $return_value =$data['id'];
+            $return_value = $data['id'];
         } else {
             $this->db->insert('question_options', $data);
             $message   = INSERT_RECORD_CONSTANT . " On question_options id " . $this->db->insert_id();
             $action    = "Insert";
             $record_id = $this->db->insert_id();
             $this->log($message, $record_id, $action);
-            $return_value= $this->db->insert_id();
+            $return_value = $this->db->insert_id();
         }
 
-         //======================Code End==============================
+        //======================Code End==============================
         $this->db->trans_complete(); # Completing transaction
         /*Optional*/
         if ($this->db->trans_status() === false) {
@@ -210,7 +216,7 @@ class Question_model extends MY_model
             return false;
         } else {
             return $return_value;
-        }  
+        }
     }
 
     public function add_question_answers($data)
@@ -226,17 +232,17 @@ class Question_model extends MY_model
             $action    = "Update";
             $record_id = $data['id'];
             $this->log($message, $record_id, $action);
-            $return_value =$data['id'];
+            $return_value = $data['id'];
         } else {
             $this->db->insert('question_answers', $data);
             $message   = INSERT_RECORD_CONSTANT . " On question_answers id " . $this->db->insert_id();
             $action    = "Insert";
             $record_id = $this->db->insert_id();
             $this->log($message, $record_id, $action);
-            $return_value= $this->db->insert_id();
+            $return_value = $this->db->insert_id();
         }
 
-         //======================Code End==============================
+        //======================Code End==============================
         $this->db->trans_complete(); # Completing transaction
         /*Optional*/
         if ($this->db->trans_status() === false) {
@@ -245,19 +251,19 @@ class Question_model extends MY_model
             return false;
         } else {
             return $return_value;
-        }          
+        }
     }
 
     public function add_question_bulk($data)
-    { 
+    {
 
         $this->db->trans_start(); # Starting Transaction
         $this->db->trans_strict(false); # See Note 01. If you wish can remove as well
         //=======================Code Start===========================
         $this->db->insert_batch('questions', $data);
-        $message   = 'Questions '.IMPORT_RECORD_CONSTANT . " (" . count($data).")";
+        $message   = 'Questions ' . IMPORT_RECORD_CONSTANT . " (" . count($data) . ")";
         $action    = "Import";
-        $record_id = null; 
+        $record_id = null;
         $this->log($message, $record_id, $action);
         //======================Code End==============================
         $this->db->trans_complete(); # Completing transaction
@@ -268,8 +274,8 @@ class Question_model extends MY_model
             return false;
         } else {
             //return $return_value;
-        }          
-             
+        }
+
     }
 
     public function get_result($id)
@@ -287,7 +293,8 @@ class Question_model extends MY_model
         return $this->db->select('option_id as answer_id')->from('question_answers')->where('question_id', $id)->get()->row_array();
     }
 
-    public function count(){
+    public function count()
+    {
         $query = $this->db->select('count(*) as total')->get('questions')->row_array();
         return $query['total'];
     }

@@ -47,6 +47,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                 <tr>
                                     <?php
                                     foreach ($fields as $key => $value) {
+echo $value;
 
                                         if ($value == 'adhar_no') {
                                             $value = "national_identification_no";
@@ -83,7 +84,8 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             $value = "previous_school_details";
                                         }
                                         $add = "";
-                                        if (($value == "admission_no") || ($value == "firstname") || ($value == "dob") || ($value == "if_guardian_is") || ($value == "gender") || ($value == "guardian_name") || ($value == "guardian_phone")) {
+                                        
+                                        if (($value == "admission_no") || ($value == "firstname") || ($value == "date_of_birth") || ($value == "if_guardian_is") || ($value == "gender") || ($value == "guardian_name") || ($value == "guardian_phone")) {
                                             $add = "<span class=text-red>*</span>";
                                         }
                                         ?>    

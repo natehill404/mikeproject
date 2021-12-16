@@ -36,39 +36,9 @@ class Question extends Admin_Controller
     public function index($offset = 0)
     { 
 
-        
-   
         if (!$this->rbac->hasPrivilege('question_bank', 'can_view')) {
             access_denied();
-        } 
-         $listaudit = $this->question_model->getall();
-
-        $config['total_rows'] = $this->question_model->count();
-        $config['base_url'] = base_url() . "admin/question/index";
-        $config['per_page'] = 100;
-        $config['uri_segment'] = '4';
-        $config['full_tag_open'] = '<div class="pagination"><ul>';
-        $config['full_tag_close'] = '</ul></div>';
-        $config['first_link'] = '« First';
-        $config['first_tag_open'] = '<li class="prev page">';
-        $config['first_tag_close'] = '</li>';
-        $config['last_link'] = 'Last »';
-        $config['last_tag_open'] = '<li class="next page">';
-        $config['last_tag_close'] = '</li>';
-        $config['next_link'] = 'Next →';
-        $config['next_tag_open'] = '<li class="next page">';
-        $config['next_tag_close'] = '</li>';
-        $config['prev_link'] = '← Previous';
-        $config['prev_tag_open'] = '<li class="prev page">';
-        $config['prev_tag_close'] = '</li>';
-        $config['cur_tag_open'] = '<li ><a href="" class="active">';
-        $config['cur_tag_close'] = '</a></li>';
-        $config['num_tag_open'] = '<li class="page">';
-        $config['num_tag_close'] = '</li>';
-        $this->pagination->initialize($config);
-        $query = $this->question_model->getall(100, $this->uri->segment(4));
-      
-        $data['resultlist'] = $query;
+        }      
        
         $this->session->set_userdata('top_menu', 'Online_Examinations');
         $this->session->set_userdata('sub_menu', 'Online_Examinations/question');
@@ -80,7 +50,7 @@ class Question extends Admin_Controller
         $data['question_type']  = $this->config->item('question_type');
         $data['question_level'] = $this->config->item('question_level');
         $questionList           = $this->question_model->get();
-        $data['questionList']   = $query;
+       
      
         $this->load->view('layout/header', $data);
         $this->load->view('admin/question/question', $data);
@@ -95,8 +65,8 @@ class Question extends Admin_Controller
 
         echo json_encode(array('status' => 1, 'result' => $question_result));
     }
-
-    public function exportformat()
+	
+	 public function exportformat()
     {
         $this->load->helper('download');
         $filepath = "./backend/import/import_question_sample_file.csv";
@@ -104,11 +74,17 @@ class Question extends Admin_Controller
         $name     = 'import_question_sample_file.csv';
         force_download($name, $data);
     }
- 
+	
+    public function bulkdelete()
+    {
+        $question_array=$this->input->post('recordid');
+        $question_result = $this->question_model->bulkdelete($question_array);
+        echo json_encode(array('status' => 1, 'message' =>  $this->lang->line('delete_message')));
+
+    }
+	
     public function uploadfile()
     {
-
-        // $this->form_validation->set_error_delimiters('', '');
 
         $this->form_validation->set_rules('file', $this->lang->line('image'), 'callback_handle_upload');
         $this->form_validation->set_rules('class_id', $this->lang->line('class'), 'trim|required|xss_clean');
@@ -156,7 +132,7 @@ class Question extends Admin_Controller
                         }
                     }
                 }
-
+				
                 if (!empty($insert_array)) {
                     $this->question_model->add_question_bulk($insert_array);
                 }
@@ -404,8 +380,7 @@ class Question extends Admin_Controller
         $previous_link = '';
         $next_link     = '';
         $page_link     = '';
-
-// echo $total_links;
+ 
         $page_array = array();
         if ($total_links > 4) {
             if ($page < 5) {
@@ -493,30 +468,32 @@ class Question extends Admin_Controller
         $question_type      = $this->config->item('question_type');
         $question_level      = $this->config->item('question_level');
         $question_dt = $this->question_model->getAllRecord();
+
         $question_dt = json_decode($question_dt);
         $dt_data = array();
+
         $recordsTotal_flter="";
         $userdata = $this->customlib->getUserData();
         $role_id = $userdata["role_id"];
         if (!empty($question_dt->data)) {
             foreach ($question_dt->data as $key => $value) {
-              
-            
+
                 $delete="'".$this->lang->line("delete_confirm")."'";
                 $delete_title="'".$this->lang->line("delete")."'";
                 $row = array();
           
+                $row[] = "<input type='checkbox' name='question_".$value->id."' data-question-id='".$value->id."' value='".$value->id."'>";
                 $row[] = $value->id;
                 $row[] = $value->name;
-                $row[] = ($value->question_type != "") ?$question_type[$value->question_type]:"";
-                $row[] = ($value->level !="" )? $question_level[$value->level]:"";
+                $row[] = ($value->question_type != "") ? $question_type[$value->question_type]:"";
+                $row[] = ($value->level != "" )? $question_level[$value->level]:"";
                 $row[] = readmorelink($value->question,site_url('admin/question/read/'.$value->id));
                 if ($this->rbac->hasPrivilege('question_bank', 'can_edit')) {
-                $row[] ='<button type="button" data-placement="left" class="btn btn-default btn-xs question-btn-edit" data-toggle="tooltip" id="load" data-recordid="'.$value->id.'" title="'.$this->lang->line("edit").'" ><i class="fa fa-pencil"></i></button><a data-placement="left" href="'.base_url().'admin/question/delete/'.$value->id.'" class="btn btn-default btn-xs"  data-toggle="tooltip" title='.$delete_title.' onclick="return confirm('.$delete.')">
-                                                    <i class="fa fa-remove"></i>
-                                                </a>';
+                $row[] ='<a target="_blank" href="'.site_url('admin/question/read/'.$value->id).'" class="btn btn-default btn-xs"  data-toggle="tooltip" title='.$this->lang->line("view").' ><i class="fa fa-eye"></i></a><button type="button" data-placement="left" class="btn btn-default btn-xs question-btn-edit" data-toggle="tooltip" id="load" data-recordid="'.$value->id.'" title="'.$this->lang->line("edit").'" ><i class="fa fa-pencil"></i></button><a data-placement="left" href="'.base_url().'admin/question/delete/'.$value->id.'" class="btn btn-default btn-xs"  data-toggle="tooltip" title='.$delete_title.' onclick="return confirm('.$delete.')"><i class="fa fa-remove"></i></a>';
             }
-           if($role_id==2){
+           
+
+                if($role_id==2){
              $my_section=array();
              if($this->sch_setting_detail->class_teacher=='yes' && $this->sch_setting_detail->my_question=='1'){
                 $my_class=$this->class_model->get();
@@ -528,7 +505,10 @@ class Question extends Admin_Controller
              
               if(in_array($value->section_id, $my_section, TRUE) && $class_value['id']==$value->class_id){
                  $dt_data[] = $row;
-         $recordsTotal_flter=count($dt_data);  
+          
+              }elseif(($class_value['id']==$value->class_id) && $value->section_id=='0'){
+                   $dt_data[] = $row;
+                    
               }
             }
 
@@ -542,7 +522,10 @@ class Question extends Admin_Controller
              
               if(in_array($value->section_id, $my_section, TRUE) && $class_value['id']==$value->class_id){
                  $dt_data[] = $row;
-         $recordsTotal_flter=count($dt_data);  
+          
+              }elseif(($class_value['id']==$value->class_id) && $value->section_id=='0'){
+                   $dt_data[] = $row;
+                     
               }
             }
             
@@ -550,26 +533,23 @@ class Question extends Admin_Controller
         }elseif($this->sch_setting_detail->class_teacher=='no' && $this->sch_setting_detail->my_question=='1'){
             if($this->customlib->getStaffID()==$value->staff_id){
                $dt_data[] = $row;
-               $recordsTotal_flter=count($dt_data);
+              
             }
        }else{
          $dt_data[] = $row;
-         $recordsTotal_flter=count($dt_data);  
+        
        }
 
            }else{
             $dt_data[] = $row;
-         $recordsTotal_flter=count($dt_data);   
+          
            }
-
-
-               
-            }
+            } 
         }
 
         $json_data = array(
             "draw" => intval($question_dt->draw),
-            "recordsTotal" => intval($recordsTotal_flter),
+            "recordsTotal" => intval($question_dt->recordsTotal),
             "recordsFiltered" => intval($question_dt->recordsFiltered),
             "data" => $dt_data,
         );

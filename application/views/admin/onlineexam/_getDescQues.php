@@ -16,7 +16,13 @@ if (!empty($result->total_result)) {
 <div class="font-weight-bold"> <?php echo $this->lang->line('answer')?>:</div>
 
 <span class="displayblock pb5"><?php echo html_entity_decode($result_item->select_option); ?></span>
+<?php if ($result_item->attachment_name != ""){
+  ?>  
 
+<div class="font-weight-bold"> Attachment : --r <a href="<?php echo site_url('admin/onlineexam/downloadattachment/'.$result_item->attachment_upload_name); ?>"><?php echo $result_item->attachment_name;?> <i class="fa fa-download"></i></a></div>
+  <?php
+}
+ ?>
 <form class="mark_fill_form" method="POST" action="<?php echo site_url('admin/onlineexam/fillmarks') ?>">
     <input type="hidden" name="onlineexam_student_result_id" value="<?php echo $result_item->id; ?>">
     <input type="hidden" name="question_marks" value="<?php echo $result_item->question_marks; ?>">

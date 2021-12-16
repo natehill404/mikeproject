@@ -130,7 +130,7 @@
 
                                                 if ($reted == '0') {
                                                     ?>
-                                                    <a class="btn btn-default btn-xs" onclick="rating('<?php echo $teacher[0]->staff_id ?>')" data-placement="left" data-toggle="tooltip" title=""  data-original-title="Add" ><i class="fa fa-plus"></i></a><?php } ?></td>
+                                                    <a class="btn btn-default btn-xs" onclick="rating('<?php echo $teacher[0]->staff_id ?>')" data-placement="left" data-toggle="tooltip" title=""  data-original-title="<?php echo $this->lang->line('add'); ?>" ><i class="fa fa-plus"></i></a><?php } ?></td>
 
                                             <?php
                                         } elseif ($role == 'parent') {

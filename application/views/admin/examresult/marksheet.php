@@ -165,9 +165,10 @@
                                             } else {
                                                 $count = 1;
                                                 foreach ($studentList as $student_key => $student_value) {
+                                                  
                                                     ?>
                                                     <tr>
-                                                        <td class="text-center"><input type="checkbox" class="checkbox center-block"  name="exam_group_class_batch_exam_student_id[]" data-student_id="<?php echo $student_value->student_id; ?>" value="<?php echo $student_value->student_id; ?>">
+                                                        <td class="text-center"><input type="checkbox" class="checkbox center-block"  name="exam_group_class_batch_exam_student_id[]" data-student_id="<?php echo $student_value->exam_group_class_batch_exam_student_id; ?>" value="<?php echo $student_value->exam_group_class_batch_exam_student_id; ?>">
 
                                                         </td>
                                                         <td><?php echo $student_value->admission_no; ?></td>
@@ -179,7 +180,9 @@
                                                         <td><?php echo $student_value->father_name;
                                         ;
                                                     ?></td>
-                                                        <td><?php echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student_value->dob)); ?></td>
+                                                        <td><?php 
+															if (!empty($student_value->dob) && $student_value->dob != '0000-00-00') {
+															echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student_value->dob)); }?></td>
                                                         <td><?php echo $student_value->gender; ?></td>
                                                         <td><?php echo $student_value->category; ?></td>
                                                         <td><?php echo $student_value->mobileno; ?></td>
@@ -263,10 +266,12 @@
 
     function getExamByExamgroup(exam_group_id, exam_id) {
 
-        if (exam_group_id != "") {
+        if (exam_group_id !== "") {
             $('#exam_id').html("");
             var base_url = '<?php echo base_url() ?>';
             var div_data = '<option value=""><?php echo $this->lang->line('select'); ?></option>';
+
+
             $.ajax({
                 type: "POST",
                 url: base_url + "admin/examgroup/getExamByExamgroup",
@@ -279,12 +284,14 @@
                     $.each(data, function (i, obj)
                     {
                         var sel = "";
-                        if (exam_id == obj.id) {
+                        if (exam_id === obj.id) {
                             sel = "selected";
                         }
                         div_data += "<option value=" + obj.id + " " + sel + ">" + obj.exam + "</option>";
                     });
+
                     $('#exam_id').append(div_data);
+                    $('#exam_id').trigger('change');
                 },
                 complete: function () {
                     $('#exam_id').removeClass('dropdownloading');

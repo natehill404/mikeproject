@@ -111,7 +111,7 @@
                                                 ?>
                                             </td>
                                             <td><?php echo $value['staff_name'] . " " . $value['surname']; ?></td>
-                                            <td class="text-right">
+                                            <td class="text-right white-space-nowrap">
                                                 <?php
                                                 if ($value['status'] == 1) {
                                                     ?>
@@ -430,9 +430,6 @@
             url: "<?php echo site_url("admin/approve_leave/searchByClassSection") ?>/" + class_id + "/" + student_id,
             type: "POST",
             data: {section_id: id},
-            //contentType: false,
-            //cache: false,
-            //processData: true,
             success: function (res)
             {
 

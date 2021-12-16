@@ -58,6 +58,16 @@ class Sections extends Admin_Controller
         }
         $data['title'] = 'Section List';
         $this->section_model->remove($id);
+
+        $student_delete=$this->student_model->getUndefinedStudent();
+        if(!empty($student_delete)){
+            $delte_student_array=array();
+            foreach ($student_delete as $student_key => $student_value) {
+
+                $delte_student_array[]=$student_value->id;
+            }
+            $this->student_model->bulkdelete($delte_student_array);
+        }        
         redirect('sections/index');
     }
 

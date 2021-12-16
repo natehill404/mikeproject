@@ -31,10 +31,9 @@ class Mailgateway {
         }
     }
 
-    public function sentRegisterMail($id, $send_to, $template) {
+    public function sentRegisterMail($id, $send_to, $template, $subject) {
 
         if (!empty($this->_CI->mail_config) && $send_to != "") {
-            $subject = "Admission Confirm";
 
             $msg = $this->getStudentRegistrationContent($id, $template);
 
@@ -42,71 +41,107 @@ class Mailgateway {
         }
     }
 
-    public function sendLoginCredential($chk_mail_sms, $sender_details, $template) {
+    public function sendLoginCredential($chk_mail_sms, $sender_details, $template, $subject) {
         $msg = $this->getLoginCredentialContent($sender_details['credential_for'], $sender_details, $template);
         $send_to = $sender_details['email'];
         if (!empty($this->_CI->mail_config) && $send_to != "") {
-            $subject = "Login Credential";
             $this->_CI->mailer->send_mail($send_to, $subject, $msg);
         }
     }
 
-    public function sentAddFeeMail($detail, $template) {
+    public function sentAddFeeMail($detail, $template, $subject) {
         $send_to = $detail->email;
         $msg = $this->getAddFeeContent($detail, $template);
         if (!empty($this->_CI->mail_config) && $send_to != "") {
-            $subject = "Fees Received";
-
             $this->_CI->mailer->send_mail($send_to, $subject, $msg);
         }
     }
 
-    public function sentExamResultMail($detail, $template) {
+    public function sentExamResultMail($detail, $template, $subject) {
 
         $msg = $this->getStudentResultContent($detail, $template);
         $send_to = $detail['guardian_email'];
-        if (!empty($this->_CI->mail_config) && $send_to != "") {
-            $subject = "Exam Result";
+        if (!empty($this->_CI->mail_config) && $send_to != "") {            
             $this->_CI->mailer->send_mail($send_to, $subject, $msg);
         }
     }
 
-    public function sentExamResultMailStudent($detail, $template) {
+    public function sentExamResultMailStudent($detail, $template, $subject) {
 
         $msg = $this->getStudentResultContent($detail, $template);
         $send_to = $detail['email'];
         if (!empty($this->_CI->mail_config) && $send_to != "") {
-            $subject = "Exam Result";
             $this->_CI->mailer->send_mail($send_to, $subject, $msg);
         }
     }
 
-    public function sentHomeworkStudentMail($detail, $template) {
+    public function sentHomeworkStudentMail($detail, $template, $subject) {
 
         if (!empty($this->_CI->mail_config)) {
             foreach ($detail as $student_key => $student_value) {
                 $send_to = $student_key;
                 if ($send_to != "") {
                     $msg = $this->getHomeworkStudentContent($detail[$student_key], $template);
-                    $subject = "HomeWork Notice";
                     $this->_CI->mailer->send_mail($send_to, $subject, $msg);
                 }
             }
         }
     }
 
-     public function sentOnlineexamStudentMail($detail, $template) {
+     public function sentOnlineexamStudentMail($detail, $template, $subject) {
 
         if (!empty($this->_CI->mail_config)) {
             foreach ($detail as $student_key => $student_value) {
                 $send_to = $student_key;
                 if ($send_to != "") {
                     $msg = $this->getOnlineexamStudentContent($detail[$student_key], $template);
-                    $subject = "Online Examinitaion";
                     $this->_CI->mailer->send_mail($send_to, $subject, $msg);
                 }
             }
         }
+    }
+
+    public function sentOnlineadmissionStudentMail($detail, $template, $subject) {
+
+        if (!empty($this->_CI->mail_config)) {
+            
+                $send_to = $detail['email'];
+                if ($send_to != "") {
+                    $msg = $this->getOnlineadmissionStudentContent($detail, $template);
+                    $this->_CI->mailer->send_mail($send_to, $subject, $msg);
+                }
+            
+        }
+    }
+
+    public function getOnlineadmissionStudentContent($student_detail, $template) {
+
+        foreach ($student_detail as $key => $value) {
+            $template = str_replace('{{' . $key . '}}', $value, $template);
+        }
+       
+        return $template;
+    }
+    public function sentOnlineadmissionFeesMail($detail, $template, $subject) {
+
+        if (!empty($this->_CI->mail_config)) {
+            
+                $send_to = $detail['email'];
+                if ($send_to != "") {
+                    $msg = $this->getOnlineadmissionFeesContent($detail, $template);
+                    $this->_CI->mailer->send_mail($send_to, $subject, $msg);
+                }
+            
+        }
+    }
+
+    public function getOnlineadmissionFeesContent($student_detail, $template) {
+
+        foreach ($student_detail as $key => $value) {
+            $template = str_replace('{{' . $key . '}}', $value, $template);
+        }
+       
+        return $template;
     }
 
     public function sentOnlineClassStudentMail($detail, $template) {
@@ -139,13 +174,12 @@ class Mailgateway {
         }
     }
 
-    public function sentAbsentStudentMail($detail, $template) {
+    public function sentAbsentStudentMail($detail, $template, $subject) {
 
         $send_to = $detail['guardian_email'];
         $msg = $this->getAbsentStudentContent($detail, $template);
 
         if (!empty($this->_CI->mail_config) && $send_to != "") {
-            $subject = "Absent Notice";
             $this->_CI->mailer->send_mail($send_to, $subject, $msg);
         }
     }
@@ -207,9 +241,7 @@ class Mailgateway {
     public function getAbsentStudentContent($student_detail, $template) {
 
         $session_name = $this->_CI->setting_model->getCurrentSessionName();
-
         $student_detail['current_session_name'] = $session_name;
-
         foreach ($student_detail as $key => $value) {
             $template = str_replace('{{' . $key . '}}', $value, $template);
         }
@@ -223,7 +255,6 @@ class Mailgateway {
         $student = $this->_CI->student_model->get($id);
         $student['current_session_name'] = $session_name;
         $student['student_name'] = $this->_CI->customlib->getFullName($student['firstname'],$student['middlename'],$student['lastname'],$this->sch_setting->middlename,$this->sch_setting->lastname); 
-
         foreach ($student as $key => $value) {
             $template = str_replace('{{' . $key . '}}', $value, $template);
         }
@@ -255,7 +286,6 @@ class Mailgateway {
     }
 
     public function getStudentResultContent($student_result_detail, $template) {
-
         foreach ($student_result_detail as $key => $value) {
             $template = str_replace('{{' . $key . '}}', $value, $template);
         }
@@ -263,11 +293,9 @@ class Mailgateway {
     }
 
     public function getContent($sender_details, $template) {
-
         foreach ($sender_details as $key => $value) {
             $template = str_replace('{{' . $key . '}}', $value, $template);
         }
-
         return $template;
     }
 

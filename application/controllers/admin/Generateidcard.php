@@ -15,25 +15,11 @@ class Generateidcard extends Admin_Controller
         $this->sch_setting_detail = $this->setting_model->getSetting();
     }
 
-    public function index()
+    public function search()
     {
-
         if (!$this->rbac->hasPrivilege('generate_id_card', 'can_view')) {
             access_denied();
         }
-        $this->session->set_userdata('top_menu', 'Certificate');
-        $this->session->set_userdata('sub_menu', 'admin/generateidcard');
-        $idcardlist         = $this->Generateidcard_model->getstudentidcard();
-        $data['idcardlist'] = $idcardlist;
-        $class              = $this->class_model->get();
-        $data['classlist']  = $class;
-        $this->load->view('layout/header', $data);
-        $this->load->view('admin/certificate/generateidcard', $data);
-        $this->load->view('layout/footer', $data);
-    }
-
-    public function search()
-    {
         $this->session->set_userdata('top_menu', 'Certificate');
         $this->session->set_userdata('sub_menu', 'admin/generateidcard');
 
@@ -46,7 +32,7 @@ class Generateidcard extends Admin_Controller
         $button                  = $this->input->post('search');
         if ($this->input->server('REQUEST_METHOD') == "GET") {
             $this->load->view('layout/header', $data);
-            $this->load->view('admin/certificate/Generateidcard', $data);
+            $this->load->view('admin/certificate/generateidcard', $data);
             $this->load->view('layout/footer', $data);
         } else {
             $class   = $this->input->post('class_id');
@@ -102,7 +88,7 @@ class Generateidcard extends Admin_Controller
         $std_arr             = array();
         $data['sch_setting'] = $this->setting_model->get();
         $data['id_card']     = $this->Generateidcard_model->getidcardbyid($idcard);
-       
+
         foreach ($student_array as $key => $value) {
             $std_arr[] = $value->student_id;
         }
@@ -111,8 +97,7 @@ class Generateidcard extends Admin_Controller
         $data['sch_settingdata'] = $this->sch_setting_detail;
 
         $id_cards = $this->load->view('admin/certificate/generatemultiple', $data, true);
-        
-        echo $id_cards;
+        echo json_encode(array('status' => 1, 'page' => $id_cards));
     }
 
 }

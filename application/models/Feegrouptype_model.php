@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Feegrouptype_model extends CI_Model {
+class Feegrouptype_model extends MY_Model {
 
     public function __construct() {
         parent::__construct();
@@ -79,6 +79,9 @@ class Feegrouptype_model extends CI_Model {
      * @param $id
      */
     public function remove($id) {
+		$this->db->trans_start(); # Starting Transaction
+        $this->db->trans_strict(false); # See Note 01. If you wish can remove as well
+        //=======================Code Start===========================
         $this->db->select()->from('fee_groups_feetype');
         $this->db->where('id', $id);
         $query = $this->db->get();
@@ -93,6 +96,21 @@ class Feegrouptype_model extends CI_Model {
         }
         $this->db->where('id', $id);
         $this->db->delete('fee_groups_feetype');
+		
+		$message = DELETE_RECORD_CONSTANT . " On fee groups fee type id " . $id;
+        $action = "Delete";
+        $record_id = $id;
+        $this->log($message, $record_id, $action);
+        //======================Code End==============================
+        $this->db->trans_complete(); # Completing transaction
+        /* Optional */
+        if ($this->db->trans_status() === false) {
+            # Something went wrong.
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            //return $return_value;
+        }
     }
 
     /**
@@ -130,13 +148,40 @@ class Feegrouptype_model extends CI_Model {
     }
 
     public function add($data) {
+		$this->db->trans_start(); # Starting Transaction
+        $this->db->trans_strict(false); # See Note 01. If you wish can remove as well
+        //=======================Code Start===========================
         if (isset($data['id'])) {
             $this->db->where('id', $data['id']);
             $this->db->update('fee_groups_feetype', $data);
+			$message = UPDATE_RECORD_CONSTANT . " On  fee groups fee type id " . $data['id'];
+            $action = "Update";
+            $record_id = $data['id'];
+            $this->log($message, $record_id, $action);
+           
         } else {
             $this->db->insert('fee_groups_feetype', $data);
-            return $this->db->insert_id();
+            $id = $this->db->insert_id();
+            $message = INSERT_RECORD_CONSTANT . " On fee groups fee type id " . $id;
+            $action = "Insert";
+            $record_id = $id;
+            $this->log($message, $record_id, $action);
+            
         }
+		
+		//======================Code End==============================
+
+            $this->db->trans_complete(); # Completing transaction
+            /* Optional */
+
+            if ($this->db->trans_status() === false) {
+                # Something went wrong.
+                $this->db->trans_rollback();
+                return false;
+            } else {
+                return $id;
+            }
+            
     }
 
     public function getFeeTypeDueDateReminder($date) {

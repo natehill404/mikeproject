@@ -35,32 +35,46 @@ class User extends Student_Controller
 
             redirect('user/user/dashboard');
         }
-		$data['sch_setting'] = $this->sch_setting_detail;
-        $role         = $this->customlib->getUserRole();
-        $data['role'] = $role;
+        $data['sch_setting']      = $this->sch_setting_detail;
+        $role                     = $this->customlib->getUserRole();
+        $data['role']             = $role;
+        $student_current_class    = array();
+        $default_login_student_id = "";
         if ($role == "student") {
             $student_id            = $this->customlib->getStudentSessionUserID();
             $data['student_lists'] = $this->studentsession_model->searchMultiClsSectionByStudent($student_id);
+            if ($data['student_lists'][0]->default_login) {
+                $default_login_student_id = $data['student_lists'][0]->student_id;
+                $student_current_class    = array('class_id' => $data['student_lists'][0]->class_id, 'section_id' => $data['student_lists'][0]->section_id, 'student_session_id' => $data['student_lists'][0]->student_session_id);
+            }
         } elseif ($role == "parent") {
             $parent_id             = $this->customlib->getUsersID();
             $data['student_lists'] = $this->student_model->getParentChilds($parent_id);
+            if ($data['student_lists'][0]->default_login) {
+                $default_login_student_id = $data['student_lists'][0]->id;
+                $student_current_class    = array('class_id' => $data['student_lists'][0]->class_id, 'section_id' => $data['student_lists'][0]->section_id, 'student_session_id' => $data['student_lists'][0]->student_session_id);
+            }
+        }
+        if (!empty($student_current_class)) {
+           
+            $logged_In_User               = $this->customlib->getLoggedInUserData();
+            $logged_In_User['student_id'] = $default_login_student_id;
+            $this->session->set_userdata('student', $logged_In_User);
+            $this->session->set_userdata('current_class', $student_current_class);
+             redirect('user/user/dashboard');
         }
 
-        $this->form_validation->set_rules('clschg', $this->lang->line('select')." ".$this->lang->line('class'), 'trim|required|xss_clean');
+        $this->form_validation->set_rules('clschg', $this->lang->line('select') . " " . $this->lang->line('class'), 'trim|required|xss_clean');
 
         if ($this->form_validation->run() == true) {
-
-            $student_session_id = $this->input->post('clschg');
-
-            $student        = $this->student_model->getByStudentSession($student_session_id);
-            $logged_In_User = $this->customlib->getLoggedInUserData();
-
+            $student_session_id           = $this->input->post('clschg');
+            $student                      = $this->student_model->getByStudentSession($student_session_id);
+            $logged_In_User               = $this->customlib->getLoggedInUserData();
             $logged_In_User['student_id'] = $student['id'];
-
             $this->session->set_userdata('student', $logged_In_User);
+            $this->studentsession_model->updateById(array('id'=>$student_session_id,'default_login'=>1));
             $student_current_class = array('class_id' => $student['class_id'], 'section_id' => $student['section_id'], 'student_session_id' => $student['student_session_id']);
-            $this->session->set_userdata('current_class', $student_current_class);
-
+            $this->session->set_userdata('current_class', $student_current_class);   
             redirect('user/user/dashboard');
         }
 
@@ -102,11 +116,11 @@ class User extends Student_Controller
             $data['gradeList']            = $gradeList;
             $data['student']              = $student;
 
-        } 
- 
+        }
+
         $unread_notifications = $this->notification_model->getUnreadStudentNotification();
 
-        $notification_bydate  = array();
+        $notification_bydate = array();
 
         foreach ($unread_notifications as $unread_notifications_key => $unread_notifications_value) {
             if (date($this->customlib->getSchoolDateFormat()) >= date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($unread_notifications_value->publish_date))) {
@@ -313,10 +327,49 @@ class User extends Student_Controller
         $data['student_discount_fee'] = $student_discount_fee;
         $data['student_due_fee']      = $student_due_fee;
         $data['student']              = $student;
-		
+
         $this->load->view('layout/student/header', $data);
         $this->load->view('student/getfees', $data);
         $this->load->view('layout/student/footer', $data);
+    }
+
+    public function printFeesByGroupArray()
+    {
+
+        $data['sch_setting'] = $this->sch_setting_detail;
+        $record              = $this->input->post('data');
+        $record_array        = json_decode($record);
+        $fees_array          = array();
+        foreach ($record_array as $key => $value) {
+            $fee_groups_feetype_id = $value->fee_groups_feetype_id;
+            $fee_master_id         = $value->fee_master_id;
+            $fee_session_group_id  = $value->fee_session_group_id;
+            $feeList               = $this->studentfeemaster_model->getDueFeeByFeeSessionGroupFeetype($fee_session_group_id, $fee_master_id, $fee_groups_feetype_id);
+            $fees_array[]          = $feeList;
+        }
+        $data['feearray'] = $fees_array;
+        $this->load->view('student/printFeesByGroupArray', $data);
+    }
+
+    public function getcollectfee()
+    {
+        $setting_result      = $this->setting_model->get();
+        $data['settinglist'] = $setting_result;
+        $record              = $this->input->post('data');
+        $record_array        = json_decode($record);
+        $fees_array = array();
+        foreach ($record_array as $key => $value) {
+            $fee_groups_feetype_id = $value->fee_groups_feetype_id;
+            $fee_master_id         = $value->fee_master_id;
+            $fee_session_group_id  = $value->fee_session_group_id;
+            $feeList               = $this->studentfeemaster_model->getDueFeeByFeeSessionGroupFeetype($fee_session_group_id, $fee_master_id, $fee_groups_feetype_id);
+            $fees_array[]          = $feeList;
+        }
+        $data['feearray'] = $fees_array;
+        $result           = array(
+            'view' => $this->load->view('student/getcollectfee', $data, true),
+        );
+        $this->output->set_output(json_encode($result));
     }
 
     public function create_doc()
@@ -358,44 +411,48 @@ class User extends Student_Controller
         echo json_encode($array);
 
     }
+	
     public function handle_upload()
     {
-        $image_validate = $this->config->item('file_validate');
 
+        $image_validate = $this->config->item('file_validate');
+        $result         = $this->filetype_model->get();
         if (isset($_FILES["first_doc"]) && !empty($_FILES['first_doc']['name'])) {
 
-            $file_type         = $_FILES["first_doc"]['type'];
-            $file_size         = $_FILES["first_doc"]["size"];
-            $file_name         = $_FILES["first_doc"]["name"];
-            $allowed_extension = $image_validate['allowed_extension'];
-            $ext               = pathinfo($file_name, PATHINFO_EXTENSION);
-            $allowed_mime_type = $image_validate['allowed_mime_type'];
-            $finfo             = finfo_open(FILEINFO_MIME_TYPE);
-            $mtype             = finfo_file($finfo, $_FILES['first_doc']['tmp_name']);
+            $file_type = $_FILES["first_doc"]['type'];
+            $file_size = $_FILES["first_doc"]["size"];
+            $file_name = $_FILES["first_doc"]["name"];
+
+            $allowed_extension = array_map('trim', array_map('strtolower', explode(',', $result->file_extension)));
+            $allowed_mime_type = array_map('trim', array_map('strtolower', explode(',', $result->file_mime)));
+            $ext               = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mtype = finfo_file($finfo, $_FILES['first_doc']['tmp_name']);
             finfo_close($finfo);
 
             if (!in_array($mtype, $allowed_mime_type)) {
-                $this->form_validation->set_message('handle_uploadcreate_doc', 'File Type Not Allowed');
+                $this->form_validation->set_message('handle_upload', $this->lang->line('file_type_not_allowed'));
                 return false;
             }
 
             if (!in_array($ext, $allowed_extension) || !in_array($file_type, $allowed_mime_type)) {
-                $this->form_validation->set_message('handle_uploadcreate_doc', 'Extension Not Allowed');
+                $this->form_validation->set_message('handle_upload', $this->lang->line('extension_not_allowed'));
                 return false;
             }
-            if ($file_size > $image_validate['upload_size']) {
-                $this->form_validation->set_message('handle_uploadcreate_doc', $this->lang->line('file_size_shoud_be_less_than') . number_format($image_validate['upload_size'] / 1048576, 2) . " MB");
+            if ($file_size > $result->file_size) {
+                $this->form_validation->set_message('handle_upload', $this->lang->line('file_size_shoud_be_less_than') . number_format($image_validate['upload_size'] / 1048576, 2) . " MB");
                 return false;
             }
 
             return true;
         } else {
-            $this->form_validation->set_message('handle_uploadcreate_doc', "The File Field is required");
+            $this->form_validation->set_message('handle_upload', $this->lang->line('the_file_field_is_required'));
             return false;
         }
         return true;
-
     }
+	
     public function edit()
     {
         $data['title']              = 'Edit Student';
@@ -413,19 +470,19 @@ class User extends Student_Controller
         $data["bloodgroup"]         = $this->config->item('bloodgroup');
         $data['inserted_fields']    = $this->student_edit_field_model->get();
         $data['sch_setting_detail'] = $this->sch_setting_detail;
-       
+
         if ($this->findSelected($data['inserted_fields'], 'firstname')) {
             $this->form_validation->set_rules('firstname', $this->lang->line('first_name'), 'trim|required|xss_clean');
         }
-           if ($this->findSelected($data['inserted_fields'], 'guardian_is')) {
+        if ($this->findSelected($data['inserted_fields'], 'guardian_is')) {
 
             $this->form_validation->set_rules('guardian_is', $this->lang->line('guardian'), 'trim|required|xss_clean');
         }
-           if ($this->findSelected($data['inserted_fields'], 'dob')) {
+        if ($this->findSelected($data['inserted_fields'], 'dob')) {
 
             $this->form_validation->set_rules('dob', $this->lang->line('date_of_birth'), 'trim|required|xss_clean');
         }
-            if ($this->findSelected($data['inserted_fields'], 'gender')) {
+        if ($this->findSelected($data['inserted_fields'], 'gender')) {
 
             $this->form_validation->set_rules('gender', $this->lang->line('gender'), 'trim|required|xss_clean');
         }
@@ -434,7 +491,7 @@ class User extends Student_Controller
 
         }
 
-       if ($this->findSelected($data['inserted_fields'], 'guardian_phone')) {
+        if ($this->findSelected($data['inserted_fields'], 'guardian_phone')) {
 
             $this->form_validation->set_rules('guardian_phone', $this->lang->line('guardian_phone'), 'trim|required|xss_clean');
         }
@@ -615,7 +672,7 @@ class User extends Student_Controller
 
                 $data['father_name'] = $this->input->post('father_name');
             }
- 
+
             if (isset($father_phone)) {
 
                 $data['father_phone'] = $this->input->post('father_phone');
@@ -680,7 +737,6 @@ class User extends Student_Controller
         }
     }
 
-
     public function findSelected($inserted_fields, $find)
     {
         foreach ($inserted_fields as $inserted_key => $inserted_value) {
@@ -692,7 +748,6 @@ class User extends Student_Controller
         return false;
 
     }
-
 
     public function edit_handle_upload($value, $field_name)
     {
@@ -731,5 +786,24 @@ class User extends Student_Controller
         }
         return true;
     }
+
+    public function printFeesByName()
+    {
+        $data                   = array('payment' => "0");
+        $record                 = $this->input->post('data');
+        $invoice_id             = $this->input->post('main_invoice');
+        $sub_invoice_id         = $this->input->post('sub_invoice');
+        $student_session_id     = $this->input->post('student_session_id');
+        $setting_result         = $this->setting_model->get();
+        $data['settinglist']    = $setting_result;
+        $student                = $this->studentsession_model->searchStudentsBySession($student_session_id);
+        $fee_record             = $this->studentfeemaster_model->getFeeByInvoice($invoice_id, $sub_invoice_id);
+        $data['student']        = $student;
+        $data['sub_invoice_id'] = $sub_invoice_id;
+        $data['feeList']        = $fee_record;
+        $data['sch_setting']    = $this->sch_setting_detail;
+        $this->load->view('print/printFeesByName', $data);
+    }
+    
 
 }

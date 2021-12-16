@@ -14,7 +14,6 @@ class Classes extends Admin_Controller
 
     public function index()
     {
-       
         if (!$this->rbac->hasPrivilege('class', 'can_view')) {
             access_denied();
         }
@@ -37,15 +36,12 @@ class Classes extends Admin_Controller
             $class       = $this->input->post('class');
             $class_array = array(
                 'class' => $this->input->post('class'),
-                'school' => $this->input->post('school'),
             );
             $sections = $this->input->post('sections');
             $this->classsection_model->add($class_array, $sections);
             $this->session->set_flashdata('msg', '<div class="alert alert-success text-left">' . $this->lang->line('success_message') . '</div>');
             redirect('classes');
         }
-        $school = $this->school_model->getAll();
-        $data['schoollist'] = $school;
         $vehicle_result       = $this->section_model->get();
         $data['vehiclelist']  = $vehicle_result;
         $vehroute_result      = $this->classsection_model->getByID();
@@ -62,12 +58,23 @@ class Classes extends Admin_Controller
         }
         $data['title'] = 'Fees Master List';
         $this->class_model->remove($id);
+
+        $student_delete=$this->student_model->getUndefinedStudent();
+        if(!empty($student_delete)){
+            $delte_student_array=array();
+            foreach ($student_delete as $student_key => $student_value) {
+
+                $delte_student_array[]=$student_value->id;
+            }
+            $this->student_model->bulkdelete($delte_student_array);
+        }
+
+     
         redirect('classes');
     }
 
     public function edit($id)
     {
-
         if (!$this->rbac->hasPrivilege('class', 'can_edit')) {
             access_denied();
         }
@@ -88,9 +95,6 @@ class Classes extends Admin_Controller
         $this->form_validation->set_rules('sections[]', $this->lang->line('sections'), 'trim|required|xss_clean');
 
         if ($this->form_validation->run() == false) {
-
-            $school = $this->school_model->getAll();
-            $data['schoollist'] = $school;
             $vehicle_result       = $this->section_model->get();
             $data['vehiclelist']  = $vehicle_result;
             $routeList            = $this->route_model->get();
@@ -101,12 +105,10 @@ class Classes extends Admin_Controller
             $this->load->view('class/classEdit', $data);
             $this->load->view('layout/footer', $data);
         } else {
-
             $sections      = $this->input->post('sections');
             $prev_sections = $this->input->post('prev_sections');
             $route_id      = $this->input->post('route_id');
             $class_id      = $this->input->post('pre_class_id');
-            $school      = $this->input->post('school');
             if (!isset($prev_sections)) {
                 $prev_sections = array();
             }
@@ -117,7 +119,6 @@ class Classes extends Admin_Controller
                 $class_array         = array(
                     'id'    => $class_id,
                     'class' => $this->input->post('class'),
-                    'school' => $this->input->post('school'),
                 );
                 foreach ($add_result as $vec_add_key => $vec_add_value) {
                     $vehicle_batch_array[] = $vec_add_value;
@@ -127,7 +128,6 @@ class Classes extends Admin_Controller
                 $class_array = array(
                     'id'    => $class_id,
                     'class' => $this->input->post('class'),
-                     'school' => $this->input->post('school'),
                 );
                 $this->classsection_model->update($class_array);
             }

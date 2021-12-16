@@ -32,10 +32,11 @@ class Ipayafrica extends Student_Controller
         $data['setting'] = $this->setting;
         $data['api_error'] = array();
         $data['student_data'] = $this->student_model->get($data['params']['student_id']);
+        $data['student_fees_master_array']=$data['params']['student_fees_master_array'];
         $this->load->view('student/ipayafrica/index', $data);
     }
 
-
+ 
         public function pay() {
         $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'trim|required|xss_clean');
         $this->form_validation->set_rules('email', $this->lang->line('email'), 'trim|required|xss_clean');
@@ -56,26 +57,18 @@ class Ipayafrica extends Student_Controller
 
             $params = $this->session->userdata('params');
             $data = array();
-            $student_fees_master_id = $params['student_fees_master_id'];
-            $fee_groups_feetype_id = $params['fee_groups_feetype_id'];
             $student_id = $params['student_id'];
-            $total = $params['total'];
-
-            $data['student_fees_master_id'] = $student_fees_master_id;
-            $data['fee_groups_feetype_id'] = $fee_groups_feetype_id;
-            $data['student_id'] = $student_id;
             $data['total'] =number_format((float)($params['fine_amount_balance']+$params['total']), 2, '.', '');;
             $data['symbol'] = $params['invoice']->symbol;
             $data['currency_name'] = $params['invoice']->currency_name;
             $data['name'] = $params['name'];
             $data['guardian_phone'] = $params['guardian_phone'];
-            $amount = $data['total'];
 
 
              $fields = array("live"=> "1",
                     "oid"=> uniqid(),
                     "inv"=> time(),
-                    "ttl"=> $amount,
+                    "ttl"=> $data['total'],
                     "tel"=> $_POST['phone'],
                     "eml"=> $_POST['email'],
                     "vid"=> ($this->pay_method->api_publishable_key),
@@ -83,7 +76,7 @@ class Ipayafrica extends Student_Controller
                     "p1"=> "airtel",
                     "p2"=> "",
                     "p3"=> "",
-                    "p4"=> $amount,
+                    "p4"=> $data['total'],
                     "cbk"=> base_url().'students/ipayafrica/success',
                     "cst"=> "1",
                     "crl"=> "2"
@@ -103,33 +96,42 @@ class Ipayafrica extends Student_Controller
  
     public function success()
     {
-       
+        
         if(!empty($_GET['status'])){
              
             $params = $this->session->userdata('params');
            
             $payment_id = $_GET['txncd'];;
-            $json_array = array(
-                'amount' => $params['total'],
-                'date' => date('Y-m-d'),
+            $bulk_fees=array();
+            $params     = $this->session->userdata('params');
+         
+            foreach ($params['student_fees_master_array'] as $fee_key => $fee_value) {
+           
+             $json_array = array(
+                'amount'          =>  $fee_value['amount_balance'],
+                'date'            => date('Y-m-d'),
                 'amount_discount' => 0,
-                'amount_fine' => $params['fine_amount_balance'],
-                'description' => "Online fees deposit through iPayAfrica TXN ID: " . $payment_id,
-                'received_by' => '',
-                'payment_mode' => 'iPayAfrica',
+                'amount_fine'     => $fee_value['fine_balance'],
+                'description'     => "Online fees deposit through ipayAfrica TXN ID: " . $payment_id,
+                'received_by'     => '',
+                'payment_mode'    => 'Ipay_africa'
             );
 
-            $data = array(
-                'student_fees_master_id' => $params['student_fees_master_id'],
-                'fee_groups_feetype_id' => $params['fee_groups_feetype_id'],
-                'amount_detail' => $json_array
-            );
-
-            $send_to = $params['guardian_phone'];
-            $inserted_id = $this->studentfeemaster_model->fee_deposit($data, $send_to);
-            $invoice_detail = json_decode($inserted_id);
-
-            redirect(base_url("students/payment/successinvoice/" . $invoice_detail->invoice_id . "/" . $invoice_detail->sub_invoice_id));
+            $insert_fee_data = array(
+                'student_fees_master_id' => $fee_value['student_fees_master_id'],
+                'fee_groups_feetype_id'  => $fee_value['fee_groups_feetype_id'],
+                'amount_detail'          => $json_array,
+            );                 
+           $bulk_fees[]=$insert_fee_data;
+            //========
+            }
+            $send_to     = $params['guardian_phone'];
+            $inserted_id = $this->studentfeemaster_model->fee_deposit_bulk($bulk_fees, $send_to);
+            if ($inserted_id) {
+                  redirect(base_url("students/payment/successinvoice"));                     
+            } else {
+              redirect(base_url('students/payment/paymentfailed'));
+            }
         }else{
 
               redirect(base_url("students/payment/paymentfailed"));

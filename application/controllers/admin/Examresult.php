@@ -178,9 +178,7 @@ class Examresult extends Admin_Controller {
             $data['exam_grades'] = $exam_grades;
             $data['marksheet'] = $this->examresult_model->getExamResults($post_exam_id, $post_exam_group_id, $students_array);
             $data['sch_setting'] = $this->sch_setting_detail;
-            $student_exam_page = $this->load->view('admin/examresult/_printmarksheet', $data, true);
-
- 
+            $student_exam_page = $this->load->view('admin/examresult/_printmarksheet', $data, true); 
             $array = array('status' => '1', 'error' => '', 'page' => $student_exam_page);
             echo json_encode($array);
         }
@@ -261,8 +259,6 @@ class Examresult extends Admin_Controller {
         $student_id = $this->input->post('student_id');
 
         $data['examgrouplist'] = $this->examgroup_model->getExamGroupByStudent($student_id);
-        echo $this->db->last_query();
-        die;
         echo json_encode($data);
     }
 

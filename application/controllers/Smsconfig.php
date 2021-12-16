@@ -290,4 +290,74 @@ class Smsconfig extends Admin_Controller
         }
     }
 
+     public function nexmo(){
+      
+          $this->form_validation->set_error_delimiters('', '');
+
+        $this->form_validation->set_rules('nexmo_api_key', $this->lang->line('nexmo_api_key'), 'required');
+        $this->form_validation->set_rules('nexmo_api_secret', $this->lang->line('nexmo_api_secret'), 'required');
+        $this->form_validation->set_rules('nexmo_registered_phone_number', $this->lang->line('nexmo_registered_phone_number'), 'required');
+        $this->form_validation->set_rules('nexmo_status', $this->lang->line('status'), 'required');
+
+        if ($this->form_validation->run()) {
+
+            $data = array(
+                'type'      => 'nexmo',
+                'authkey'   => $this->input->post('nexmo_api_secret'),
+                'senderid'  => $this->input->post('nexmo_registered_phone_number'),
+                'api_id'    => $this->input->post('nexmo_api_key'),
+                'is_active' => $this->input->post('nexmo_status'),
+            );
+            $this->smsconfig_model->add($data);
+            echo json_encode(array('st' => 0, 'msg' => $this->lang->line('update_message')));
+
+        } else { 
+
+            $data = array(
+                'nexmo_api_secret'  => form_error('nexmo_api_secret'),
+                'nexmo_registered_phone_number' => form_error('nexmo_registered_phone_number'),
+                'nexmo_api_key'  => form_error('nexmo_api_key'),
+                'nexmo_status'    => form_error('nexmo_status'),
+
+            );
+
+            echo json_encode(array('st' => 1, 'msg' => $data));
+        }
+     }
+
+      public function africastalking(){
+      
+        $this->form_validation->set_error_delimiters('', '');
+
+        $this->form_validation->set_rules('africastalking_username', $this->lang->line('africastalking_username'), 'required');
+        $this->form_validation->set_rules('africastalking_apikey', $this->lang->line('africastalking_apikey'), 'required');
+        $this->form_validation->set_rules('africastalking_short_code', $this->lang->line('africastalking_short_code'), 'required');
+        $this->form_validation->set_rules('africastalking_status', $this->lang->line('status'), 'required');
+
+        if ($this->form_validation->run()) {
+
+            $data = array(
+                'type'      => 'africastalking',
+                'username'   => $this->input->post('africastalking_username'),
+                'api_id'  => $this->input->post('africastalking_apikey'),
+                'senderid'    => $this->input->post('africastalking_short_code'),
+                'is_active' => $this->input->post('africastalking_status'),
+            );
+            $this->smsconfig_model->add($data);
+            echo json_encode(array('st' => 0, 'msg' => $this->lang->line('update_message')));
+
+        } else {
+
+            $data = array(
+                'africastalking_username'  => form_error('africastalking_username'),
+                'africastalking_apikey' => form_error('africastalking_apikey'),
+                'africastalking_short_code'  => form_error('africastalking_short_code'),
+                'africastalking_status'    => form_error('africastalking_status'),
+
+            );
+
+            echo json_encode(array('st' => 1, 'msg' => $data));
+        }
+     }
+
 }

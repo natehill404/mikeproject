@@ -58,6 +58,7 @@ class Cron extends CI_Controller
         }
     }
 
+
     public function feereminder($key = "")
     {
         $setting_result = $this->setting_model->getSetting();
@@ -74,10 +75,12 @@ class Cron extends CI_Controller
             if (!empty($feereminder)) {
                 foreach ($feereminder as $feereminder_key => $feereminder_value) {
                     if ($feereminder_value->reminder_type == "before") {
+                       
                         $date               = date('Y-m-d', strtotime('+' . $feereminder_value->day . ' days'));
                         $fees_type_reminder = $this->feegrouptype_model->getFeeTypeDueDateReminder($date);
 
                         if (!empty($fees_type_reminder)) {
+
                             foreach ($fees_type_reminder as $reminder_key => $reminder_value) {
 
                                 $students = $this->feegrouptype_model->getFeeTypeStudents($reminder_value->fee_session_group_id, $reminder_value->id);
@@ -93,7 +96,7 @@ class Cron extends CI_Controller
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         $deposit_amount = 0;
                                         foreach ($fees_array as $fee_collected_key => $fee_collected_value) {
-                                            $deposit_amount = $deposit_amount + $fee_collected_value->amount;
+                                            $deposit_amount = $deposit_amount + ($fee_collected_value->amount+$fee_collected_value->amount_discount);
                                         };
                                         $students[$student_key]->{'deposit_amount'} = number_format((float) ($deposit_amount), 2, '.', '');
                                         $students[$student_key]->{'due_amount'}     = number_format((float) ($reminder_value->amount - $deposit_amount), 2, '.', '');
@@ -105,8 +108,10 @@ class Cron extends CI_Controller
                         }
 
                     } else if ($feereminder_value->reminder_type == "after") {
+                       
                         $date               = date('Y-m-d', strtotime('-' . $feereminder_value->day . ' days'));
                         $fees_type_reminder = $this->feegrouptype_model->getFeeTypeDueDateReminder($date);
+                        
                         if (!empty($fees_type_reminder)) {
                             foreach ($fees_type_reminder as $reminder_key => $reminder_value) {
 
@@ -123,20 +128,22 @@ class Cron extends CI_Controller
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         $deposit_amount = 0;
                                         foreach ($fees_array as $fee_collected_key => $fee_collected_value) {
-                                            $deposit_amount = $deposit_amount + $fee_collected_value->amount;
+                                      
+                                            $deposit_amount = $deposit_amount + ($fee_collected_value->amount+$fee_collected_value->amount_discount);
                                         };
                                         $students[$student_key]->{'deposit_amount'} = number_format((float) ($deposit_amount), 2, '.', '');
                                         $students[$student_key]->{'due_amount'}     = number_format((float) ($reminder_value->amount - $deposit_amount), 2, '.', '');
                                     };
 
                                     $students[$student_key]->{'student_name'} = $this->customlib->getFullName($student_value->firstname, $student_value->middlename, $student_value->lastname, $setting_result->middlename, $setting_result->lastname);
+                                    $students[$student_key]->{'school_name'}  =   $this->customlib->getSchoolName();
                                     $studentList[]                            = $student_value;
                                 }
                             }
                         }
                     }
                 }
-
+                  
                 if (!empty($studentList)) {
                     foreach ($studentList as $eachStudent_key => $eachStudent_value) {
                         if ($eachStudent_value->due_amount <= 0) {

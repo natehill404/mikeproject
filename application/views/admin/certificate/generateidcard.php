@@ -3,7 +3,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 ?>
 
 
-<div class="content-wrapper" style="min-height: 946px;">  
+<div class="content-wrapper">  
     <section class="content-header">
         <h1><i class="fa fa-newspaper-o"></i> <?php echo $this->lang->line('certificate'); ?></h1>
     </section>
@@ -20,7 +20,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                     </div>
                     <div class="box-body">
                         <div class="row">
-                            <form role="form" action="<?php echo site_url('admin/Generateidcard/search') ?>" method="post" class="">
+                            <form role="form" action="<?php echo site_url('admin/generateidcard/search') ?>" method="post" class="">
                                 <?php echo $this->customlib->getCSRF(); ?>
                                 <div class="col-sm-4">
                                     <div class="form-group"> 
@@ -79,7 +79,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                     <?php
                     if (isset($resultlist)) {
                         ?>
-                        <form method="post" action="<?php echo base_url('admin/Generateidcard/generatemultiple') ?>">
+                        <form method="post" action="<?php echo base_url('admin/generateidcard/generatemultiple') ?>">
                             <div  class="" id="duefee">
                                 <div class="box-header ptbnull"></div>   
                                 <div class="box-header ptbnull">
@@ -256,13 +256,13 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                 alert("<?php echo $this->lang->line('no_record_selected'); ?>");
             } else {
                 $.ajax({
-                    url: '<?php echo site_url("admin/Generateidcard/generatemultiple") ?>',
+                    url: '<?php echo site_url("admin/generateidcard/generatemultiple") ?>',
                     type: 'post',
-                    dataType: "html",
+                    dataType: 'JSON',
                     data: {'data': JSON.stringify(array_to_print), 'class_id': classId, 'id_card': idCard, },
                     success: function (response) {
 
-                        Popup(response);
+                        Popup(response.page);
                     }
                 });
             }
@@ -275,8 +275,10 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
     function Popup(data)
     {
 
-        var frame1 = $('<iframe />');
-        frame1[0].name = "frame1";
+        var frame1 = $('<iframe>', {
+           id:  'printDiv',
+           name:  'frame1'
+        });
 
         $("body").append(frame1);
         var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
@@ -294,12 +296,14 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
         frameDoc.document.write('</html>');
         frameDoc.document.close();
         setTimeout(function () {
-            window.frames["frame1"].focus();
-            window.frames["frame1"].print();
+        document.getElementById('printDiv').contentWindow.focus();
+        document.getElementById('printDiv').contentWindow.print();
             frame1.remove();
         }, 500);
 
 
         return true;
     }
+
+
 </script>

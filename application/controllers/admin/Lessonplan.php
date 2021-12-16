@@ -14,6 +14,7 @@ class Lessonplan extends Admin_Controller
         $this->load->library('Customlib');
         $this->sch_current_session = $this->setting_model->getCurrentSession();
         $this->staff_id            = $this->customlib->getStaffID();
+        $this->load->library("datatables");
     }
 
     public function index()
@@ -93,11 +94,11 @@ class Lessonplan extends Admin_Controller
             $myclasssubjects = $this->subjecttimetable_model->getByStaffClassTeachersubjects($staff_id);
 
             if (!empty($myclasssubjects[0]->subject_group_subject_id)) {
-                
+
                 $timetableid = $myclasssubjects[0]->subject_group_subject_id;
                 $concate     = "yes";
             }
-            
+
             $mysubjects = $this->subjecttimetable_model->getByTeacherSubjects($staff_id);
             if (!empty($mysubjects[0]->subject_group_subject_id)) {
                 if ($concate == 'yes') {
@@ -115,20 +116,6 @@ class Lessonplan extends Admin_Controller
                 $condition = " and subject_timetable.id in(" . $timetableid . ") ";
             }
             $where_in = explode(',', $timetableid);
-        }
-        
-        $result = $this->lessonplan_model->get('', $this->sch_current_session);
-        
-        if (!empty($result)) {
-            foreach ($result as $key => $value) {
-                $lesson           = $this->lessonplan_model->getlesson($value["subject_group_subject_id"], $value["subject_group_class_sections_id"], $this->sch_current_session);
-                $lessonname[$key] = $lesson;
-            }
-        }
-
-        $data['result'] = $result;
-        if (!empty($lessonname)) {
-            $data['lessonname'] = $lessonname;
         }
 
         $this->load->view('layout/header');
@@ -218,9 +205,7 @@ class Lessonplan extends Admin_Controller
         }
 
         $carray = array();
-
-        $result = $this->lessonplan_model->get('', $this->sch_current_session);
-
+		$result = $this->lessonplan_model->get($this->sch_current_session, '');		
         if (!empty($result)) {
             foreach ($result as $key => $value) {
                 $lesson = $this->lessonplan_model->getlesson($value["subject_group_subject_id"], $value["subject_group_class_sections_id"], $this->sch_current_session);
@@ -233,9 +218,8 @@ class Lessonplan extends Admin_Controller
         if (!empty($lessonname)) {
             $data['lessonname'] = $lessonname;
         }
-
-        $editresult = $this->lessonplan_model->get($id, $this->sch_current_session, $subject_group_subject_id);
-
+		
+		$editresult = $this->lessonplan_model->get($this->sch_current_session, $id, $subject_group_subject_id);
         $editlesson = $this->lessonplan_model->getlesson($editresult["subject_group_subject_id"], $editresult["subject_group_class_sections_id"], $this->sch_current_session);
 
         $data['editlessonname']                 = $editlesson;
@@ -372,21 +356,6 @@ class Lessonplan extends Admin_Controller
         $data['section_id']       = "";
         $data['subject_group_id'] = "";
         $data['subject_id']       = "";
-
-        $result = $this->lessonplan_model->gettopic('', $this->sch_current_session);
-
-        if (!empty($result)) {
-            foreach ($result as $key => $value) {
-                $topic             = $this->lessonplan_model->gettopicBylessonid($value["lesson_id"], $this->sch_current_session);
-                $topicresult[$key] = $topic;
-            }
-        }
-
-        $data['result'] = $result;
-        if (!empty($topicresult)) {
-            $data['topicresult'] = $topicresult;
-        }
-
         $this->load->view('layout/header');
         $this->load->view('admin/lessonplan/topic', $data);
         $this->load->view('layout/footer');
@@ -486,7 +455,7 @@ class Lessonplan extends Admin_Controller
         }
         $carray = array();
 
-        $result = $this->lessonplan_model->gettopic('', $this->sch_current_session);
+        $result = $this->lessonplan_model->gettopic($this->sch_current_session, '');
 
         if (!empty($result)) {
             foreach ($result as $key => $value) {
@@ -500,7 +469,7 @@ class Lessonplan extends Admin_Controller
             $data['topicresult'] = $topicresult;
         }
 
-        $editresult                              = $this->lessonplan_model->gettopic($id, $this->sch_current_session);
+        $editresult                              = $this->lessonplan_model->gettopic($this->sch_current_session,$id);
         $edittopic                               = $this->lessonplan_model->gettopicBylessonid($editresult["lesson_id"], $this->sch_current_session);
         $data['lesson_id']                       = $editresult["lesson_id"];
         $data['topic_lesson_id']                 = $id;
@@ -667,7 +636,119 @@ class Lessonplan extends Admin_Controller
 
     public function get_topicbyid()
     {
-        $this->lessonplan_model->gettopic('', $this->sch_current_session);
+        $this->lessonplan_model->gettopic($this->sch_current_session,'');
     }
 
+    public function gettopiclist()
+    {
+
+        $class             = $this->class_model->get();
+        $data['classlist'] = $class;
+        foreach ($class as $class_key => $class_value) {
+
+            $class_array[] = $class_value['id'];
+        }
+        $carray                   = array();
+        $data['class_id']         = "";
+        $data['section_id']       = "";
+        $data['subject_group_id'] = "";
+        $data['subject_id']       = "";
+        $result                   = $this->lessonplan_model->gettopiclist($this->sch_current_session);
+        $m                        = json_decode($result);
+        $currency_symbol          = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data                  = array();
+        if (!empty($m->data)) {
+            foreach ($m->data as $key => $value) {
+                $topic1    ='';
+                $topic     = "";
+                $lesson_id = $key;
+                $topic     = $this->lessonplan_model->gettopicBylessonid($value->lesson_id, $this->sch_current_session);
+                if ($this->rbac->hasPrivilege('topic', 'can_edit')) {
+                    $editbtn = "<a href='" . base_url() . "admin/lessonplan/edittopic/" . $value->lesson_id . "'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('edit') . "'><i class='fa fa-pencil'></i></a>";
+                }
+                if ($this->rbac->hasPrivilege('topic', 'can_delete')) {
+                    $deletebtn = '';
+                    $deletebtn = "<a onclick='deletetopicbulk(" . $this->lang->line('delete_confirm') . ")'  class='btn btn-default btn-xs' data-placement='left' title='" . $this->lang->line('delete') . "' data-toggle='tooltip'><i class='fa fa-trash'></i></a>";
+                }
+
+                foreach ($topic as $rl_value) {
+                    $topic = $rl_value['name'] . '<br>';
+                    $topic1 .=  $topic;
+                }
+                
+                if (in_array($value->classid, $class_array)) {
+                    $lesson_id = $key;
+                    $row       = array();
+                    $row[]     = $value->cname;
+                    $row[]     = $value->sname;
+                    $row[]     = $value->sgname;
+                    $row[]     = $value->subname;
+                    $row[]     = $value->lessonname;
+                    $row[]     = $topic1;
+                    $row[]     = $editbtn . ' ' . $deletebtn;
+                    $dt_data[] = $row;
+                }
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    public function getlessonlist()
+    {
+        $class = $this->class_model->get();
+
+        foreach ($class as $class_key => $class_value) {
+            $class_array[] = $class_value['id'];
+        }
+        $result  = $this->lessonplan_model->getlessonlist($this->sch_current_session, '');
+        $m       = json_decode($result);
+        $dt_data = array();
+        if (!empty($m->data)) {
+            foreach ($m->data as $key => $value) {
+
+                $topic       = "";
+                $lesson_id   = $key;
+                $lesson_name = "";
+                $lesson      = $this->lessonplan_model->getlesson($value->subject_group_subject_id, $value->subject_group_class_sections_id, $this->sch_current_session);
+
+                if ($this->rbac->hasPrivilege('lesson', 'can_edit')) {
+                    $editbtn = "<a href='" . base_url() . "admin/lessonplan/editlesson/" . $value->subject_group_class_sections_id . "/" . $value->subject_group_subject_id . "'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('edit') . "'><i class='fa fa-pencil'></i></a>";
+                }
+                if ($this->rbac->hasPrivilege('lesson', 'can_delete')) {
+                    $deletebtn = '';
+                    $deletebtn = "<a onclick='deletelessonbulk(" . '"' . $value->subject_group_class_sections_id . '"' . ',' . '"' . $value->subject_group_subject_id . '"' . "  )'  class='btn btn-default btn-xs' data-placement='left' title='" . $this->lang->line('delete') . "' data-toggle='tooltip'><i class='fa fa-remove'></i></a>";
+                }
+
+                if (in_array($value->classid, $class_array)) {
+
+                    foreach ($lesson as $rl_value) {
+                        $lesson_name .= $rl_value['name'] . '<br>';
+                    };
+                    $row       = array();
+                    $row[]     = $value->cname;
+                    $row[]     = $value->sname;
+                    $row[]     = $value->sgname;
+                    $row[]     = $value->subname;
+                    $row[]     = $lesson_name;
+                    $row[]     = $editbtn . ' ' . $deletebtn;
+                    $dt_data[] = $row;
+                }
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
 }

@@ -2,6 +2,14 @@
 $language      = $this->customlib->getLanguage();
 $language_name = $language["short_code"];
 ?>
+<style>
+     @media print {
+               .noprint {
+                  visibility: hidden;
+               }
+            }
+</style>
+<script src="<?php echo base_url(); ?>backend/plugins/ckeditor/ckeditor.js"></script>
 <div class="content-wrapper">
     <section class="content">
         <div class="row">
@@ -22,9 +30,9 @@ $language_name = $language["short_code"];
                             </div>
                         </div>
                         <div class="mailbox-messages">
-                            <div class="download_label"><?php ?> <?php echo $this->lang->line('online') . " " . $this->lang->line('exam') . " " . $this->lang->line('list'); ?></div>
+                           
                             <div class="table-responsive">
-                             <table class="table table-striped table-bordered table-hover example">
+                                 <table class="table table-striped table-bordered table-hover exam-list" data-export-title="<?php echo $this->lang->line('online') . " " . $this->lang->line('exam') . " " . $this->lang->line('list'); ?>">
                                 <thead>
                                     <tr>
 
@@ -38,138 +46,11 @@ $language_name = $language["short_code"];
                                         <th class="text text-center"><?php echo $this->lang->line('exam') . " " . $this->lang->line('publish') ?></th>
                                         
                                         <th class="text text-center"><?php echo $this->lang->line('result') . " " . $this->lang->line('publish') ?></th>
-                                        <th class="pull-right no-print"><?php echo $this->lang->line('action'); ?></th>
+                                        <th class="pull-right noExport"><?php echo $this->lang->line('action'); ?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php
-$count = 1;
-foreach ($questionList as $subject_key => $subject_value) {
-    $set_enable=false;
-    if((($subject_value->publish_result == 0) && (strtotime($subject_value->exam_to) >= strtotime(date('Y-m-d H:i:s')))) && (($subject_value->auto_publish_date == "0000-00-00" || $subject_value->auto_publish_date == "" || $subject_value->auto_publish_date == NULL)  || strtotime($subject_value->auto_publish_date) >= strtotime(date('Y-m-d H:i:s')))){
-$set_enable=true;
-    }
-    ?>
-                                        <tr>
-                                                  <td class="mailbox-name">
-                                                        <a href="#" data-toggle="popover" class="detail_popover"><?php echo $subject_value->exam; ?></a>
-                                                        <div class="fee_detail_popover" style="display: none">
-                                                            <?php
-                                                            if ($subject_value->description == "") {
-                                                                ?>
-                                                                <p class="text text-danger"><?php echo $this->lang->line('no_description'); ?></p>
-                                                                <?php
-                                                            } else {
-                                                                ?>
-                                                                <p class="text text-info"><?php echo $subject_value->description;; ?></p>
-                                                                <?php
-                                                            }
-                                                            ?>
-                                                        </div>
-                                                    </td>
-													<td class="mailbox-name text text-center"><?php
-if($subject_value->is_quiz){
-    ?>
-<i class="fa fa-check-square-o"></i>
-    <?php
-}else{
-    ?>
-<i class="fa fa-exclamation-circle"></i>
-    <?php
-} ?></td>
-                                             <td class="mailbox-name text-center" width="150"> <?php echo $subject_value->total_ques; ?><br />
-                                                 <span>(<?php echo $this->lang->line('descriptive')?>: <?php echo $subject_value->total_descriptive_ques; ?>)</span>
-                                             </td>
-                                            <td class="mailbox-name text text-center"> <?php echo $subject_value->attempt; ?></td>   
-                                            <td class="mailbox-name">
-
- <?php echo $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_from, false); ?>
-                                            </td>
-                                            <td class="mailbox-name">
- <?php echo $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_to, false); ?>
-                                            </td>
-                                            <td class="mailbox-name"> <?php echo $subject_value->duration; ?></td>
-                                      <td class="text text-center"><?php echo ($subject_value->is_active == 1) ? "<i class='fa fa-check-square-o'></i>" : "<i class='fa fa-exclamation-circle'></i>"; ?>
-                                            <?php if ($subject_value->is_active == 1) {?>
-                                                <span style="display:none;"  id=""><?php echo $this->lang->line('yes'); ?>
-                                                </span>
-                                            <?php }?>
-                                      </td>
- 
-                                      <td class="text text-center">
-                                <?php echo ($subject_value->publish_result == 1) ? "<i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>" : "<i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>"; ?></td>
-
-                                            <td class="pull-right">
-                                                <?php
-                        
-
-
-        if ($this->rbac->hasPrivilege('online_assign_view_student', 'can_view')) {
-        if ($set_enable) {
-         
-                ?>
-                                  <a href="<?php echo base_url(); ?>admin/onlineexam/assign/<?php echo $subject_value->id ?>"
-                                                   class="btn btn-default btn-xs" data-toggle="tooltip" title="<?php echo $this->lang->line('assign / view'); ?>">
-                                                    <i class="fa fa-tag"></i>
-                                                </a>
-                                            <?php
-    }
-
-    }
-
-    if ($this->rbac->hasPrivilege('add_questions_in_exam', 'can_view')) {
-        ?>
-                                                <button type="button" class="btn btn-default btn-xs" data-recordid="<?php echo $subject_value->id; ?>" data-is_quiz="<?php echo $subject_value->is_quiz; ?>" data-toggle="modal" data-target="#myQuestionModal" title="<?php echo $this->lang->line('add') . " " . $this->lang->line('question') ?>"><i class="fa fa-question-circle"></i></button>
-                                                <?php
-}
-    if ($this->rbac->hasPrivilege('online_examination', 'can_edit')) {
-        ?>
-                                                 <button type="button" class="btn btn-default btn-xs question-btn-edit" data-toggle="tooltip" title="<?php echo $this->lang->line('edit'); ?>" id="load" data-recordid="<?php echo $subject_value->id; ?>" data-loading-text="<i class='fa fa-spinner fa-spin '></i>" ><i class="fa fa-pencil"></i></button>
-                                                <?php
-}
-    ?>
-
-    <?php
-
-
-    if ($this->rbac->hasPrivilege('add_questions_in_exam', 'can_view')) {
-        ?>
- <button class="btn btn-default btn-xs exam_ques_list " data-recordid="<?php echo $subject_value->id; ?>" data-toggle="tooltip" title="<?php echo $this->lang->line('exam_questions_list'); ?>" data-loading-text="<i class='fa fa-spinner fa-spin '></i>"><i class="fa fa-file-text-o"></i></button>
-
-
-  <a href="<?php echo base_url(); ?>admin/onlineexam/evalution/<?php echo $subject_value->id ?>"
-                                                   class="btn btn-default btn-xs" data-toggle="tooltip" title="<?php echo $this->lang->line('exam_evalution');?>">
-                                                    <i class="fa fa-newspaper-o"></i>
-                                                </a>
-                                                <?php 
-
-if($subject_value->publish_result || ($subject_value->auto_publish_date != "0000-00-00" && $subject_value->auto_publish_date != "" && $subject_value->auto_publish_date != NULL && (strtotime($subject_value->auto_publish_date) <= strtotime(date('Y-m-d H:i:s'))))){
-?>
- <button class="btn btn-default btn-xs generate_rank" data-exam-title="<?php echo $subject_value->exam?>" data-recordid="<?php echo $subject_value->id; ?>" data-toggle="tooltip" title="<?php echo $this->lang->line('generate_rank'); ?>" ><i class="fa fa-list-alt"></i></button>
-<?php
-}
-                                                 ?>
-
-        <?php
-    }
-    ?>
-
-<?php
-if ($this->rbac->hasPrivilege('online_examination', 'can_delete')) {
-        ?>
-                                                <a data-placement="left" href="<?php echo base_url(); ?>admin/onlineexam/delete/<?php echo $subject_value->id; ?>" class="btn btn-default btn-xs"  data-toggle="tooltip" title="<?php echo $this->lang->line('delete'); ?>" onclick="return confirm('<?php echo $this->lang->line('delete_confirm') ?>');">
-                                                    <i class="fa fa-remove"></i>
-                                                </a>
-                                            <?php
-}
-    ?>
-                                            </td>
-                                        </tr>
-                                        <?php
-}
-$count++;
-?>
-                                </tbody>
+                               <tbody>
+                               </tbody>
                             </table>
                          </div>
                         </div>
@@ -308,7 +189,6 @@ function findOption($questionOpt, $find)
 <input type="checkbox" class="publish_result" name="publish_result" value="1">
                                            <?php echo $this->lang->line('publish') . " " . $this->lang->line('result'); ?>
                                         </label>
-                                  
                
        
                                      <label class="checkbox-inline">
@@ -529,6 +409,14 @@ foreach ($classList as $class_key => $class_value) {
 
 <script>
     $(document).ready(function () {
+ 
+CKEDITOR.config.toolbar = [
+   ['Styles','Format','Font','FontSize'],['Bold','Italic','Underline'],
+   ['NumberedList','BulletedList','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+   ['Table','TextColor','BGColor','Source']
+] ;
+ CKEDITOR.replace( 'description');
+
         $('.detail_popover').popover({
             placement: 'right',
             trigger: 'hover',
@@ -614,11 +502,12 @@ $(document).on('submit','#delete_question',function(e) {
 
         $('#myModal').on('hidden.bs.modal', function () {
 
-            $(this).find("input,textarea,select")
+            $(this).find(":input, select, textarea")
+                    .not('input:checkbox,input:radio')
                     .val('')
                     .end()
-                    .find("input[type=checkbox], input[type=radio]")
-                    .prop("checked", "")
+                    .removeAttr('checked')
+                    .removeAttr('selected')
                     .end();
         });
         $('#myGenerateRankModal').on('hidden.bs.modal', function () {
@@ -662,9 +551,10 @@ $(document).on('submit','#delete_question',function(e) {
 
         $('#myQuestionModal').on('hidden.bs.modal', function (e) {
 
-            $(this).find("input,textarea,select").val('');
+                $(this).find("input,textarea,select").val('');
                 $('.search_box_result').html("");
                 $('.search_box_pagination').html("");
+                  table.ajax.reload( null, false );
 
         });
 
@@ -702,7 +592,8 @@ $(document).on('submit','#delete_question',function(e) {
                    
                         $('#exam').val(data.result.exam);
                         $('#attempt').val(data.result.attempt);
-                        $('#description').val(data.result.description);
+                        CKEDITOR.instances['description'].setData(data.result.description);
+                
                         var is_quiz=(data.result.is_quiz == 0)?false:true;
 
                         $('input[name=is_quiz]').prop('checked',is_quiz);
@@ -742,12 +633,8 @@ $(document).on('submit','#delete_question',function(e) {
                     $this.button('reset');
                 }
             });
-
-        });
-
-
-
-    });
+		});
+	});
 
     $(document).on('submit',"form#saverank",function(e){
 
@@ -756,7 +643,6 @@ $(document).on('submit','#delete_question',function(e) {
         var url = form.attr('action');
         var submit_button = form.find(':submit');
         var post_params = form.serialize();
-
 
         $.ajax({
             type: "POST",
@@ -784,8 +670,6 @@ $(document).on('submit','#delete_question',function(e) {
                 submit_button.button('reset');
             }
         });
-
-
     });
 
 
@@ -797,7 +681,9 @@ $(document).on('submit','#delete_question',function(e) {
         var url = form.attr('action');
         var submit_button = form.find(':submit');
         var post_params = form.serialize();
-
+        for (instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }
 
         $.ajax({
             type: "POST",
@@ -814,13 +700,15 @@ $(document).on('submit','#delete_question',function(e) {
                 if (!data.status) {
                    var message = "";
             $.each(data.error, function (index, value) {
-
             message += value;
-
             });
-         errorMsg(message);
-                } else {
-                    location.reload();
+            errorMsg(message);
+            } else {
+            successMsg(data.message);
+            $('#myModal').modal('hide');
+
+            table.ajax.reload( null, false );
+                   
                 }
             },
             error: function (xhr) { // if error occured
@@ -832,8 +720,6 @@ $(document).on('submit','#delete_question',function(e) {
                 submit_button.button('reset');
             }
         });
-
-
     });
 
     function getQuestionByExam(page, exam_id,is_quiz) {
@@ -850,8 +736,6 @@ $(document).on('submit','#delete_question',function(e) {
             data: {'page': page, 'exam_id': exam_id, 'search': search,'keyword':keyword,'question_type':question_type,'question_level': question_level,'class_id':class_id,'section_id':section_id,'is_quiz':is_quiz}, // serializes the form's elements.
             dataType: "JSON", // serializes the form's elements.
             beforeSend: function () {
-                // $("[class$='_error']").html("");
-                // submit_button.button('loading');
             },
             success: function (data)
             {
@@ -875,15 +759,6 @@ $(document).on('submit','#delete_question',function(e) {
 
     }
 
-    // $(document).on('keyup', '#search_box', function (e) {
-
-    //     if (e.keyCode == 13) {
-    //         var _exam_id = $('#modal_exam_id').val();
-    //         getQuestionByExam(1, _exam_id);
-    //     }
-    // });
-
-
     /* Pagination Clicks   */
     $(document).on('click', '.search_box_pagination li.activee', function (e) {
         var _exam_id = $('#modal_exam_id').val();
@@ -900,9 +775,6 @@ $(document).on('submit','#delete_question',function(e) {
 
         getQuestionByExam(1, _exam_id,__is_quiz);
     });
-
-
-
 
     $(document).on('change', '.question_chk', function () {
         var _exam_id = $('#modal_exam_id').val();
@@ -937,14 +809,11 @@ $(document).on('submit','#delete_question',function(e) {
         });
     }
 
-
-
-
-    $('#myQuestionModal').on('hidden.bs.modal', function () {
-     window.location.reload();
-        });
+    // $('#myQuestionModal').on('hidden.bs.modal', function () {
+    //  window.location.reload();
+    //     });
     $('#myQuestionListModal').on('hidden.bs.modal', function () {
-     window.location.reload();
+         table.ajax.reload( null, false );
         });
 
     $(document).on('change', '#class_id', function (e) {
@@ -986,9 +855,6 @@ $(document).on('submit','#delete_question',function(e) {
         }
     }
 
-
-
-
            $(document).on('click', '.exam_ques_list', function () {
             var $this=$(this);
             var recordid = $(this).data('recordid');
@@ -1002,7 +868,6 @@ $(document).on('submit','#delete_question',function(e) {
                     $this.button('loading');
                 },
                 success: function (data) {
-
 
                 $('#myQuestionListModal').modal('show');
                 $('#myQuestionListModal .modal-title').html(data.exam.exam);
@@ -1019,7 +884,6 @@ $(document).on('submit','#delete_question',function(e) {
                 }
             });
         });
-
 
            $(document).on('click', '.subject_pills li', function () {
             var $this=$(this);
@@ -1078,4 +942,12 @@ $(document).on('submit','#delete_question',function(e) {
 
     }
 });
+</script>
+<script>
+    ( function ( $ ) {
+    'use strict';
+    $(document).ready(function () {
+      initDatatable('exam-list','admin/onlineexam/getexamlist',[],[],100);
+    });
+} ( jQuery ) )
 </script>

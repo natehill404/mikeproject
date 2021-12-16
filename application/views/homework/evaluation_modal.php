@@ -103,7 +103,6 @@
     </div><!--/.col (left) -->
     <div class="col-lg-4 col-md-4 col-sm-4 col-eq">
         <div class="taskside">
-
             <h4><?php echo $this->lang->line('summary'); ?></h4>
             <div class="box-tools pull-right">
             </div><!-- /.box-tools -->
@@ -157,8 +156,6 @@
                     <?php } ?>
                 <label><span><?php echo $this->lang->line('description'); ?></span>: <br/><?php echo $result['description']; ?></label>
 
-
-
             </div> 
         </div>
     </div>  
@@ -170,9 +167,6 @@
         $('body').on('click', '.list-group .list-group-item', function () {
             $(this).removeClass('active');
             $(this).toggleClass('active');
-            //  $(this).attr('selected');
-            // $('select option[value="' + this.value + '"]').attr("selected", "true");
-            //$(this).selected = true;
         });
         $('.list-arrows a').click(function () {
             var $button = $(this), actives = '';

@@ -23,6 +23,8 @@
                         <li><a href="#tab_5" data-toggle="tab"><?php echo $this->lang->line('SMS_country'); ?></a></li>
                         <li><a href="#tab_7" data-toggle="tab"><?php echo $this->lang->line('bulk_sms'); ?></a></li>    
                         <li><a href="#tab_8" data-toggle="tab"><?php echo $this->lang->line('mobireach'); ?></a></li>
+                        <li><a href="#tab_9" data-toggle="tab"><?php echo $this->lang->line('nexmo'); ?></a></li>
+                        <li><a href="#tab_10" data-toggle="tab"><?php echo $this->lang->line('africastalking'); ?></a></li>
                         <li><a href="#tab_3" data-toggle="tab"><?php echo $this->lang->line('custom_sms_gateway'); ?></a></li>
 
                     </ul>
@@ -31,7 +33,7 @@
                             <form role="form" id="clickatell" action="<?php echo site_url('smsconfig/clickatell') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $clickatell_result = check_in_array('clickatell', $smslist);
@@ -52,7 +54,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('clickatell_api_id'); ?><small class="req"> *</small></label>
+                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('api_key'); ?><small class="req"> *</small></label>
                                                     <div class="col-sm-7">
                                                         <input type="text" class="form-control" name="clickatell_api_id"  value="<?php echo $clickatell_result->api_id; ?>">
                                                         <span class=" text text-danger clickatell_api_id_error"></span>
@@ -93,10 +95,12 @@
                                 <!-- /.box-body -->
 
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="clickatell_loader"></span>
-                                    <?php } ?>
+                                        <div class="col-md-offset-3">
+                                            <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                                ?>
+                                                <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="clickatell_loader"></span>
+                                            <?php } ?>
+                                        </div>       
                                 </div>
                             </form>
                         </div>
@@ -105,7 +109,7 @@
                             <form role="form" id="twilio" id="twilio" action="<?php echo site_url('smsconfig/twilio') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $twilio_result = check_in_array('twilio', $smslist);
@@ -163,11 +167,13 @@
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="twilio_loader"></span>
-                                    <?php }
-                                    ?>
+                                        <div class="col-md-offset-3">
+                                            <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                                ?>
+                                                <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="twilio_loader"></span>
+                                            <?php }
+                                            ?>
+                                        </div>      
 
                                 </div>
                             </form>
@@ -177,7 +183,7 @@
                             <form role="form" id="custom" id="custom" action="<?php echo site_url('smsconfig/custom') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $custom_result = check_in_array('custom', $smslist);
@@ -224,10 +230,12 @@
                                 <!-- /.box-body -->
 
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="custom_loader"></span>
-                                    <?php } ?>
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="custom_loader"></span>
+                                        <?php } ?>
+                                    </div>    
                                 </div>
                             </form>
                         </div>
@@ -237,7 +245,7 @@
                             <form role="form" id="msg_nineone" id="msg_nineone" action="<?php echo site_url('smsconfig/msgnineone') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $msg_nineone_result = check_in_array('msg_nineone', $smslist);
@@ -289,10 +297,12 @@
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="msg_nineone_loader"></span>
-                                    <?php } ?>
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="msg_nineone_loader"></span>
+                                        <?php } ?>
+                                    </div>    
                                 </div>
                             </form>
                         </div>
@@ -301,7 +311,7 @@
                             <form role="form" id="smscountry" id="smscountry" action="<?php echo site_url('smsconfig/smscountry') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $smscountry_result = check_in_array('smscountry', $smslist);
@@ -361,10 +371,12 @@
                                 <!-- /.box-body -->
 
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="smscountry_loader"></span>
-                                    <?php } ?>
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="smscountry_loader"></span>
+                                        <?php } ?>
+                                    </div>    
                                 </div>
                             </form>
                         </div>
@@ -374,7 +386,7 @@
                             <form role="form" id="text_local" id="text_local" action="<?php echo site_url('smsconfig/textlocal') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $text_local_result = check_in_array('text_local', $smslist);
@@ -434,10 +446,12 @@
                                 <!-- /.box-body -->
 
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="text_local_loader"></span>
-                                    <?php } ?>
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="text_local_loader"></span>
+                                        <?php } ?>
+                                    </div>    
                                 </div>
                             </form>
                         </div>
@@ -446,7 +460,7 @@
                             <form role="form"  id="bulk_sms" action="<?php echo site_url('smsconfig/bulk_sms') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $bulk_sms_result = check_in_array('bulk_sms', $smslist);
@@ -490,7 +504,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-5 text text-center disblock">
-                                                <a href="https://www.textlocal.in/" target="_blank"><img src="<?php echo base_url() ?>backend/images/bulk_sms.png" class="img-responsive center-block"><p>https://www.textlocal.in</p></a>
+                                                <a href="https://www.bulksms.com/" target="_blank"><img src="<?php echo base_url() ?>backend/images/bulk_sms.png" class="img-responsive center-block"><p>https://www.bulksms.com/</p></a>
 
                                             </div>
                                         </div>
@@ -500,10 +514,12 @@
                                 <!-- /.box-body -->
 
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="bulk_sms_loader"></span>
-                                    <?php } ?>
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="bulk_sms_loader"></span>
+                                        <?php } ?>
+                                    </div>    
                                 </div>
                             </form>
                         </div>
@@ -512,7 +528,7 @@
                             <form role="form"  id="mobireach" action="<?php echo site_url('smsconfig/mobireach') ?>" class="form-horizontal" method="post">
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-12 minheight170">
+                                        <div class="minheight170">
                                             <div class="col-md-7">
                                                 <?php
                                                 $mobireach_result = check_in_array('mobireach', $smslist);
@@ -572,10 +588,165 @@
                                 <!-- /.box-body -->
 
                                 <div class="box-footer">
-                                    <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
-                                        ?>
-                                        <button type="submit" class="btn btn-primary col-md-offset-3"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="mobireach_loader"></span>
-                                    <?php } ?>
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="mobireach_loader"></span>
+                                        <?php } ?>
+                                    </div>     
+                                </div>
+                            </form>
+                        </div>
+
+                         <div class="tab-pane" id="tab_9">
+ 
+                            <form role="form"  id="nexmo" action="<?php echo site_url('smsconfig/nexmo') ?>" class="form-horizontal" method="post">
+                                <div class="box-body"> 
+                                    <div class="row">
+                                        <div class="minheight170">
+                                            <div class="col-md-7">
+                                                <?php
+                                                $nexmo_result = check_in_array('nexmo', $smslist);
+                                                ?>
+                                                <div class="form-group">
+                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('nexmo_api_key'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" name="nexmo_api_key" value="<?php echo $nexmo_result->api_id; ?>">
+                                                        <span class="text text-danger nexmo_api_key_error"></span>
+                                                    </div>
+                                                </div>
+                                               
+                                               <div class="form-group">
+                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('nexmo_api_secret'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" name="nexmo_api_secret" value="<?php echo $nexmo_result->authkey; ?>">
+                                                        <span class="text text-danger nexmo_api_secret_error"></span>
+                                                    </div>
+                                                </div>
+                                                 <div class="form-group">
+                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('registered_from_number'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" name="nexmo_registered_phone_number" value="<?php echo $nexmo_result->senderid; ?>">
+                                                        <span class="text text-danger nexmo_registered_phone_number_error"></span>
+                                                    </div>
+                                                </div>
+                                                 <div class="form-group">
+                                                   <label class="col-sm-5 control-label"><?php echo $this->lang->line('status'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <select class="form-control" name="nexmo_status">
+                                                            <?php
+                                                            foreach ($statuslist as $s_key => $s_value) {
+                                                                ?>
+                                                                <option 
+                                                                    value="<?php echo $s_key; ?>"
+                                                                    <?php
+                                                                    if ($nexmo_result->is_active == $s_key) {
+                                                                        echo "selected=selected";
+                                                                    }
+                                                                    ?>
+                                                                    ><?php echo $s_value; ?></option>
+                                                                    <?php
+                                                                }
+                                                                ?>
+                                                        </select>
+                                                        <span class=" text text-danger nexmo_status_error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5 text text-center disblock">
+                                                <a href="https://dashboard.nexmo.com/sign-up" target="_blank"><img src="<?php echo base_url() ?>backend/images/nexmo.jpg"><p>https://dashboard.nexmo.com/sign-up</p></a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- /.box-body -->
+
+                                <div class="box-footer">
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="nexmo_loader"></span>
+                                        <?php } ?>
+                                    </div>    
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="tab-pane" id="tab_10">
+  
+                            <form role="form" id="africastalking" action="<?php echo site_url('smsconfig/africastalking') ?>" class="form-horizontal" method="post">
+                                <div class="box-body"> 
+                                    <div class="row">
+                                        <div class="minheight170">
+                                            <div class="col-md-7">
+                                                <?php 
+                                                $africastalking_result = check_in_array('africastalking', $smslist);
+                                                ?>
+                                                <div class="form-group">
+                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('username'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" name="africastalking_username" value="<?php echo $africastalking_result->username; ?>">
+                                                        <span class="text text-danger africastalking_username_error"></span>
+                                                    </div>
+                                                </div>
+                                               
+                                               <div class="form-group">
+                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('api_key'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" name="africastalking_apikey" value="<?php echo $africastalking_result->api_id; ?>">
+                                                        <span class="text text-danger africastalking_apikey_error"></span>
+                                                    </div>
+                                                </div>
+                                                 <div class="form-group">
+                                                    <label class="col-sm-5 control-label"><?php echo $this->lang->line('short_code'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" name="africastalking_short_code" value="<?php echo $africastalking_result->senderid; ?>">
+                                                        <span class="text text-danger africastalking_short_code_error"></span>
+                                                    </div>
+                                                </div>
+                                                 <div class="form-group">
+                                                   <label class="col-sm-5 control-label"><?php echo $this->lang->line('status'); ?><small class="req"> *</small></label>
+                                                    <div class="col-sm-7">
+                                                        <select class="form-control" name="africastalking_status">
+                                                            <?php
+                                                            foreach ($statuslist as $s_key => $s_value) {
+                                                                ?>
+                                                                <option 
+                                                                    value="<?php echo $s_key; ?>"
+                                                                    <?php
+                                                                    if ($africastalking_result->is_active == $s_key) {
+                                                                        echo "selected=selected";
+                                                                    }
+                                                                    ?>
+                                                                    ><?php echo $s_value; ?></option>
+                                                                    <?php
+                                                                }
+                                                                ?>
+                                                        </select>
+                                                        <span class=" text text-danger africastalking_status_error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5 text text-center disblock">
+                                                <a href="https://africastalking.com/" target="_blank"><img src="<?php echo base_url() ?>backend/images/africastalking.png"><p>https://africastalking.com/</p></a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- /.box-body -->
+
+                                <div class="box-footer">
+                                    <div class="col-md-offset-3">
+                                        <?php if ($this->rbac->hasPrivilege('sms_setting', 'can_edit')) {
+                                            ?>
+                                            <button type="submit" class="btn btn-primary btnleftinfo"><?php echo $this->lang->line('save'); ?></button>&nbsp;&nbsp;<span class="nexmo_loader"></span>
+                                        <?php } ?>
+                                    </div>    
                                 </div>
                             </form>
                         </div>
@@ -914,6 +1085,8 @@ function check_in_array($find, $array) {
 
         e.preventDefault(); // avoid to execute the actual submit of the form.
     });
+
+
       $("#mobireach").submit(function (e) {
         $("[class$='_error']").html("");
         $(".mobireach_loader").html('<img src="' + img_path + '">');
@@ -946,6 +1119,69 @@ function check_in_array($find, $array) {
         e.preventDefault(); // avoid to execute the actual submit of the form.
     });
 
+       $("#nexmo").submit(function (e) {
+        $("[class$='_error']").html("");
+        $(".nexmo_loader").html('<img src="' + img_path + '">');
+        var url = $(this).attr('action'); // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            dataType: 'JSON',
+            url: url,
+            data: $("#nexmo").serialize(), // serializes the form's elements.
+            success: function (data, textStatus, jqXHR)
+            {
+                if (data.st === 1) {
+                    $.each(data.msg, function (key, value) {
+                        $('.' + key + "_error").html(value);
+                    });
+                } else {
+                    successMsg(data.msg);
+                }
+
+                $(".nexmo_loader").html("");
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $(".nexmo_loader").html("");
+                //if fails      
+            }
+        });
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+    });
+
+        $("#africastalking").submit(function (e) {
+        $("[class$='_error']").html("");
+        $(".africastalking_loader").html('<img src="' + img_path + '">');
+        var url = $(this).attr('action'); // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            dataType: 'JSON',
+            url: url,
+            data: $("#africastalking").serialize(), // serializes the form's elements.
+            success: function (data, textStatus, jqXHR)
+            {
+                if (data.st === 1) {
+                    $.each(data.msg, function (key, value) {
+                        $('.' + key + "_error").html(value);
+                    });
+                } else {
+                    successMsg(data.msg);
+                }
+
+                $(".africastalking_loader").html("");
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $(".africastalking_loader").html("");
+                //if fails      
+            }
+        });
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+    });
 </script>
 
 

@@ -1,7 +1,11 @@
+<?php
+$currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+?>
 <style type="text/css">
     .collect_grp_fees{
-        font-size: 15px;
-        font-weight: 600;
+      font-size: 15px;
+    font-weight: 600;
+    padding-bottom: 15px;
     }
 
     .fees-list {
@@ -60,8 +64,19 @@
     .fees-list-in-box>.item:last-of-type {
         border-bottom-width: 0;
     }
+
+.fees-footer {
+    border-top-color: #f4f4f4;
+}
+.fees-footer {
+    padding: 15px 0px 0px 0px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
 </style>
-<div class="col-lg-12">
+<div class="box-body">
+<div class="row">
+  <div class="col-lg-12">
     <div class="form-horizontal">
         <div class="form-group">
             <label for="inputEmail3" class="col-sm-3 control-label"><?php echo $this->lang->line('date'); ?> <small class="req"> *</small></label>
@@ -104,7 +119,7 @@
         </div>
 
     </div>
-</div>
+
 <ul class="fees-list fees-list-in-box">
     <?php
     $row_counter = 1;
@@ -112,6 +127,7 @@
     foreach ($feearray as $fee_key => $fee_value) {
         $amount_prev_paid = 0;
         $fees_fine_amount = 0;
+        $fine_amount_paid = 0;
         $fine_amount_status = false;
         $amount_to_be_pay = $fee_value->amount;
 
@@ -119,17 +135,13 @@
             $amount_to_be_pay = $fee_value->student_fees_master_amount;
         }
 
-        if (($fee_value->due_date != "0000-00-00" && $fee_value->due_date != NULL) && (strtotime($fee_value->due_date) < strtotime(date('Y-m-d')))) {
-         $fees_fine_amount=$fee_value->fine_amount;
-         $total_amount=$total_amount+$fee_value->fine_amount;
-         $fine_amount_status=true;
-        }
-
+    
         if (is_string(($fee_value->amount_detail)) && is_array(json_decode(($fee_value->amount_detail), true))) {
 
             $amount_data = json_decode($fee_value->amount_detail);
 
             foreach ($amount_data as $amount_data_key => $amount_data_value) {
+                      $fine_amount_paid+=$amount_data_value->amount_fine;
                 $amount_prev_paid = $amount_prev_paid + ($amount_data_value->amount + $amount_data_value->amount_discount);
             }
 
@@ -140,6 +152,14 @@
                 $amount_to_be_pay = $fee_value->amount - $amount_prev_paid;
             }
         }
+
+    if (($fee_value->due_date != "0000-00-00" && $fee_value->due_date != NULL) && (strtotime($fee_value->due_date) < strtotime(date('Y-m-d'))) && $amount_to_be_pay > 0) {
+         $fees_fine_amount=$fee_value->fine_amount-$fine_amount_paid;
+         $total_amount=$total_amount+$fees_fine_amount;
+         $fine_amount_status=true;
+        }
+
+
         $total_amount = $total_amount + $amount_to_be_pay;
         if ($amount_to_be_pay > 0) {
             ?>
@@ -152,7 +172,7 @@
                 <input name="fee_amount_<?php echo $row_counter; ?>" type="hidden" value="<?php echo $amount_to_be_pay; ?>">
                 <div class="product-info">
                     <a href="#"  onclick="return false;" class="product-title"><?php echo $fee_value->name; ?>
-                        <span class="pull-right"><?php echo $amount_to_be_pay; ?></span></a>
+                        <span class="pull-right"><?php echo  $currency_symbol.number_format((float) $amount_to_be_pay, 2, '.', ''); ?></span></a>
                          <span class="product-description">
                         <?php echo $fee_value->code; ?>
                         </span>
@@ -161,7 +181,7 @@ if($fine_amount_status){
     ?>
                        <a href="#"  onclick="return false;" class="product-title text text-danger"><?php echo $this->lang->line('fine'); ?>
                         <span class="pull-right">
-                            <?php echo $fees_fine_amount; ?>                                
+                            <?php echo  $currency_symbol.number_format((float) $fees_fine_amount, 2, '.', ''); ?>                                
                         </span>
                     </a>
 
@@ -178,7 +198,11 @@ if($fine_amount_status){
     }
     ?>
 </ul>
+</div>
 
+</div>
+</div>
+<?php if ($total_amount > 0) { ?>
 <div class="row collect_grp_fees">
     <div class="col-md-8">
         <span class="pull-right">
@@ -187,8 +211,25 @@ if($fine_amount_status){
     </div>
     <div class="col-md-4">
         <span class="pull-right">
-            <?php echo number_format((float) $total_amount, 2, '.', ''); ?>
+            <?php echo $currency_symbol.number_format((float) $total_amount, 2, '.', ''); ?>
         </span>
 
     </div>
 </div>
+<div class="row fees-footer">
+    <div class="col-md-12">
+          <button type="submit" class="btn btn-primary pull-right payment_collect" data-loading-text="<i class='fa fa-spinner fa-spin '></i><?php echo $this->lang->line('processing')?>"><i class="fa fa-money"></i> <?php echo $this->lang->line('pay'); ?></button>
+    </div>
+</div>
+<?php }else{
+    ?>
+    <div class="row">
+    <div class="col-md-12">
+<div class="alert alert-info">
+    <?php echo $this->lang->line('no_fees_found'); ?>
+</div>
+</div>
+    <?php
+}
+
+ ?>

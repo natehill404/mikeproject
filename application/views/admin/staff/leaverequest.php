@@ -329,9 +329,10 @@
                 $('#applied_date').html(result.date);
                 $('#appliedby').html(result.applied_by);
                 $("#detailremark").text(result.admin_remark);
+                console.log(result.document_file);
                 if (result.document_file != "") {
                     var cl = "<i class='fa fa-download'></i>";
-                    $("#download_file").html('<a href=' + base_url + 'admin/staff/download/' + result.staff_id + '/' + result.document_file + ' class=btn btn-default btn-xs  data-toggle=tooltip >' + cl + '</a>');
+                    $("#download_file").html('<a href=' + base_url + 'admin/staff/download/' + result.staff_id + '/' + encodeURIComponent(result.document_file) + ' class=btn btn-default btn-xs  data-toggle=tooltip >' + cl + '</a>');
                 }
 
 

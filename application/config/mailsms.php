@@ -20,6 +20,8 @@ $config['mailsms'] = array(
     'forgot_password' => 'forgot_password',
     'online_examination_publish_exam' => 'online_examination_publish_exam',
     'online_examination_publish_result' => 'online_examination_publish_result',
+    'online_admission_form_submission' => 'online_admission_form_submission',
+    'online_admission_fees_submission' => 'online_admission_fees_submission',
 );
 $config['smtp_encryption'] = array(
     '' => 'OFF',

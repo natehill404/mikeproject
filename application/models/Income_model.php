@@ -19,38 +19,52 @@ class Income_model extends My_Model
      * @param int $id
      * @return mixed
      */
+    
     public function search($text = null, $start_date = null, $end_date = null)
     {
-        if (!empty($text)) {
-            $this->db->select('income.id,income.date,income.name,income.invoice_no,income.amount,income.documents,income.note,income_head.income_category,income.inc_head_id')->from('income');
-            $this->db->join('income_head', 'income.inc_head_id = income_head.id');
 
-            $this->db->like('income.name', $text);
-            $query = $this->db->get();
-            return $query->result_array();
+        if (!empty($text)) {
+
+            $this->datatables
+            ->select('income.id,income.date,income.name,income.invoice_no,income.amount,income.documents,income.note,income_head.income_category,income.inc_head_id')
+            ->searchable('income.name,income.invoice_no,income.date,income_head.income_category,income.amount')
+            ->orderable('income.name,income.invoice_no,income.date,income_head.income_category,income.amount')
+            ->join("income_head", "income.inc_head_id = income_head.id")
+            ->like('income.name', $text)
+            ->from('income');
+
         } else {
-            $this->db->select('income.id,income.date,income.name,income.invoice_no,income.amount,income.documents,income.note,income_head.income_category,income.inc_head_id')->from('income');
-            $this->db->join('income_head', 'income.inc_head_id = income_head.id');
-            $this->db->where('income.date >=', $start_date);
-            $this->db->where('income.date <=', $end_date);
-            $query = $this->db->get();
-            return $query->result_array();
+            
+            $this->datatables
+            ->select('income.id,income.date,income.name,income.invoice_no,income.amount,income.documents,income.note,income_head.income_category,income.inc_head_id')
+           ->searchable('income.name,income.invoice_no,income.date,income_head.income_category,income.amount')
+            ->orderable('income.name,income.invoice_no,income.date,income_head.income_category,income.amount')
+            ->join("income_head", "income.inc_head_id = income_head.id")
+            ->where('income.date <=', $end_date)
+            ->where('income.date >=', $start_date)
+            ->from('income');
         }
+
+      
+        return $this->datatables->generate('json');
     }
 
     public function searchincomegroup($start_date = null, $end_date = null, $head_id = null)
     {
-        $this->db->select('GROUP_CONCAT(income.id,"@",income.name,"@",income.invoice_no,"@",income.date,"@",income.amount) as income, income_head.income_category,sum(income.amount) as total_amount')->from('income');
-        $this->db->join('income_head', 'income.inc_head_id = income_head.id');
-
-        $this->db->where('income.date >=', $start_date);
-        $this->db->where('income.date <=', $end_date);
+       
+         $this->datatables
+            ->select('GROUP_CONCAT(income.id,"@",income.name,"@",income.invoice_no,"@",income.date,"@",income.amount) as income, income_head.income_category,sum(income.amount) as total_amount')
+            ->searchable('income_head.income_category,income.id,income.name,income.date,income.invoice_no,income.amount')
+            ->orderable('income_head.income_category,income.id,income.name,income.date,income.invoice_no')
+            ->join('income_head', 'income.inc_head_id = income_head.id')
+            ->where('income.date >=', $start_date)
+            ->where('income.date <=', $end_date)
+            ->from('income');
         if ($head_id != null) {
-            $this->db->where('income.inc_head_id', $head_id);
+            $this->datatables->where('income.inc_head_id', $head_id);
         }
-        $this->db->group_by('income.inc_head_id');
-        $query = $this->db->get();
-        return $query->result_array();
+        $this->datatables->group_by('income.inc_head_id');
+        return $this->datatables->generate('json');
     }
 
     public function getIncomeHeadsData($start_date, $end_date)
@@ -81,6 +95,21 @@ class Income_model extends My_Model
         } else {
             return $query->result_array();
         }
+    }
+
+     /**
+     * This function is used to get income list by using datatable
+     */
+     public function getincomelist()
+    {
+        $this->datatables
+            ->select('income.id,income.date,income.name,income.invoice_no,income.amount,income.documents,income.note,income_head.income_category,income.inc_head_id')
+            ->searchable('income.name,income.invoice_no,income.date,income_head.income_category,income.amount,income.note')
+            ->orderable('income.name,income.note,income.invoice_no,income.date,income_head.income_category,income.amount')
+            ->join("income_head", "income.inc_head_id = income_head.id")
+            ->sort('income.id', 'desc')
+            ->from('income');
+        return $this->datatables->generate('json');
     }
 
     /**

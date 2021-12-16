@@ -10,7 +10,8 @@ class Onlineexam extends Student_Controller
     public function __construct()
     {
         parent::__construct();
-         $this->config->load("mailsms");
+        $this->sch_setting_detail = $this->setting_model->getSetting();
+        $this->config->load("mailsms");
     }
 
     public function index()
@@ -32,35 +33,39 @@ class Onlineexam extends Student_Controller
     {
         $data = array();
         $this->session->set_userdata('top_menu', 'Onlineexam');
+        $data['sch_setting']         = $this->sch_setting_detail;
         $role                        = $this->customlib->getUserRole();
         $data['role']                = $role;
         $student_current_class       = $this->customlib->getStudentCurrentClsSection();
         $student_session_id          = $student_current_class->student_session_id;
         $online_exam_validate        = $this->onlineexam_model->examstudentsID($student_session_id, $id);
-        
+        $student                     = $this->student_model->getByStudentSession($student_session_id);
         $data['question_true_false'] = $this->config->item('question_true_false');
         $exam                        = $this->onlineexam_model->get($id);
         $data['exam']                = $exam;
+        $data['student']             = $student;
         $questionOpt                 = $this->customlib->getQuesOption();
         $data['questionOpt']         = $questionOpt;
-
         if (!empty($online_exam_validate)) {
-
             $data['question_result'] = $this->onlineexamresult_model->getResultByStudent($online_exam_validate->id, $online_exam_validate->onlineexam_id);
             $data['result_prepare']  = $this->onlineexamresult_model->checkResultPrepare($online_exam_validate->id);
-
-        } 
+        }
         $data['online_exam_validate'] = $online_exam_validate;
-       // echo "<pre>"; print_r($data);  echo "<pre>";die;
+        $filetype                     = $this->filetype_model->get();
+
+        $data['allowed_extension']   = array_map('trim', array_map('strtolower', explode(',', $filetype->image_extension)));
+        $data['allowed_mime_type']   = array_map('trim', array_map('strtolower', explode(',', $filetype->image_mime)));
+        $data['allowed_upload_size'] = $filetype->image_size;
+
         $this->load->view('layout/student/header');
         $this->load->view('user/onlineexam/view', $data);
         $this->load->view('layout/student/footer');
     }
 
-      public function print()
-    {
-        $data = array();
-        $exam_id=$this->input->post('exam_id');
+    function print() {
+        $data                        = array();
+        $data['sch_setting']         = $this->sch_setting_detail;
+        $exam_id                     = $this->input->post('exam_id');
         $role                        = $this->customlib->getUserRole();
         $data['role']                = $role;
         $student_current_class       = $this->customlib->getStudentCurrentClsSection();
@@ -71,6 +76,8 @@ class Onlineexam extends Student_Controller
         $data['exam']                = $exam;
         $questionOpt                 = $this->customlib->getQuesOption();
         $data['questionOpt']         = $questionOpt;
+        $student                     = $this->student_model->getByStudentSession($student_session_id);
+        $data['student']             = $student;
 
         if (!empty($online_exam_validate)) {
 
@@ -79,7 +86,7 @@ class Onlineexam extends Student_Controller
 
         }
         $data['online_exam_validate'] = $online_exam_validate;
-        $data['page']=$this->load->view('user/onlineexam/_print', $data,true);
+        $data['page']                 = $this->load->view('user/onlineexam/_print', $data, true);
         echo json_encode(array('status' => 1, 'page' => $data['page']));
     }
 
@@ -99,6 +106,8 @@ class Onlineexam extends Student_Controller
                                 'onlineexam_student_id'  => $this->input->post('onlineexam_student_id'),
                                 'onlineexam_question_id' => $this->input->post('question_id_' . $row_value),
                                 'select_option'          => $_POST['radio' . $row_value],
+                                'attachment_name'        => "",
+                                'attachment_upload_name' => "",
                             );
                         }
                     } elseif (($_POST['question_type_' . $row_value]) == "true_false") {
@@ -108,6 +117,8 @@ class Onlineexam extends Student_Controller
                                 'onlineexam_student_id'  => $this->input->post('onlineexam_student_id'),
                                 'onlineexam_question_id' => $this->input->post('question_id_' . $row_value),
                                 'select_option'          => $_POST['radio' . $row_value],
+                                'attachment_name'        => "",
+                                'attachment_upload_name' => "",
                             );
                         }
                     } elseif (($_POST['question_type_' . $row_value]) == "multichoice") {
@@ -117,23 +128,39 @@ class Onlineexam extends Student_Controller
                                 'onlineexam_student_id'  => $this->input->post('onlineexam_student_id'),
                                 'onlineexam_question_id' => $this->input->post('question_id_' . $row_value),
                                 'select_option'          => json_encode($_POST['checkbox' . $row_value]),
+                                'attachment_name'        => "",
+                                'attachment_upload_name' => "",
                             );
                         }
                     } elseif (($_POST['question_type_' . $row_value]) == "descriptive") {
                         # code...
-                        if (isset($_POST['answer' . $row_value])) {
-                            $save_result[] = array(
+                        if (isset($_POST['answer' . $row_value]) || (isset($_FILES["attachment" . $row_value]) && !empty($_FILES["attachment" . $row_value]['name']))) {
+                            $inst_array = array(
                                 'onlineexam_student_id'  => $this->input->post('onlineexam_student_id'),
                                 'onlineexam_question_id' => $this->input->post('question_id_' . $row_value),
                                 'select_option'          => $_POST['answer' . $row_value],
                             );
+
+                            $file_name        = "";
+                            $upload_file_name = "";
+                            if (isset($_FILES["attachment" . $row_value]) && !empty($_FILES["attachment" . $row_value]['name'])) {
+                                $file_name        = $_FILES["attachment" . $row_value]["name"];
+                                $fileInfo         = pathinfo($_FILES["attachment" . $row_value]["name"]);
+                                $upload_file_name = time() . uniqid(rand()) . '.' . $fileInfo['extension'];
+                                move_uploaded_file($_FILES["attachment" . $row_value]["tmp_name"], "./uploads/onlinexam_images/" . $upload_file_name);
+
+                            }
+                            $inst_array['attachment_name']        = $file_name;
+                            $inst_array['attachment_upload_name'] = $upload_file_name;
+
+                            $save_result[] = $inst_array;
                         }
                     }
 
                 }
 
                 $this->onlineexamresult_model->add($save_result);
-                $this->onlineexam_model->updateExamResult($this->input->post('onlineexam_student_id')); 
+                $this->onlineexam_model->updateExamResult($this->input->post('onlineexam_student_id'));
                 redirect('user/onlineexam', 'refresh');
             }
         } else {
@@ -161,17 +188,17 @@ class Onlineexam extends Student_Controller
         $question_status = 0;
         $recordid        = $this->input->post('recordid');
         $exam            = $this->onlineexam_model->get($recordid);
-        $data['exam']                  = $exam;
-       
-        $data['questions']             = $this->onlineexam_model->getExamQuestions($recordid,$exam->is_random_question);
+        $data['exam']    = $exam;
+
+        $data['questions'] = $this->onlineexam_model->getExamQuestions($recordid, $exam->is_random_question);
 
         $student_current_class         = $this->customlib->getStudentCurrentClsSection();
         $student_session_id            = $student_current_class->student_session_id;
         $onlineexam_student            = $this->onlineexam_model->examstudentsID($student_session_id, $exam->id);
         $data['onlineexam_student_id'] = $onlineexam_student;
         $getStudentAttemts             = $this->onlineexam_model->getStudentAttemts($onlineexam_student->id);
-        $data['question_status'] = 0;
-        $data['exam_duration']=$exam->duration;
+        $data['question_status']       = 0;
+        $data['exam_duration']         = $exam->duration;
         if (strtotime(date('Y-m-d H:i:s')) >= strtotime(date($exam->exam_to))) {
             $question_status         = 1;
             $data['question_status'] = 1;
@@ -185,10 +212,11 @@ class Onlineexam extends Student_Controller
         $questionOpt         = $this->customlib->getQuesOption();
         $data['questionOpt'] = $questionOpt;
         $pag_content         = $this->load->view('user/onlineexam/_searchQuestionByExamID', $data, true);
-        
-        $total_remaining_seconds = round((strtotime($exam->exam_to) - strtotime(date('Y-m-d H:i:s')))/3600*60*60, 1);
-        $exam_duration=($total_remaining_seconds < getSecondsFromHMS($exam->duration)) ? getHMSFromSeconds($total_remaining_seconds) : $exam->duration;
 
-        echo json_encode(array('status' => 0, 'exam' => $exam, 'duration' =>$exam_duration,'page' => $pag_content, 'question_status' => $question_status,'total_question'=>count($data['questions'])));
+        $total_remaining_seconds = round((strtotime($exam->exam_to) - strtotime(date('Y-m-d H:i:s'))) / 3600 * 60 * 60, 1);
+        $exam_duration           = ($total_remaining_seconds < getSecondsFromHMS($exam->duration)) ? getHMSFromSeconds($total_remaining_seconds) : $exam->duration;
+
+        echo json_encode(array('status' => 0, 'exam' => $exam, 'duration' => $exam_duration, 'page' => $pag_content, 'question_status' => $question_status, 'total_question' => count($data['questions'])));
     }
+
 }

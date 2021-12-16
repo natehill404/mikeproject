@@ -23,8 +23,10 @@ class Admin extends Admin_Controller
         $this->load->view('layout/header', $data);
         $this->load->view('unauthorized', $data);
         $this->load->view('layout/footer', $data);
-    }
+    } 
 
+
+ 
     public function dashboard()
     {
 
@@ -329,7 +331,7 @@ class Admin extends Admin_Controller
         } else {
             $data['std_graphclass'] = "col-lg-4 col-md-6 col-sm-6";
         }
-
+       
         $this->load->view('layout/header', $data);
         $this->load->view('admin/dashboard', $data);
         $this->load->view('layout/footer', $data);
@@ -643,7 +645,8 @@ class Admin extends Admin_Controller
             }
         }
 
-        $resultlist = $this->student_model->searchFullText($search_text, $carray);
+        $resultlist = $this->student_model->searchusersbyFullText($search_text, $carray);
+
         $data['resultlist'] = $resultlist;
         $this->load->view('layout/header', $data);
         $this->load->view('admin/search', $data);
@@ -738,9 +741,9 @@ class Admin extends Admin_Controller
                 $this->form_validation->set_message('handle_upload', 'Extension not allowed');
                 return false;
             }
-            if ($_FILES["file"]["size"] > 10240000) {
+            if ($_FILES["file"]["size"] > 102400000) {
 
-                $this->form_validation->set_message('handle_upload', 'File size shoud be less than 100 kB');
+                $this->form_validation->set_message('handle_upload', 'File size shoud be less than 100 MB');
                 return false;
             }
             return true;
@@ -884,6 +887,100 @@ class Admin extends Admin_Controller
             //==================
             $response = $this->auth->addon_update();
         }
+    }
+
+    public function searchvalidation()
+    {
+        $search_text1       = $this->input->post('search_text1');
+        $params      = array('search_text1'=> $search_text1);
+        $array       = array('status' => 1, 'error' => '', 'params' => $params);
+        echo json_encode($array);
+    }
+
+
+     public function dtstudentlist($search_text)
+    {
+       if($search_text==="0"){           
+            $search_text="";
+        }
+       $sch_setting    = $this->sch_setting_detail;
+       $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $classlist                   = $this->class_model->get();
+                $classlist      = $classlist;
+                $carray   = array();
+                if (!empty($classlist)) {
+                    foreach ($classlist as $ckey => $cvalue) {
+
+                        $carray[] = $cvalue["id"];
+                    }
+                }
+        
+      
+        $resultlist = $this->student_model->searchFullText($search_text, $carray);
+        $fields = $this->customfield_model->get_custom_fields('students', 1);
+        $students = json_decode($resultlist);
+         $dt_data=array();
+        if (!empty($students->data)) {
+            foreach ($students->data as $student_key => $student) {
+
+                $editbtn='';
+                $deletebtn = '';
+                $viewbtn='';
+
+                 $viewbtn = "<a href='".base_url()."student/view/".$student->id."'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('show') . "'><i class='fa fa-reorder'></i></a>";
+
+                 if ($this->rbac->hasPrivilege('student', 'can_edit')) {
+                    $editbtn = "<a href='".base_url()."student/edit/".$student->id."'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('edit') . "'><i class='fa fa-pencil'></i></a>";
+                }
+                if ($this->rbac->hasPrivilege('collect_fees', 'can_add')) {
+                    
+                    $collectbtn = "<a href='".base_url()."studentfee/addfee/".$student->student_session_id."'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('add_fees') . "'><span >".$currency_symbol."</a>";
+                }
+             
+                $row   = array();
+                $row[] = $student->admission_no;
+                $row[] =  "<a href='".base_url()."student/view/".$student->id."'>".$this->customlib->getFullName($student->firstname,$student->middlename,$student->lastname,$sch_setting->middlename,$sch_setting->lastname)."</a>";              
+                  $row[] = $student->class . "(" . $student->section . ")";
+                if ($sch_setting->father_name) {
+                    $row[]= $student->father_name ;
+                }
+                
+                   $row[]=  $this->customlib->dateformat($student->dob);
+              
+
+                $row[] = $student->gender;
+                if ($sch_setting->category) {
+                    $row[] = $student->category ;
+                }
+                if ($sch_setting->mobile_no) {
+                    $row[] = $student->mobileno ;
+                }
+
+                foreach ($fields as $fields_key => $fields_value) {
+                   
+                    $custom_name = $fields_value->name ;
+                   $display_field=$student->$custom_name;
+                 if($fields_value->type == "link"){
+                     $display_field= "<a href=".$student->$custom_name." target='_blank'>".$student->$custom_name."</a>";
+
+                 }
+                 $row[] = $display_field ;  
+
+                }
+                $row[] = $viewbtn.''.$editbtn.''.$collectbtn;
+
+                $dt_data[] = $row;
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($students->draw),
+            "recordsTotal"    => intval($students->recordsTotal),
+            "recordsFiltered" => intval($students->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data); 
+
     }
 
 }

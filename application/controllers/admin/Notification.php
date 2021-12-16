@@ -308,19 +308,24 @@ class Notification extends Admin_Controller
         $response = array();
         $this->form_validation->set_rules('temp_id', $this->lang->line('template_id'), 'required|trim|xss_clean');
         $this->form_validation->set_rules('template_message', $this->lang->line('template_message'), 'required|trim|xss_clean');
+        $this->form_validation->set_rules('template_subject', $this->lang->line('subject'), 'required|trim|xss_clean');
 
         if ($this->form_validation->run() == false) {
             $data = array(
                 'temp_id'          => form_error('temp_id'),
-                'template_message' => form_error('template_message'),
+                 'template_message' => form_error('template_message'),
+                'template_subject' => form_error('template_subject'),
             );
             $response = array('status' => 0, 'error' => $data);
         } else {
 
             $data_update = array(
                 'id'       => $this->input->post('temp_id'),
+                'template_id' => $this->input->post('template_id'),
                 'template' => $this->input->post('template_message'),
+                'subject' => $this->input->post('template_subject'),
             );
+            
             $this->notificationsetting_model->update($data_update);
             $response = array('status' => 1, 'message' => $this->lang->line('update_message'));
         }

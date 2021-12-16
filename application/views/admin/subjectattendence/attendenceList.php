@@ -234,6 +234,9 @@ $language_name1 = $language1["short_code"];
                                         <input type="hidden" name="subject_timetable_id" value="<?php echo $subject_timetable_id; ?>">
                                         <input type="hidden" name="date" value="<?php echo $date; ?>">
                                         <div class="table-responsive ptt10">
+                                            <div class="download_label">
+                                          <?php echo $this->lang->line('student_attendance'); ?>                               
+                                            </div>
                                             <table class="table table-hover table-striped example"> 
                                                 <thead>
                                                     <tr>

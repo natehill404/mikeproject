@@ -13,7 +13,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                         <h3 class="box-title"><i class="fa fa-search"></i> <?php echo $this->lang->line('select_criteria'); ?></h3>
                     </div>
 
-                    <form role="form" action="<?php echo site_url('report/onlineexams') ?>" method="post" class="">
+                    <form role="form" action="<?php echo site_url('report/getformparameter') ?>" method="post" class="" id="report_form" >
                         <div class="box-body row">
 
                             <?php echo $this->customlib->getCSRF(); ?>
@@ -74,10 +74,9 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                         </div>
                         <div class="box-body table-responsive">
                             <div class="download_label"><?php echo $this->lang->line('exams') . " " . $this->lang->line('report'); ?></div>
-                            <table class="table table-striped table-bordered table-hover example">
+                             <table class="table table-striped table-bordered table-hover record-list" data-export-title="<?php echo $this->lang->line('exams') . " " . $this->lang->line('report'); ?>">
                                 <thead>
                                     <tr>
-
                                         <th><?php echo $this->lang->line('exam') ?></th>
                                         <th><?php echo $this->lang->line('attempt') ?></th>
                                         <th><?php echo $this->lang->line('exam') . " " . $this->lang->line('from') ?></th>
@@ -88,37 +87,9 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         <th class="text text-center"><?php echo $this->lang->line('questions') ?></th>
                                         <th class="text text-center"><?php echo $this->lang->line('exam') . " " . $this->lang->line('publish') ?></th>
                                         <th class="text text-center"><?php echo $this->lang->line('result') . " " . $this->lang->line('publish') ?></th>
-
-
                                     </tr> 
                                 </thead>
                                 <tbody>
-                                    <?php 
-                                    $count = 1;
-                                 
-                                    foreach ($resultlist as $subject_key => $subject_value) {
-
-                                        ?>
-                                        <tr>
-                                            <td class="mailbox-name"> <?php echo $subject_value->exam; ?></td>
-                                            <td class="mailbox-name"> <?php echo $subject_value->attempt; ?></td>
-                                            <td class="mailbox-name"> <?php echo $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_from, false);  ?> </td>
-
-                                            <td class="mailbox-name"> <?php echo $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_to, false);  ?> </td>
-
-                                            <td class="mailbox-name"> <?php echo $subject_value->duration; ?></td>
-                                            <td class="mailbox-name text-center"> <?php echo $subject_value->assign; ?></td>
-                                            <td class="mailbox-name text-center"> <?php echo $subject_value->questions; ?></td>
-
-                                            <td class="text text-center"><?php echo ($subject_value->is_active == 1) ? "<i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>" : "<i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>"; ?></td>
-                                            <td class="text text-center"><?php echo ($subject_value->publish_result == 1) ? "<i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>" : "<i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>"; ?></td>
-
-
-                                        </tr>
-                                        <?php
-                                    }
-                                    $count++;
-                                    ?>
                                 </tbody>
                             </table>
                         </div>
@@ -142,4 +113,55 @@ if ($search_type == 'period') {
 }
 ?>
 
+</script>
+<script>
+$(document).ready(function() {
+     emptyDatatable('record-list','data');
+});
+</script>  
+<script>
+$(document).ready(function() {
+     initDatatable('record-list','report/dtexamreportlist',[],[],100);
+});
+</script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+$(document).on('submit','#report_form',function(e){
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+    var $this = $(this).find("button[type=submit]:focus");  
+    var form = $(this);
+    var url = form.attr('action');
+    var form_data = form.serializeArray();
+    $.ajax({
+           url: url,
+           type: "POST",
+           dataType:'JSON',
+           data: form_data, // serializes the form's elements.
+              beforeSend: function () {
+                $('[id^=error]').html("");
+                $this.button('loading');
+               },
+              success: function(response) { // your success handler
+                
+                if(!response.status){
+                    $.each(response.error, function(key, value) {
+                    $('#error_' + key).html(value);
+                    });
+                }else{
+                
+                   initDatatable('record-list','report/dtexamreportlist',response.params);
+                }
+              },
+             error: function() { // your error handler
+                 $this.button('reset');
+             },
+             complete: function() {
+             $this.button('reset');
+             }
+         });
+
+        });
+
+    });
+    
 </script>

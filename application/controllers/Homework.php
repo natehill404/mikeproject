@@ -40,62 +40,137 @@ class Homework extends Admin_Controller
         $data['subject_group_id'] = "";
         $data['subject_id']       = "";
 
-        $homeworklist = $this->homework_model->get();
-
-        $data["homeworklist"] = array();
-
-        $this->form_validation->set_rules('class_id', $this->lang->line('class'), 'trim|required|xss_clean');
-
-        if ($this->form_validation->run() == false) {
-
-        } else {
-
-            $class_id                 = $this->input->post("class_id");
-            $section_id               = $this->input->post("section_id");
-            $subject_group_id         = $this->input->post("subject_group_id");
-            $subject_id               = $this->input->post("subject_id");
-            $data['class_id']         = $class_id;
-            $data['section_id']       = $section_id;
-            $data['subject_group_id'] = $subject_group_id;
-            $data['subject_id']       = $subject_id;
-            $homeworklist             = $this->homework_model->search_homework($class_id, $section_id, $subject_group_id, $subject_id);
-
-            $data["homeworklist"] = $homeworklist;
-
-            foreach ($data["homeworklist"] as $key => $value) {
-                $report                                     = $this->homework_model->getEvaluationReport($value["id"]);
-                $data["homeworklist"][$key]["report"]       = $report;
-                $create_data                                = $this->staff_model->get($value["created_by"]);
-                $eval_data                                  = $this->staff_model->get($value["evaluated_by"]);
-                $created_by                                 = $create_data["name"] . " " . $create_data["surname"];
-                $evaluated_by                               = $eval_data["name"] . " " . $create_data["surname"];
-                $data["homeworklist"][$key]["created_by"]   = $created_by;
-                $data["homeworklist"][$key]["evaluated_by"] = $evaluated_by;
-            }
-        }
-
         $this->load->view("layout/header", $data);
         $this->load->view("homework/homeworklist", $data);
         $this->load->view("layout/footer", $data);
     }
 
+      public function searchvalidation()
+    {
+        $class_id       = $this->input->post('class_id');
+        $section_id     = $this->input->post('section_id');
+        $subject_group_id    = $this->input->post('subject_group_id');
+        $subject_id  = $this->input->post('subject_id');
+
+        $this->form_validation->set_rules('class_id', $this->lang->line('class'), 'trim|required|xss_clean');
+        if ($this->form_validation->run() == false) { 
+            $error = array();
+            
+            $error['class_id'] = form_error('class_id');
+            $array = array('status' => 0, 'error' => $error);
+            echo json_encode($array);
+        } else {
+            $class_id = $this->input->post('class_id');
+            $section_id = $this->input->post('section_id');
+            
+            $params      = array('class_id' => $class_id, 'section_id' => $section_id, 'subject_group_id' => $subject_group_id, 'subject_id' => $subject_id);
+            $array       = array('status' => 1, 'error' => '', 'params' => $params);
+            echo json_encode($array);
+        }
+    }
+
+    public function dthomeworklist()
+    {
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $class_id       = $this->input->post('class_id');
+        $section_id     = $this->input->post('section_id');
+        $subject_group_id    = $this->input->post('subject_group_id');
+        $subject_id  = $this->input->post('subject_id');
+
+        $userdata                = $this->customlib->getUserData();
+        $carray                  = array();
+        $homeworklist            = $this->homework_model->search_dthomework($class_id, $section_id, $subject_group_id, $subject_id);
+        
+        $homework      = json_decode($homeworklist);
+        
+        $dt_data=array();
+        if (!empty($homework->data)) {
+            foreach ($homework->data as $homework_key => $homeworklist) {
+
+                $editbtn='';
+                $deletebtn = '';
+                $viewbtn='';
+
+                 if ($this->rbac->hasPrivilege('homework_evaluation', 'can_view')) {
+                    $viewbtn = "<a onclick='evaluation(" . '"' .$homeworklist->id . '"' . "  )' title=''  data-toggle='tooltip'  data-original-title=".$this->lang->line('evaluation')." class='btn btn-default btn-xs' data-placement='left' title='" . $this->lang->line('data-original-title') . "' data-toggle='tooltip'><i class='fa fa-reorder'></i></a>";
+
+                    if ($homeworklist->assignments > 0) {
+
+                        $viewbtn.= "<a data-placement='left' class='btn btn-default btn-xs' onclick='homework_docs(" . '"' .$homeworklist->id . '"' . "  )' data-toggle='tooltip'  data-original-title=".$this->lang->line('assignments')."> <i class='fa fa-download'></i></a>" ; 
+                       }
+                }
+                if ($this->rbac->hasPrivilege('homework', 'can_edit')) {
+                    
+                    $editbtn = "<a  class='btn btn-default btn-xs modal_form'  data-toggle='tooltip' data-placement='left'  data-method_call='edit' data-original-title='" . $this->lang->line('edit') . "' data-record_id=".$homeworklist->id." ><i class='fa fa-pencil'></i></a>";
+                }
+                if ($this->rbac->hasPrivilege('homework', 'can_delete')) {
+                    
+                    $collectbtn = "<a onclick='return confirm(" . '"' . $this->lang->line('delete_confirm') . '"' . "  )' href='".base_url()."homework/delete/".$homeworklist->id."'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('delete') . "' data-original-title='" . $this->lang->line('delete') . "'><i class='fa fa-remove'></i></a>";
+                }
+             
+                $row   = array();
+                $row[] = $homeworklist->class;
+                $row[] = $homeworklist->section ;
+                $row[] = $homeworklist->name;
+                $row[] = $homeworklist->subject_name ;
+
+                
+                if ($homeworklist->homework_date != null && $homeworklist->homework_date!='0000-00-00') {
+                   $row[]= date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($homeworklist->homework_date));
+                }else{
+                    $row[]="";
+                }
+                $row[]= date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($homeworklist->submit_date));
+
+                 $evl_date = "";
+                 if ($homeworklist->evaluation_date != "0000-00-00") { 
+
+                 $row[]= date($this->customlib->getSchoolDateFormat(), $this->customlib->dateYYYYMMDDtoStrtotime($homeworklist->evaluation_date));
+                }else{
+                    $row[]="";
+                }
+                $row[] = $homeworklist->staff_name.' '.$homeworklist->staff_surname;
+                $row[] = $viewbtn.''.$editbtn.''.$collectbtn;
+                $dt_data[] = $row;  
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($homework->draw),
+            "recordsTotal"    => intval($homework->recordsTotal),
+            "recordsFiltered" => intval($homework->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data); 
+    }
+
     public function homework_docs($id)
     { 
-        $docs = $this->homework_model->get_homeworkDocByid($id);;
+        $docs = $this->homework_model->get_homeworkDocByid($id);
         $docs = json_decode($docs);
 
         $dt_data = array();
         if (!empty($docs->data)) {
-            $doc="";
+            
             foreach ($docs->data as $key => $value) {
-                if($value->docs!==''){
+                
+                if(!empty($value->docs)){
                     $doc='<a class="btn btn-default btn-xs" href="'.base_url().'homework/assigmnetDownload/'.$value->docs.'"  data-original-title='.$this->lang->line("evaluation").'>
                 <i class="fa fa-download"></i></a>';
+                }else{
+                    $doc= "";
                 }
-
+                
+                if(!empty($value->message)){ 
+                    $message = $value->message; 
+                    
+                }else{
+                    $message = '';
+                }
+                
                 $row = array();
                 $row[] = $this->customlib->getFullName($value->firstname,$value->middlename,$value->lastname,$this->sch_setting_detail->middlename,$this->sch_setting_detail->lastname) . " (" . $value->admission_no . ")";;
-                $row[] = $value->message;
+                $row[] = $message;
                 $row[] = $doc;
                
 

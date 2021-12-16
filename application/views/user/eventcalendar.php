@@ -33,7 +33,7 @@ $time = $date->format('Y-m-d H:i:sP');
                         <div class="box-header ptbnull">
                             <h3 class="box-title"><?php echo $this->lang->line('to_do_list'); ?></h3>
                             <div class="box-tools pull-right">
-                                <button class="btn btn-primary btn-sm pull-right" onclick="add_task()"><i class="fa fa-plus"></i><?php //echo 'Add Task';     ?></button>
+                                <button class="btn btn-primary btn-sm pull-right" onclick="add_task()"><i class="fa fa-plus"></i></button>
                             </div>
                         </div>
                         <div class="">
@@ -207,9 +207,8 @@ if (isset($title)) {
             element.attr('title', event.title);
             element.attr('onclick', event.onclick);
             element.attr('data-toggle', 'tooltip');
-            if ((!event.url) && (event.event_type != 'task')) {
-               
-                //element.click(function() { view_event(event.id); });
+            if ((!event.url) && (event.event_type != 'task')) {               
+                
             }
         },
         dayClick: function (date, jsEvent, view) {
@@ -317,8 +316,7 @@ if (isset($title)) {
         if (confirm("<?php echo $this->lang->line('delete_confirm')?>")) {
             $.ajax({
                 url: base_url + 'user/calendar/delete_event/' + id,
-                type: 'POST',
-                //data: '',
+                type: 'POST',               
                 dataType: "json",
                 success: function (res) {
                     if (res.status == "fail") {

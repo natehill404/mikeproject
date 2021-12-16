@@ -85,10 +85,8 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 <th><?php echo $this->lang->line('father_name'); ?></th>
                                                 <th><?php echo $this->lang->line('date_of_birth'); ?></th>
                                                 <th><?php echo $this->lang->line('gender'); ?></th>
-
                                                 <th><?php echo $this->lang->line('mobile_no'); ?></th>
-
-                                                <th class="text text-right"><?php echo $this->lang->line('action'); ?></th>
+                                                <th class="text text-right noExport"><?php echo $this->lang->line('action'); ?></th>
                                             </tr>
                                         </thead>
                                         <tbody>

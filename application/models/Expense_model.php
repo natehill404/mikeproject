@@ -20,22 +20,31 @@ class Expense_model extends MY_Model
      * @return mixed
      */
     public function search($text = null, $start_date = null, $end_date = null)
+    
     {
         if (!empty($text)) {
-            $this->db->select('expenses.id,expenses.date,expenses.invoice_no,expenses.name,expenses.amount,expenses.documents,expenses.note,expense_head.exp_category,expenses.exp_head_id')->from('expenses');
-            $this->db->join('expense_head', 'expenses.exp_head_id = expense_head.id');
-
-            $this->db->like('expenses.name', $text);
-            $query = $this->db->get();
-            return $query->result_array();
+           
+             $this->datatables
+            ->select('expenses.id,expenses.date,expenses.invoice_no,expenses.name,expenses.amount,expenses.documents,expenses.note,expense_head.exp_category,expenses.exp_head_id')
+             ->searchable('expenses.name,expenses.invoice_no,exp_category,date,expenses.amount')
+            ->orderable('expenses.name,expenses.invoice_no,exp_category,date,expenses.amount')
+            ->join('expense_head', 'expenses.exp_head_id = expense_head.id')
+            ->like('expenses.name', $text)
+            ->from('expenses');
+            
         } else {
-            $this->db->select('expenses.id,expenses.date,expenses.name,expenses.invoice_no,expenses.amount,expenses.documents,expenses.note,expense_head.exp_category,expenses.exp_head_id')->from('expenses');
-            $this->db->join('expense_head', 'expenses.exp_head_id = expense_head.id');
-            $this->db->where('expenses.date >=', $start_date);
-            $this->db->where('expenses.date <=', $end_date);
-            $query = $this->db->get();
-            return $query->result_array();
+            
+            $this->datatables
+            ->select('expenses.id,expenses.date,expenses.invoice_no,expenses.name,expenses.amount,expenses.documents,expenses.note,expense_head.exp_category,expenses.exp_head_id')
+            ->searchable('expenses.name,expenses.invoice_no,exp_category,date,expenses.amount')
+            ->orderable('expenses.name,expenses.invoice_no,exp_category,date,expenses.amount')
+            ->join('expense_head', 'expenses.exp_head_id = expense_head.id')
+            ->where('expenses.date <=', $end_date)
+            ->where('expenses.date >=', $start_date)
+            ->from('expenses');
         }
+         return $this->datatables->generate('json');
+         
     }
 
     public function get($id = null)
@@ -54,6 +63,18 @@ class Expense_model extends MY_Model
         } else {
             return $query->result_array();
         }
+    }
+
+    public function getexpenselist($id = null)
+    {
+         $this->datatables
+            ->select('expenses.id,expenses.date,expenses.name,expenses.invoice_no,expenses.amount,expenses.documents,expenses.note,expense_head.exp_category,expenses.exp_head_id')
+            ->searchable('expenses.id,expenses.date,expenses.name,expenses.invoice_no,expenses.amount,expenses.documents,expenses.note,expense_head.exp_category,expenses.exp_head_id')
+            ->orderable('expenses.name,expenses.note,expenses.invoice_no,expenses.date,expense_head.exp_category,expenses.amount')
+            ->join("expense_head", "expenses.exp_head_id = expense_head.id")
+            ->sort('expenses.id', 'desc')
+            ->from('expenses');
+        return $this->datatables->generate('json');
     }
 
     /**

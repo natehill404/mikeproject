@@ -1,8 +1,7 @@
+<script src="<?php echo base_url() ?>backend/plugins/ckeditor/plugins/ckeditor_wiris/integration/WIRISplugins.js?viewer=image"></script>
 <style type="text/css">
 .inpwidth40{width: 50px;height: 20px;}
 </style>
-
-
 <?php
 
 if (!empty($questions)) {

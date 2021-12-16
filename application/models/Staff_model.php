@@ -562,10 +562,10 @@ class Staff_model extends MY_Model
             $this->db->join('class_teacher', 'staff.id=class_teacher.staff_id', 'left');
             $this->db->or_where('class_teacher.class_id', $student_current_class->class_id);
         }
-
-        $this->db->where("staff.is_active", $active);      
-
+        $this->db->where("staff.is_active", $active);  
+        if($role != ""){
         $this->db->where("roles.id", $role);
+          }   
         $query = $this->db->get();
 
         return $query->result_array();

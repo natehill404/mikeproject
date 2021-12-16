@@ -1,11 +1,7 @@
 <?php
 $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 ?>
-<style type="text/css">
-
-</style>
-
-<div class="content-wrapper" style="min-height: 946px;">  
+<div class="content-wrapper">  
     <section class="content-header">
         <h1><i class="fa fa-newspaper-o"></i> <?php echo $this->lang->line('certificate'); ?></h1>
     </section>

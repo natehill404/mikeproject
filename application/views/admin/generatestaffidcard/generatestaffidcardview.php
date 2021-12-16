@@ -1,4 +1,4 @@
-<div class="content-wrapper" style="min-height: 946px;">  
+<div class="content-wrapper">  
     <!-- Main content -->
     <section class="content">
         <?php if ($this->session->flashdata('msg')) { ?>
@@ -16,7 +16,7 @@
                                 <?php echo $this->customlib->getCSRF(); ?>
                                 <div class="col-sm-6">
                                     <div class="form-group"> 
-                                        <label><?php echo $this->lang->line('role'); ?></label><small class="req"> *</small>
+                                        <label><?php echo $this->lang->line('role'); ?></label>
                                         <select autofocus="" id="role_id" name="role_id" class="form-control" >
                                             <option value=""><?php echo $this->lang->line('select'); ?></option>
                                             <?php
@@ -76,12 +76,12 @@
                                                 <th><?php echo $this->lang->line('staff'); ?> <?php echo $this->lang->line('id'); ?></th>
 												<?php } ?>
                                                 <th><?php echo $this->lang->line('staff'); ?> <?php echo $this->lang->line('name'); ?></th>
+												<th><?php echo $this->lang->line('role'); ?></th>
                                                 <th><?php echo $this->lang->line('designation'); ?></th>
                                                 <th><?php echo $this->lang->line('department'); ?></th>
                                                 <th><?php echo $this->lang->line('father_name'); ?></th>
                                                 <th><?php echo $this->lang->line('mother_name'); ?></th>
                                                 <th><?php echo $this->lang->line('date_of_joining'); ?></th>
-												<th><?php echo $this->lang->line('address'); ?></th>
                                                 <th><?php echo $this->lang->line('phone'); ?></th>
                                                 <th><?php echo $this->lang->line('date_of_birth'); ?></th>
                                             </tr>
@@ -94,6 +94,7 @@
                                             } else {
                                                 $count = 1;
                                                 foreach ($resultlist as $staff_value) {
+
                                                     ?>
                                                     <tr>
                                                         <td class="text-center"><input type="checkbox" class="checkbox center-block" data-staff_id="<?php echo $staff_value['id'] ?>"  name="check" id="check" value="<?php echo $staff_value['id'] ?>">
@@ -107,14 +108,15 @@
                                                             <a href="<?php echo base_url(); ?>admin/staff/profile/<?php echo $staff_value['id']; ?>"><?php echo $staff_value['name'] . " " . $staff_value['surname']; ?>
                                                             </a>
                                                         </td>
+                                                         <td><?php echo $staff_value['user_type']; ?></td>
                                                         <td><?php echo $staff_value['designation']; ?></td>
                                                         <td><?php echo $staff_value['department']; ?></td>
                                                          <td><?php echo $staff_value['father_name']; ?></td>
                                                         <td><?php echo $staff_value['mother_name']; ?></td>
-                                                        <td><?php if(!empty($staff_value['date_of_joining'] && $staff_value['date_of_joining'] != '0000-00-00')){ echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($staff_value['date_of_joining']));} ?></td>
-                                                        <td><?php echo $staff_value['local_address']; ?></td>
+                                                        <td><?php if(!empty($staff_value['date_of_joining'] && $staff_value['date_of_joining'] != '0000-00-00')){ echo $this->customlib->dateFormat($staff_value['date_of_joining']);} ?></td>
+                                                       
                                                         <td><?php echo $staff_value['contact_no']; ?></td>
-														<td><?php echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($staff_value['dob'])); ?></td>
+														<td><?php echo $this->customlib->dateFormat($staff_value['dob']); ?></td>
                                                     </tr>
                                                     <?php
                                                     $count++;

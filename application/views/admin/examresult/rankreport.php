@@ -14,7 +14,6 @@
                         <h3 class="box-title"><i class="fa fa-search"></i> <?php echo $this->lang->line('select_criteria'); ?></h3>
                     </div>
                     <div class="box-body">
-
                         <form role="form" action="<?php echo site_url('admin/examresult/rankreport') ?>" method="post">
 
                             <?php echo $this->customlib->getCSRF(); ?>
@@ -100,8 +99,6 @@
                                     </div>
                                 </div>
 
-
-
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <button type="submit" name="search" value="search_filter" class="btn btn-primary pull-right btn-sm checkbox-toggle"><i class="fa fa-search"></i> <?php echo $this->lang->line('search'); ?></button>
@@ -109,7 +106,6 @@
                                 </div>
                             </div>  
                         </form>
-
                     </div>
 
                     <?php
@@ -140,17 +136,14 @@
                                         $no_subject_result = 0;
                                         $student_array = array();
                                         $student_array['admission_no'] = $student_value->admission_no;
-                                        $student_array['exam_roll_no'] = ($student_value->exam_roll_no != 0) ? $student_value->exam_roll_no : "-";
+                                        $student_array['profile_roll_no'] = ($student_value->roll_no != 0) ? $student_value->roll_no : "-";
+                                         $student_array['exam_roll_no'] = ($student_value->exam_roll_no != 0) ? $student_value->exam_roll_no : "-";
                                         $student_array['student_id'] = $student_value->student_id;
                                         $student_array['name'] = $this->customlib->getFullName($student_value->firstname,$student_value->middlename,$student_value->lastname,$sch_setting->middlename,$sch_setting->lastname);
                                         $total_subject = count($subjectList);
                                         $result_total_subject = 0;
-//                                        echo "<pre/>";
-//                                        print_r($student_value);
-//                                        exit();
+
                                         if (!empty($subjectList)) {
-
-
                                             $student_array['subject_added'] = true;
                                             $total_marks = 0;
                                             $get_marks = 0;
@@ -162,13 +155,12 @@
 
                                             foreach ($subjectList as $subject_key => $subject_value) {
                                                 $total_marks = $total_marks + $subject_value->max_marks;
-
                                                 $result = getSubjectMarks($student_value->subject_results, $subject_value->subject_id);
                                                 $subject_result = array();
                                                 $subject_result['result_status'] = false;
 
                                                 if ($result) {
-//                                                 
+                                                
                                                     $result_total_subject++;
                                                     $subject_status = false;
                                                     $subject_result['result_status'] = true;
@@ -179,7 +171,7 @@
                                                     $point = findGradePoints($exam_grades, $percentage_grade);
                                                     $subject_result['point'] = $point;
                                                     $subject_result['subject_credit_hour'] = $subject_credit_hour;
-//                                                    $subject_result['total_quality_point'] = $total_quality_point + ($point * $subject_credit_hour);
+
                                                     $total_quality_point = $total_quality_point + ($point * $subject_credit_hour);
                                                     $get_marks = $get_marks + $result->get_marks;
                                                     $subject_result['get_marks'] = $result->get_marks;
@@ -198,7 +190,6 @@
 
                                             $student_array['total_subject'] = $total_subject;
                                             $student_array['result_total_subject'] = $result_total_subject;
-
                                             $student_array['subjet_results'] = $subject_result_list;
                                             $student_array['get_marks'] = $get_marks;
                                             $student_array['total_marks'] = $total_marks;
@@ -224,7 +215,6 @@
                                         $student_list_array[] = $student_array;
                                     }
 
-
                                     if ($student_array['subject_added']) {
                                         if ($exam_details->exam_group_type != "gpa") {
                                             aasort($student_list_array);
@@ -240,7 +230,6 @@
                                         <tr>
                                             <th><?php echo $this->lang->line('rank'); ?></th>
                                             <th><?php echo $this->lang->line('admission_no'); ?></th>
-
                                             <th><?php echo $this->lang->line('roll_no'); ?></th>
                                             <th><?php echo $this->lang->line('student_name'); ?></th>
                                             <?php
@@ -259,7 +248,6 @@
                                                             <?php
                                                         }
                                                         ?>
-
                                                     </th>
                                                     <?php
                                                 }
@@ -292,13 +280,13 @@
                                         if (!empty($student_list_array)) {
                                             $rank_count = 1;
                                             foreach ($student_list_array as $student_list_value) {
-                                               
                                                 ?>
                                                 <tr>
                                                     <td><?php echo $rank_count; ?></td>
                                                     <td><?php echo $student_list_value['admission_no']; ?></td>
-
-                                                    <td><?php echo ($student_list_value['exam_roll_no'] != 0) ? $student_list_value['exam_roll_no'] : "-"; ?> </td>
+                                                    <td>
+                                                        <?php 
+                                                      echo ($exam_details->use_exam_roll_no)?$student_list_value['exam_roll_no']:$student_list_value['profile_roll_no']; ?> </td>
                                                     <td>
                                                         <a href="<?php echo base_url(); ?>student/view/<?php echo $student_list_value['student_id']; ?>"><?php echo $student_list_value['name'];
  
@@ -307,8 +295,6 @@
                                                     </td>
                                                     <?php
                                                     if ($student_list_value['subject_added']) {
-
-
 
                                                         if (!empty($student_list_value['subjet_results'])) {
                                                             foreach ($student_list_value['subjet_results'] as $result_key => $result_value) {
@@ -336,8 +322,6 @@
                                                                         <?php
                                                                     }
                                                                     ?>
-
-
                                                                 </td>
                                                                 <?php
                                                             }
@@ -376,20 +360,14 @@
                                                                             <?php
                                                                         }
                                                                         ?>
-
-
-
                                                                         </tr>
                                                                         <?php
                                                                         $rank_count++;
                                                                     }
                                                                 }
                                                                 ?>
-
                                                                 </tbody>
                                                                 </table>
-
-
                                                                 </div>
                                                                 </div>
                                                                 </div>
@@ -445,13 +423,13 @@
                                                             function aasort(&$arr) {
                                                                 array_multisort(
                                                                         array_column($arr, 'result_status'), SORT_DESC, array_column($arr, 'percentage'), SORT_DESC, $arr);
-//                                                           
+                                                         
                                                             }
 
                                                             function aasort_gpa(&$arr) {
                                                                 array_multisort(
                                                                         array_column($arr, 'exam_qulity_point'), SORT_DESC, $arr);
-//                                                           
+                                                        
                                                             }
                                                             ?>
 
@@ -478,8 +456,7 @@
                                                                 var exam_group_id = '<?php echo set_value('exam_group_id') ?>';
                                                                 var exam_id = '<?php echo set_value('exam_id') ?>';
                                                                 getSectionByClass(class_id, section_id);
-
-                                                                // getExamgroupByClassSectionSession(class_id, section_id, session_id);
+                                                            
                                                                 getExamByExamgroup(exam_group_id, exam_id);
                                                                 $(document).on('change', '#exam_group_id', function (e) {
                                                                     $('#exam_id').html("");
@@ -499,7 +476,6 @@
                                                                         $('#section_id').html("");
                                                                         var base_url = '<?php echo base_url() ?>';
                                                                         var div_data = '<option value=""><?php echo $this->lang->line('select'); ?></option>';
-
 
                                                                         $.ajax({
                                                                             type: "GET",
@@ -534,7 +510,6 @@
                                                                         $('#exam_id').html("");
                                                                         var base_url = '<?php echo base_url() ?>';
                                                                         var div_data = '<option value=""><?php echo $this->lang->line('select'); ?></option>';
-
 
                                                                         $.ajax({
                                                                             type: "POST",

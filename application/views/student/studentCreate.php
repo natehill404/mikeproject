@@ -255,7 +255,7 @@
 
 
                                                 <?php if ($sch_setting->student_height) { ?>
-                                            <div class="col-md-2 col-xs-12">
+                                            <div class="col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('height'); ?></label>
     <?php ?>
@@ -264,7 +264,7 @@
                                                 </div>
                                             </div>
                                                 <?php } if ($sch_setting->student_weight) { ?>
-                                            <div class="col-md-2 col-xs-12">
+                                            <div class="col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('weight'); ?></label>
     <?php ?>
@@ -273,7 +273,7 @@
                                                 </div>
                                             </div>
 <?php } if ($sch_setting->measurement_date) { ?>
-                                            <div class="col-md-2 col-xs-12">
+                                            <div class="col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('measurement_date'); ?></label>
     <?php ?>
@@ -282,13 +282,6 @@
                                                 </div>
                                             </div>
 <?php } ?>
-                                            <div class="col-md-2 col-xs-12">
-                                                <div class="form-group">
-                                                    <label for="">ID Card Validity</label>
-                                                    <input type="text" id="idcardvalidity" value="<?php echo set_value('id_card_validity', date($this->customlib->getSchoolDateFormat())); ?>" name="id_card_validity" class="form-control date">
-                                                    <span class="text-danger">
-                                                </div>
-                                            </div>
                                         <div class="col-md-3" style="display:none;">
                                             <div class="form-group">
                                                 <label for="exampleInputEmail1"><?php echo $this->lang->line('fees_discount'); ?></label>
@@ -882,9 +875,9 @@
 
 
 
-        $('.datetime').datetimepicker({
+        // $('.datetime').datetimepicker({
 
-        });
+        // });
         $(".color").colorpicker();
 
         $("#btnreset").click(function () {
@@ -997,15 +990,17 @@
                 if ($(this).is(':checked')) {
                     var value = $(this).val();
                     if (value == "father") {
+                        var father_relation = "<?php echo $this->lang->line('father'); ?>";
                         $('#guardian_name').val($('#father_name').val());
                         $('#guardian_phone').val($('#father_phone').val());
                         $('#guardian_occupation').val($('#father_occupation').val());
-                        $('#guardian_relation').val("Father")
+                        $('#guardian_relation').val(father_relation);
                     } else if (value == "mother") {
+                        var mother_relation = "<?php echo $this->lang->line('mother'); ?>";
                         $('#guardian_name').val($('#mother_name').val());
                         $('#guardian_phone').val($('#mother_phone').val());
                         $('#guardian_occupation').val($('#mother_occupation').val());
-                        $('#guardian_relation').val("Mother")
+                        $('#guardian_relation').val(mother_relation);
                     } else {
                         $('#guardian_name').val("");
                         $('#guardian_phone').val("");

@@ -140,7 +140,7 @@
                                         <div class="pull-right">
                                         </div>
                                     </div>
-                                    <div class="download_label"><?php echo $this->lang->line('staff'); ?> <?php echo $this->lang->line('attendance'); ?> <?php echo $this->lang->line('report') . "<br>";
+                                    <div class="download_label"><?php echo $this->lang->line('staff'); ?> <?php echo $this->lang->line('attendance'); ?> <?php echo $this->lang->line('report') ?></div>  <div> <?php echo 
                             $this->customlib->get_postmessage();
                                     ?></div>
                                     <table class="table table-striped table-bordered table-hover example xyz">
@@ -154,7 +154,7 @@
                                                 if (!empty($attendence_array)) {
                                                     foreach ($attendencetypeslist as $key => $value) {
                                                         ?>
-                                                        <th colspan="" ><br/><span data-toggle="tooltip" title="<?php echo "Total " . $value["type"]; ?>"><?php echo strip_tags($value["key_value"]); ?>
+                                                        <th colspan="" ><br/><span data-toggle="tooltip" title="<?php echo $this->lang->line('total'). ' ' . $value["type"]; ?>"><?php echo strip_tags($value["key_value"]); ?>
 
                                                             </span></th>
 
@@ -281,21 +281,7 @@
     </section>
 </div>
 
-<script type="text/javascript">
 
-    $(document).ready(function () {
-        $('.detail_popover').popover({
-            placement: 'right',
-            title: '',
-            trigger: 'hover',
-            container: 'body',
-            html: true,
-            content: function () {
-                return $(this).closest('th').find('.fee_detail_popover').html();
-            }
-        });
-    });
-</script>
 <script type="text/javascript">
     var base_url = '<?php echo base_url() ?>';
     function printDiv(elem) {

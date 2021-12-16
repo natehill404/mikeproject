@@ -1,4 +1,4 @@
-<div class="content-wrapper" style="min-height: 348px;">  
+<div class="content-wrapper">  
     <section class="content-header">
         <h1>
             <i class="fa fa-ioxhost"></i> <?php echo $this->lang->line('front_office'); ?>
@@ -116,7 +116,7 @@
                                                 <td class="mailbox-name"><?php echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value['date'])); ?> </td>
                                                 <td class="mailbox-name"> <?php if($value['follow_up_date']!='' && $value['follow_up_date']!='0000-00-00'){ echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value['follow_up_date'])); }  ?></td>
                                                 <td class="mailbox-name"> <?php echo $value['call_type']; ?></td>
-                                                <td class="mailbox-date pull-right">
+                                                <td class="mailbox-date pull-right white-space-nowrap">
                                                     <a  onclick="getRecord(<?php echo $value['id']; ?>)" class="btn btn-default btn-xs" data-target="#calldetails" data-toggle="modal" title="<?php echo $this->lang->line('view'); ?>"><i class="fa fa-reorder"></i></a>  
         <?php if ($this->rbac->hasPrivilege('phone_call_log', 'can_edit')) { ?>
                                                         <a data-placement="left" href="<?php echo base_url('admin/generalcall/edit/' . $value['id']) ?>" class="btn btn-default btn-xs" data-toggle="tooltip" title="" data-original-title="<?php echo $this->lang->line('edit'); ?>">

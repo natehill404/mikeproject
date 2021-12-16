@@ -68,7 +68,6 @@ class Page extends Admin_Controller
                 'meta_title'       => $this->input->post('meta_title'),
                 'meta_keyword'     => $this->input->post('meta_keywords'),
                 'feature_image'    => $this->input->post('image'),
-                // 'publish' => $this->input->post('publish'),
                 'type'             => 'page',
                 'sidebar'          => $this->input->post('sidebar'),
                 'meta_description' => $this->input->post('meta_description'),

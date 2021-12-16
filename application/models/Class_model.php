@@ -35,6 +35,8 @@ class Class_model extends MY_Model {
         return $classlist;
     }
 
+
+
     public function get($id = null, $classteacher = null) {
 
         $userdata = $this->customlib->getUserData();

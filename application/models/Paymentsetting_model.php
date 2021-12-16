@@ -91,7 +91,7 @@ class Paymentsetting_model extends MY_Model {
             return TRUE;
         }
     }
-
+ 
     function check_data_exists($payment_setting) {
 
         $this->db->where('payment_type', $payment_setting);
@@ -121,5 +121,7 @@ class Paymentsetting_model extends MY_Model {
             $this->db->update('payment_settings', $data);
         }
     }
+
+
 
 }

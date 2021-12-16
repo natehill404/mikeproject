@@ -224,11 +224,14 @@ class Staff extends Admin_Controller
             for ($n = $date_start; $n <= $date_end; $n++) {
                 $att_dates        = $year . "-" . $datemonth . "-" . sprintf("%02d", $n);
                 $date_array[]     = $att_dates;
-                $staff_attendence = $this->staffattendancemodel->searchStaffattendance($id, $att_dates, false);
-
-                if ($staff_attendence['att_type'] != "") {
+                $staff_attendence = $this->staffattendancemodel->searchStaffattendance($att_dates, $id, false);
+				if(!empty($staff_attendence)){
+					if ($staff_attendence['att_type'] != "") {
                     $attendence_count[$staff_attendence['att_type']][] = 1;
-                }
+					}
+				}else{
+					
+				}
                 $res[$att_dates] = $staff_attendence;
             }
         }
@@ -240,9 +243,8 @@ class Staff extends Admin_Controller
 
         $date    = $start_year . "-" . $startMonth;
         $newdate = date("Y-m-d", strtotime($date . "+1 month"));
-		
-        $data["countAttendance"] = $attendence_count;
 
+        $data["countAttendance"] = $attendence_count;
         $data["resultlist"]       = $res;
         $data["attendence_array"] = range(01, 31);
         $data["date_array"]       = $date_array;
@@ -315,7 +317,7 @@ class Staff extends Admin_Controller
     public function download($staff_id, $doc)
     {
         $this->load->helper('download');
-        $filepath = "./uploads/staff_documents/$staff_id/" . $this->uri->segment(5);
+        $filepath = "./uploads/staff_documents/$staff_id/" . urldecode($this->uri->segment(5));
         $data     = file_get_contents($filepath);
         $name     = $this->uri->segment(5);
         force_download($name, $data);
@@ -344,24 +346,20 @@ class Staff extends Admin_Controller
             $session_current   = $this->setting_model->getCurrentSessionName();
             $startMonth        = $this->setting_model->getStartMonth();
 
-            $j = 0;
-            for ($n = 1; $n <= 31; $n++) {
+            foreach ($monthlist as $key => $value) {
+                $datemonth       = date("m", strtotime($value));
+                $date_each_month = date('Y-' . $datemonth . '-01');
+                $date_end        = date('t', strtotime($date_each_month));
+                for ($n = 1; $n <= $date_end; $n++) {
+                    $att_date           = sprintf("%02d", $n);
+                    $attendence_array[] = $att_date;
+                    $datemonth          = date("m", strtotime($value));
+                    $att_dates          = $year . "-" . $datemonth . "-" . sprintf("%02d", $n);
 
-                $att_date = sprintf("%02d", $n);
-
-                $attendence_array[] = $att_date;
-
-                foreach ($monthlist as $key => $value) {
-
-                    $datemonth       = date("m", strtotime($value));
-                    $att_dates       = $year . "-" . $datemonth . "-" . sprintf("%02d", $n);
                     $date_array[]    = $att_dates;
-                    $res[$att_dates] = $this->staffattendancemodel->searchStaffattendance($id, $att_dates);
+					$res[$att_dates] = $this->staffattendancemodel->searchStaffattendance($att_dates, $id);
                 }
-
-                $j++;
             }
-
             $date    = $year . "-" . $startMonth;
             $newdate = date("Y-m-d", strtotime($date . "+1 month"));
 
@@ -791,12 +789,12 @@ class Staff extends Admin_Controller
     public function handle_upload()
     {
         $image_validate = $this->config->item('image_validate');
-        $result = $this->filetype_model->get();
+        $result         = $this->filetype_model->get();
         if (isset($_FILES["file"]) && !empty($_FILES['file']['name'])) {
 
-            $file_type         = $_FILES["file"]['type'];
-            $file_size         = $_FILES["file"]["size"];
-            $file_name         = $_FILES["file"]["name"];
+            $file_type = $_FILES["file"]['type'];
+            $file_size = $_FILES["file"]["size"];
+            $file_name = $_FILES["file"]["name"];
 
             $allowed_extension = array_map('trim', array_map('strtolower', explode(',', $result->image_extension)));
             $allowed_mime_type = array_map('trim', array_map('strtolower', explode(',', $result->image_mime)));
@@ -812,7 +810,7 @@ class Staff extends Admin_Controller
                     $this->form_validation->set_message('handle_upload', $this->lang->line('file_type_not_allowed'));
                     return false;
                 }
-                
+
                 if ($file_size > $result->image_size) {
                     $this->form_validation->set_message('handle_upload', $this->lang->line('file_size_shoud_be_less_than') . number_format($image_validate['upload_size'] / 1048576, 2) . " MB");
                     return false;
@@ -830,19 +828,19 @@ class Staff extends Admin_Controller
     public function handle_first_upload()
     {
         $file_validate = $this->config->item('file_validate');
-        $result = $this->filetype_model->get();
+        $result        = $this->filetype_model->get();
         if (isset($_FILES["first_doc"]) && !empty($_FILES['first_doc']['name'])) {
 
-            $file_type         = $_FILES["first_doc"]['type'];
-            $file_size         = $_FILES["first_doc"]["size"];
-            $file_name         = $_FILES["first_doc"]["name"];
+            $file_type = $_FILES["first_doc"]['type'];
+            $file_size = $_FILES["first_doc"]["size"];
+            $file_name = $_FILES["first_doc"]["name"];
 
             $allowed_extension = array_map('trim', array_map('strtolower', explode(',', $result->file_extension)));
             $allowed_mime_type = array_map('trim', array_map('strtolower', explode(',', $result->file_mime)));
-            $ext               = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));         
-          
-            $finfo             = finfo_open(FILEINFO_MIME_TYPE);
-            $mtype             = finfo_file($finfo, $_FILES['first_doc']['tmp_name']);
+            $ext               = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mtype = finfo_file($finfo, $_FILES['first_doc']['tmp_name']);
             finfo_close($finfo);
 
             if (!in_array($mtype, $allowed_mime_type)) {
@@ -867,18 +865,18 @@ class Staff extends Admin_Controller
     public function handle_second_upload()
     {
         $file_validate = $this->config->item('file_validate');
-        $result = $this->filetype_model->get();
+        $result        = $this->filetype_model->get();
         if (isset($_FILES["second_doc"]) && !empty($_FILES['second_doc']['name'])) {
 
             $file_type         = $_FILES["second_doc"]['type'];
             $file_size         = $_FILES["second_doc"]["size"];
             $file_name         = $_FILES["second_doc"]["name"];
-             $allowed_extension = array_map('trim', array_map('strtolower', explode(',', $result->file_extension)));
+            $allowed_extension = array_map('trim', array_map('strtolower', explode(',', $result->file_extension)));
             $allowed_mime_type = array_map('trim', array_map('strtolower', explode(',', $result->file_mime)));
             $ext               = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-           
-            $finfo             = finfo_open(FILEINFO_MIME_TYPE);
-            $mtype             = finfo_file($finfo, $_FILES['second_doc']['tmp_name']);
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mtype = finfo_file($finfo, $_FILES['second_doc']['tmp_name']);
             finfo_close($finfo);
 
             if (!in_array($mtype, $allowed_mime_type)) {
@@ -903,19 +901,19 @@ class Staff extends Admin_Controller
     public function handle_third_upload()
     {
         $file_validate = $this->config->item('file_validate');
-        $result = $this->filetype_model->get();
+        $result        = $this->filetype_model->get();
         if (isset($_FILES["third_doc"]) && !empty($_FILES['third_doc']['name'])) {
 
-            $file_type         = $_FILES["third_doc"]['type'];
-            $file_size         = $_FILES["third_doc"]["size"];
-            $file_name         = $_FILES["third_doc"]["name"];
+            $file_type = $_FILES["third_doc"]['type'];
+            $file_size = $_FILES["third_doc"]["size"];
+            $file_name = $_FILES["third_doc"]["name"];
 
             $allowed_extension = array_map('trim', array_map('strtolower', explode(',', $result->file_extension)));
             $allowed_mime_type = array_map('trim', array_map('strtolower', explode(',', $result->file_mime)));
             $ext               = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-            
-            $finfo             = finfo_open(FILEINFO_MIME_TYPE);
-            $mtype             = finfo_file($finfo, $_FILES['third_doc']['tmp_name']);
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mtype = finfo_file($finfo, $_FILES['third_doc']['tmp_name']);
             finfo_close($finfo);
 
             if (!in_array($mtype, $allowed_mime_type)) {
@@ -940,19 +938,19 @@ class Staff extends Admin_Controller
     public function handle_fourth_upload()
     {
         $file_validate = $this->config->item('file_validate');
-        $result = $this->filetype_model->get();
+        $result        = $this->filetype_model->get();
         if (isset($_FILES["fourth_doc"]) && !empty($_FILES['fourth_doc']['name'])) {
 
-            $file_type         = $_FILES["fourth_doc"]['type'];
-            $file_size         = $_FILES["fourth_doc"]["size"];
-            $file_name         = $_FILES["fourth_doc"]["name"];
+            $file_type = $_FILES["fourth_doc"]['type'];
+            $file_size = $_FILES["fourth_doc"]["size"];
+            $file_name = $_FILES["fourth_doc"]["name"];
 
             $allowed_extension = array_map('trim', array_map('strtolower', explode(',', $result->file_extension)));
             $allowed_mime_type = array_map('trim', array_map('strtolower', explode(',', $result->file_mime)));
             $ext               = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-           
-            $finfo             = finfo_open(FILEINFO_MIME_TYPE);
-            $mtype             = finfo_file($finfo, $_FILES['fourth_doc']['tmp_name']);
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mtype = finfo_file($finfo, $_FILES['fourth_doc']['tmp_name']);
             finfo_close($finfo);
 
             if (!in_array($mtype, $allowed_mime_type)) {
@@ -1131,7 +1129,7 @@ class Staff extends Admin_Controller
                 }
                 $this->customfield_model->updateRecord($custom_value_array, $id, 'staff');
             }
-        
+
             $data1 = array(
                 'id'                   => $id,
                 'department'           => $department,

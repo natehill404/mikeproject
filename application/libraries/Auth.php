@@ -22,7 +22,6 @@ class Auth
 
         $this->set_timezone();
         $this->CI->load->database();
-        //$this->CI->load->library('encrypt'); //for php 7.2+ support
     }
 
     /*
@@ -111,7 +110,7 @@ class Auth
             if (!$role) {
                 redirect('site/userlogin');
             }
-          
+
         } else {
             $_SESSION['redirect_to_user'] = current_url();
             redirect('site/userlogin');
@@ -313,18 +312,18 @@ class Auth
         }
         fclose($fhandle);
 
-        $update_session   = $this->CI->config->item('routine_session');
-        $last_update      = $this->CI->config->item('routine_update');
+        $update_session = $this->CI->config->item('routine_session');
+        $last_update    = $this->CI->config->item('routine_update');
 
         $lst_update_month = date('m', $last_update);
         $lst_update_year  = date('Y', $last_update);
- 
-     if (($lst_update_month < date("m", strtotime('first day of +1 month')) and $lst_update_year == date('Y')) ||
-         ($lst_update_month < date("m", strtotime('first day of +1 month')) and $lst_update_year < date('Y')) ||
-         ($update_session <= date('d') and  $lst_update_month == date("m") and $lst_update_year == date('Y'))) {
 
-            $date = date("Y-m-01");
-            $newdate= date("Y-m-",strtotime ( '+1 month' , strtotime ( $date ) )) ;
+        if (($lst_update_month < date("m", strtotime('first day of +1 month')) and $lst_update_year == date('Y')) ||
+            ($lst_update_month < date("m", strtotime('first day of +1 month')) and $lst_update_year < date('Y')) ||
+            ($update_session <= date('d') and $lst_update_month == date("m") and $lst_update_year == date('Y'))) {
+
+            $date    = date("Y-m-01");
+            $newdate = date("Y-m-", strtotime('+1 month', strtotime($date)));
 
             $file_license = APPPATH . 'config/license.php';
 
@@ -332,15 +331,15 @@ class Auth
             $envato_market_username      = $this->CI->config->item('envato_market_username');
             $sslk                        = $this->CI->config->item('SSLK');
             $app_version                 = $this->CI->customlib->getAppVersion();
-            $url         = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM);
-            $school      = $this->CI->setting_model->get()[0];
-            $ip          = $this->CI->input->ip_address();
-            $name        = $school['name'];
-            $email       = $school['email'];
-            $phone       = $school['phone'];
-            $address     = $school['address'];
-            $date_format = $school['date_format'];
-            $timezone    = $school['timezone'];
+            $url                         = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM);
+            $school                      = $this->CI->setting_model->get()[0];
+            $ip                          = $this->CI->input->ip_address();
+            $name                        = $school['name'];
+            $email                       = $school['email'];
+            $phone                       = $school['phone'];
+            $address                     = $school['address'];
+            $date_format                 = $school['date_format'];
+            $timezone                    = $school['timezone'];
             if (!file_exists($file_license)) {
                 $envato_market_purchase_code = "tempered";
                 $envato_market_username      = 'tempered';
@@ -372,7 +371,7 @@ class Auth
                 $resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
                 if ($resultStatus == 200) {
-                    $up_tm         =  strtotime($newdate.$update_session);
+                    $up_tm         = strtotime($newdate . $update_session);
                     $fname         = APPPATH . 'config/config.php';
                     $update_handle = fopen($fname, "r");
                     $content       = fread($update_handle, filesize($fname));
@@ -389,105 +388,309 @@ class Auth
 
     }
 
-    public function app_update(){
+    public function app_update()
+    {
+        $email                       = $this->CI->input->post('email');
         $envato_market_purchase_code = $this->CI->input->post('envato_market_purchase_code');
-        $fname         = APPPATH . 'config/license.php';
-        $update_handle = fopen($fname, "r");
-        $content       = fread($update_handle, filesize($fname));
-        $file_contents = str_replace('$config[\'SSLK\'] = \'\'', '$config[\'SSLK\'] = \'' . $envato_market_purchase_code . '\'', $content);
-        $update_handle = fopen($fname, 'w') or die("can't open file");
-        fwrite($update_handle, $file_contents);
-        fclose($update_handle);
-        $array = array('status' => 1, 'message' => 'Thank you for registering your product');
-        return $this->CI->output
-            ->set_content_type('application/json')
-            ->set_status_header(200)
-            ->set_output(json_encode($array));
-    }
+        $url                         = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM_UPDATE);
+        $ch                          = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        $data = array(
+            'email'         => $email,
+            'purchase_code' => $envato_market_purchase_code,
+            'base_url'      => base_url(),
+        );
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $output   = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-    public function andapp_update(){
-        $fname         = APPPATH . 'config/license.php';
-        $update_handle = fopen($fname, "r");
-        $content       = fread($update_handle, filesize($fname));
-        if (strpos($content, '$config[\'app_ver\']') === false) {
-            $update_handle = fopen($fname, 'a') or die("can't open file");
-            $file_contents = '$config[\'app_ver\'] = 1;' . "\n";
-            if (fwrite($update_handle, $file_contents)) {
+        $json_response = json_decode($output);
+        if ($httpcode != 200) {
+            return $this->CI->output
+                ->set_content_type('application/json')
+                ->set_status_header($httpcode)
+                ->set_output(json_encode(array(
+                    'response' => $json_response->response, true,
+                )));
 
-            }
         } else {
-            $file_contents = str_replace('$config[\'app_ver\'] = 0', '$config[\'app_ver\'] = 1', $content);
+            $fname         = APPPATH . 'config/license.php';
+            $update_handle = fopen($fname, "r");
+            $content       = fread($update_handle, filesize($fname));
+            $file_contents = str_replace('$config[\'SSLK\'] = \'\'', '$config[\'SSLK\'] = \'' . $json_response->response . '\'', $content);
             $update_handle = fopen($fname, 'w') or die("can't open file");
             if (fwrite($update_handle, $file_contents)) {
 
             }
+            fclose($update_handle);
+            $array = array('status' => 1, 'message' => 'Thank you for registering your product');
+            return $this->CI->output
+                ->set_content_type('application/json')
+                ->set_status_header($httpcode)
+                ->set_output(json_encode($array));
+
         }
-        fclose($fhandle);
-        $array = array('status' => 1, 'message' => 'Thank you for registering your product');
-        return $this->CI->output
-            ->set_content_type('application/json')
-            ->set_status_header(200)
-            ->set_output(json_encode($array));
     }
 
-    public function addon_update(){
-        $token = 'DFDQS-8LB96-BRKFM-V6VFT';
+    public function andapp_update()
+    {
+        $email                       = $this->CI->input->post('app-email');
         $envato_market_purchase_code = $this->CI->input->post('app-envato_market_purchase_code');
-        $fname         = APPPATH . 'config/license.php';
-        $update_handle = fopen($fname, "r");
-        $content       = fread($update_handle, filesize($fname));
-        if (strpos($content, '$config[\'addon_prod\']') === false) {
-            $update_handle = fopen($fname, 'a') or die("can't open file");
-            $file_contents = '$config[\'addon_prod\'] = array(' . $token . ');' . "\n";
-               if (fwrite($update_handle, $file_contents)) {
+        $sslk                        = $this->CI->config->item('SSLK');
+        $url                         = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM_APP);
+        $ch                          = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        $data = array(
+            'email'         => $email,
+            'sslk'          => $sslk,
+            'purchase_code' => $envato_market_purchase_code,
+            'base_url'      => base_url(),
+        );
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $output   = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $json_response = json_decode($output);
+        if ($httpcode != 200) {
+            return $this->CI->output
+                ->set_content_type('application/json')
+                ->set_status_header($httpcode)
+                ->set_output(json_encode(array(
+                    'response' => $json_response->response, true,
+                )));
 
+        } else {
+            $fname         = APPPATH . 'config/license.php';
+            $update_handle = fopen($fname, "r");
+            $content       = fread($update_handle, filesize($fname));
+            if (strpos($content, '$config[\'app_ver\']') == false) {
+                $update_handle = fopen($fname, 'a') or die("can't open file");
+                $file_contents = '$config[\'app_ver\'] = 1;' . "\n";
+                if (fwrite($update_handle, $file_contents)) {
+
+                }
+            } else {
+                $file_contents = str_replace('$config[\'app_ver\'] = 0', '$config[\'app_ver\'] = 1', $content);
+                $update_handle = fopen($fname, 'w') or die("can't open file");
+                if (fwrite($update_handle, $file_contents)) {
+
+                }
             }
+            fclose($fhandle);
+            $array = array('status' => 1, 'message' => 'Thank you for registering your product');
+            return $this->CI->output
+                ->set_content_type('application/json')
+                ->set_status_header($httpcode)
+                ->set_output(json_encode($array));
 
         }
-        if (strpos($content, '$config[\'addon_ver\']') === false) {
-            $update_handle = fopen($fname, 'a') or die("can't open file");
-            $file_contents = '$config[\'addon_ver\'] = array(' . $envato_market_purchase_code . ');' . "\n";
-               if (fwrite($update_handle, $file_contents)) {
-
-            }
-
-        }
-        if(strpos($content, '$config[\'addon_prod\']') === true && strpos($content, '$config[\'addon_ver\']') === true){
-             $contents = file_get_contents($fname);
-            $update_write_handle = fopen($fname, 'w') or die("can't open file");
-            $pattern  = preg_quote('$config[\'addon_prod\']', '/');
-            $pattern  = "/^.*$pattern.*\$/m";
-            if (preg_match_all($pattern, $contents, $matches)) {
-                $file_contents = str_replace($matches[0], '$config[\'addon_prod\'] = array(' . $token . ');', $contents);
-
-               file_put_contents($fname, $file_contents);
-            }
-           //=============================================
-            $contents = file_get_contents($fname);
-            $update_write_handle = fopen($fname, 'w') or die("can't open file");
-            $pattern  = preg_quote('$config[\'addon_ver\']', '/');
-            $pattern  = "/^.*$pattern.*\$/m";
-            if (preg_match_all($pattern, $contents, $matches)) {
-                $file_contents = str_replace($matches[0], '$config[\'addon_ver\'] = array(' . $envato_market_purchase_code . ');', $contents);
-
-               file_put_contents($fname, $file_contents);
-            }
-
-
-        }
-       fclose($update_handle);
-        $back= $_SERVER['HTTP_REFERER'];
-        $array = array('status' => 1,'back' => $back, 'message' => 'Thank you for registering your product');
-        return $this->CI->output
-            ->set_content_type('application/json')
-            ->set_status_header(200)
-            ->set_output(json_encode($array));
     }
 
+    public function andapp_validate()
+    {
 
-    public function autoupdate(){
-        $this->set_message('Please do updates manually, thank you.');
-        return false;
+        $sslk = $this->CI->config->item('SSLK');
+        $url  = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM_APP_REG);
+        $ch   = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        $data = array(
+            'sslk'     => $sslk,
+            'base_url' => base_url(),
+        );
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $output   = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $json_response = json_decode($output);
+        if ($httpcode == 200) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function addon_update()
+    {
+        $email                       = $this->CI->input->post('app-email');
+        $addon                       = $this->CI->input->post('addon');
+        $addon_version               = $this->CI->input->post('addon_version');
+        $envato_market_purchase_code = $this->CI->input->post('app-envato_market_purchase_code');
+        $sslk                        = $this->CI->config->item('SSLK');
+        $url                         = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM_ADDON);
+        $ch                          = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        $data = array(
+            'email'         => $email,
+            'sslk'          => $sslk,
+            'purchase_code' => $envato_market_purchase_code,
+            'addon_version' => $addon_version,
+            'addon'         => $addon,
+            'base_url'      => base_url(),
+        );
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $output   = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $json_response = json_decode($output);
+
+        if ($httpcode != 200) {
+            return $this->CI->output
+                ->set_content_type('application/json')
+                ->set_status_header($httpcode)
+                ->set_output(json_encode(array(
+                    'response' => $json_response->response, true,
+                )));
+
+        } else {
+
+            $fname         = APPPATH . 'config/license.php';
+            $update_handle = fopen($fname, "r");
+            $content       = fread($update_handle, filesize($fname));
+            if (strpos($content, '$config[\'addon_prod\']') == false) {
+                $update_handle = fopen($fname, 'a') or die("can't open file");
+                $file_contents = '$config[\'addon_prod\'] = array(' . $json_response->token . ');' . "\n";
+                if (fwrite($update_handle, $file_contents)) {
+
+                }
+
+            }
+            if (strpos($content, '$config[\'addon_ver\']') == false) {
+                $update_handle = fopen($fname, 'a') or die("can't open file");
+                $file_contents = '$config[\'addon_ver\'] = array(' . $json_response->license . ');' . "\n";
+                if (fwrite($update_handle, $file_contents)) {
+
+                }
+
+            }
+            if (strpos($content, '$config[\'addon_prod\']') == true && strpos($content, '$config[\'addon_ver\']') == true) {
+                $contents            = file_get_contents($fname);
+                $update_write_handle = fopen($fname, 'w') or die("can't open file");
+                $pattern             = preg_quote('$config[\'addon_prod\']', '/');
+                $pattern             = "/^.*$pattern.*\$/m";
+                if (preg_match_all($pattern, $contents, $matches)) {
+                    $file_contents = str_replace($matches[0], '$config[\'addon_prod\'] = array(' . $json_response->token . ');', $contents);
+
+                    file_put_contents($fname, $file_contents);
+                }
+                //=============================================
+                $contents            = file_get_contents($fname);
+                $update_write_handle = fopen($fname, 'w') or die("can't open file");
+                $pattern             = preg_quote('$config[\'addon_ver\']', '/');
+                $pattern             = "/^.*$pattern.*\$/m";
+                if (preg_match_all($pattern, $contents, $matches)) {
+                    $file_contents = str_replace($matches[0], '$config[\'addon_ver\'] = array(' . $json_response->license . ');', $contents);
+
+                    file_put_contents($fname, $file_contents);
+                }
+
+            }
+            fclose($update_handle);
+            $back  = $_SERVER['HTTP_REFERER'];
+            $array = array('status' => 1, 'back' => $back, 'message' => 'Thank you for registering your product');
+            return $this->CI->output
+                ->set_content_type('application/json')
+                ->set_status_header($httpcode)
+                ->set_output(json_encode($array));
+
+        }
+    }
+
+    public function autoupdate()
+    {
+        if (!$this->CI->session->has_userdata('version')) {
+            $this->set_message('Internal error, Please contact to service provider.');
+            return false;
+        }
+        $version_dt  = $this->CI->session->userdata('version');
+        $dw_filename = $version_dt['filename'];
+        $fd_name     = $this->filename($dw_filename);
+        $url         = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM_AUTO_UPDATE);
+        $file        = './temp/' . $dw_filename;
+        $sslk        = $this->CI->config->item('SSLK');
+        $app_version = $this->CI->customlib->getAppVersion();
+        $post_data   = [
+            'sslk'        => $sslk,
+            'site_url'    => site_url(),
+            'app_version' => $app_version,
+        ];
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL            => $url,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_FOLLOWLOCATION => 1,
+            CURLOPT_CONNECTTIMEOUT => 50,
+            CURLOPT_POSTFIELDS     => $post_data,
+            CURLOPT_USERAGENT      => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
+        ]);
+
+        $response = curl_exec($curl);
+        $info     = curl_getinfo($curl);
+        curl_close($curl);
+        $this->CI->session->unset_userdata('version');
+        if ($info['http_code'] == 0 && $info['header_size'] == 0) {
+            $this->set_error('Unable to connect updater, please try after sometime!');
+            return false;
+        }
+
+        if ($info['http_code'] == 200) {
+            if ($info['content_type'] == "application/zip") {
+//=========
+                file_put_contents($file, $response);
+                if (filesize($file) > 0) {
+                    $zip = new ZipArchive;
+                    $res = $zip->open('./temp/' . $dw_filename);
+                    if ($res === true) {
+                        $zip->extractTo('./temp/');
+                        $zip->close();
+                        if (!$this->import_dump($fd_name)) {
+                            unlink('./temp/' . $fd_name . '/db_import.sql');
+                            unlink('./temp/' . $dw_filename);
+                            $this->deleteDir('./temp/' . $fd_name);
+                            return false;
+                        }
+                        unlink('./temp/' . $fd_name . '/db_import.sql');
+                        $this->recurse_copy('./temp/' . $fd_name, '.');
+                        unlink('./temp/' . $dw_filename);
+                        $this->deleteDir('./temp/' . $fd_name);
+                        $this->set_message('Update successful!');
+                    } else {
+
+                        $this->set_message('Update error! There is some issue occurred during update, please contact to support.');
+                        return false;
+                    }
+
+                }
+                //==================
+            } else if (is_string($response) && is_array(json_decode($response, true))) {
+                $result = json_decode($response);
+                $this->set_message($result->response);
+                return false;
+            } else {
+
+            }
+
+        } else {
+            $result = json_decode($response);
+            $this->set_error($result->response);
+        }
+
     }
 
     public function import_dump($fd_name)
@@ -616,16 +819,60 @@ class Auth
         rmdir($dirPath);
     }
 
-    public function checkupdate(){
-        $this->set_error('Please check update manually, thank you!');
-        return false;
+    public function checkupdate()
+    {
+        $this->CI->session->unset_userdata('version');
+        $url         = $this->CI->enc_lib->dycrypt(DEBUG_SYSTEM_CHECK_UPDATE);
+        $sslk        = $this->CI->config->item('SSLK');
+        $app_version = $this->CI->customlib->getAppVersion();
+        $post_data   = [
+            'sslk'        => $sslk,
+            'site_url'    => site_url(),
+            'app_version' => $app_version,
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+        $output   = curl_exec($ch);
+        $httpcode = curl_getinfo($ch);
+        curl_close($ch);
+
+        if ($httpcode['http_code'] == 0 && $httpcode['header_size'] == 0) {
+            $this->set_error('Internal error or Connection problem. please try after sometime!');
+            return false;
+        }
+
+        if ($httpcode['http_code'] != 200) {
+            $result = json_decode($output);
+            $this->set_error($result->response);
+            return false;
+
+        }
+        if ($httpcode['http_code'] == 200) {
+            if (is_string($output) && is_array(json_decode($output, true))) {
+                $result = json_decode($output);
+                if (isset($result->version)) {
+                    $this->CI->session->set_userdata('version', array('version' => $result->version->nxtversion, 'filename' => $result->version->filename));
+                }
+
+                $this->set_message($result->response);
+
+                return true;
+            }
+        }
+
     }
 
-    public function filename($filename){
+    public function filename($filename)
+    {
         return preg_replace('/.[^.]*$/', '', $filename);
     }
 
-        public function addonchk($prod = null,$return_url=false)
+    public function addonchk($prod = null, $return_url = false)
     {
         if ($prod != null) {
             $addon_prod = $this->CI->config->item('addon_prod');
@@ -646,9 +893,9 @@ class Auth
                 }
             }
         }
-        if($return_url){
-        redirect($return_url);
-        exit;
+        if ($return_url) {
+            redirect($return_url);
+            exit;
 
         }
         return false;

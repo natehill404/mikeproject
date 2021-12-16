@@ -49,12 +49,12 @@ class Feesessiongroup_model extends MY_Model {
 
         $result = $query->result();
         foreach ($result as $key => $value) {
-            $value->feetypes = $this->getfeeTypeByGroup($value->fee_groups_id, $value->id);
+            $value->feetypes = $this->getfeeTypeByGroup($value->id, $value->fee_groups_id);
         }
         return $result;
     }
 
-    public function getfeeTypeByGroup($id = null, $fee_session_group_id) {
+    public function getfeeTypeByGroup($fee_session_group_id, $id = null) {
         $this->db->select('fee_groups_feetype.*,feetype.type,feetype.code');
         $this->db->from('fee_groups_feetype');
         $this->db->join('feetype', 'feetype.id=fee_groups_feetype.feetype_id');

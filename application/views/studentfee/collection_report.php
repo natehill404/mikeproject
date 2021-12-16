@@ -1,6 +1,5 @@
 <?php
 $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
-//print_r();die;
 ?>
 <div class="content-wrapper">
     <section class="content-header"></section>
@@ -14,13 +13,12 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                     <div class="box-header ">
                         <h3 class="box-title"><i class="fa fa-search"></i> <?php echo $this->lang->line('select_criteria'); ?></h3>
                     </div>
-
                     <form role="form" action="<?php echo site_url('studentfee/collection_report') ?>" method="post" class="">
                         <div class="box-body row">
                             <?php echo $this->customlib->getCSRF(); ?>
-                            <div class="col-sm-4 col-lg-4 col-md-4">
+                            <div class="col-sm-3 col-lg-3 col-md-3">
                                 <div class="form-group">
-                                    <label><?php echo $this->lang->line('search') . " " . $this->lang->line('type'); ?><small class="req"> *</small></label>
+                                    <label><?php echo $this->lang->line('search') . " " . $this->lang->line('duration'); ?><small class="req"> *</small></label>
                                     <select class="form-control" name="search_type" onchange="showdate(this.value)">
 
                                         <?php foreach ($searchlist as $key => $search) {
@@ -35,9 +33,32 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                     <span class="text-danger"><?php echo form_error('search_type'); ?></span>
                                 </div>
                             </div>
-                            <div class="col-sm-4 col-lg-4 col-md-4">
+                            <div class="col-sm-3 col-lg-3 col-md-3">
+                               <div class="form-group">
+                                            <label for="exampleInputEmail1"><?php echo $this->lang->line('fees_type'); ?></label>
+
+                                            <select  id="feetype_id" name="feetype_id" class="form-control" >
+                                                <option value=""><?php echo $this->lang->line('select'); ?></option>
+                                                <?php
+                                                foreach ($feetypeList as $feetype) {
+                                                    ?>
+                                                    <option value="<?php echo $feetype['id'] ?>"<?php
+                                                    if (set_value('feetype_id') == $feetype['id']) {
+                                                        echo "selected =selected";
+                                                    }
+                                                    ?>><?php echo $feetype['type'] ?></option>
+
+                                                    <?php
+                                                    $count++;
+                                                }
+                                                ?>
+                                            </select>
+                                            <span class="text-danger"><?php echo form_error('feetype_id'); ?></span>
+                                        </div>
+                            </div>
+                            <div class="col-sm-3 col-lg-3 col-md-3">
                                 <div class="form-group">
-                                    <label><?php echo $this->lang->line('collect') . " " . $this->lang->line('by'); ?><small class="req"> *</small></label>
+                                    <label><?php echo $this->lang->line('collect') . " " . $this->lang->line('by'); ?></label>
                                     <select class="form-control"  name="collect_by" >
                                         <option value=""><?php echo $this->lang->line('select') ?></option>
                                         <?php
@@ -54,11 +75,10 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                 </div>
                             </div> 
                             <div id='date_result'>
-
                             </div>
-                            <div class="col-sm-4 col-lg-4 col-md-4">
+                            <div class="col-sm-3 col-lg-3 col-md-3">
                                 <div class="form-group">
-                                    <label><?php echo $this->lang->line('group') . " " . $this->lang->line('by'); ?><small class="req"> *</small></label>
+                                    <label><?php echo $this->lang->line('group') . " " . $this->lang->line('by'); ?></label>
                                     <select class="form-control" name="group" >
                                         <?php foreach ($group_by as $key => $value) {
                                             ?>
@@ -79,19 +99,32 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                             </div>
                         </div>
                     </form>
-
-
+ <?php
+                                    if (empty($results)) {
+                                        ?>
+                                        
+<div class="alert alert-info">
+   <?php echo $this->lang->line('no_record_found'); ?>
+</div>
+                                        <?php
+                                    } else {?>
                     <div class="">
                         <div class="box-header ptbnull"></div>
                         <div class="box-header ptbnull">
                             <h3 class="box-title titlefix"><i class="fa fa-money"></i> <?php ?> <?php echo $this->lang->line('fees') . " " . $this->lang->line('collection') . " " . $this->lang->line('report'); ?></h3> 
                         </div>
                         <div class="box-body table-responsive" id="transfee">
+                        <div id="printhead"><center><h5><?php ?> <?php echo $this->lang->line('fees') . " " . $this->lang->line('collection') . " " . $this->lang->line('report') . "<br>";
+                                                $this->customlib->get_postmessage();
+                                                ?></h5></center></div>      
                             <div class="download_label"><?php ?> <?php echo $this->lang->line('fees') . " " . $this->lang->line('collection') . " " . $this->lang->line('report') . "<br>";
                                                 $this->customlib->get_postmessage();
                                                 ?></div>
-                            <a class="btn btn-default btn-xs pull-right" id="print" onclick="printDiv()" ><i class="fa fa-print"></i></a> <a class="btn btn-default btn-xs pull-right" id="btnExport" onclick="fnExcelReport();"> <i class="fa fa-file-excel-o"></i> </a>
-                            <table class="table table-striped  table-hover " id="headerTable">
+										
+                            <a class="btn btn-default btn-xs pull-right" id="print" onclick="printDiv()" ><i class="fa fa-print"></i></a> 
+							<a class="btn btn-default btn-xs pull-right" id="btnExport" onclick="exportToExcel();"> <i class="fa fa-file-excel-o"></i> </a>
+							
+                      		<table class="table table-striped table-bordered table-hover " id="headerTable">
                                 <thead class="header">
                                     <tr>
                                         <th><?php echo $this->lang->line('payment_id'); ?></th>
@@ -101,19 +134,15 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         <th><?php echo $this->lang->line('fee_type'); ?></th>
                                         <th><?php echo $this->lang->line('collect_by'); ?></th>
                                         <th><?php echo $this->lang->line('mode'); ?></th>
-
-                                        <th class="text text-right"><?php echo $this->lang->line('amount'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-                                        <th class="text text-right"><?php echo $this->lang->line('discount'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-                                        <th class="text text-right"><?php echo $this->lang->line('fine'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-                                        <th class="text text-right"><?php echo $this->lang->line('total'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
+                                        <th style="mso-number-format:'\@'" class="text text-right"><?php echo $this->lang->line('amount'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
+                                        <th style="mso-number-format:'\@'" class="text text-right"><?php echo $this->lang->line('discount'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
+                                        <th style="mso-number-format:'\@'" class="text text-right"><?php echo $this->lang->line('fine'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
+                                        <th style="mso-number-format:'\@'" class="text text-right"><?php echo $this->lang->line('total'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    <?php
-                                    if (empty($results)) {
-                                        
-                                    } else {
+                                   <?php
 
                                         $count = 1;
                                         $grdamountLabel = array();
@@ -122,8 +151,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         $grdTotalLabel = array();
 
                                         foreach ($results as $key => $value) {
-
-
                                             $payment_id = array();
                                             $date = array();
                                             $student_name = array();
@@ -142,13 +169,12 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 $student_class[] = $collect['class'] . " (" . $collect['section'] . ")";
                                                 $fees_type[] = $collect['type'];
                                                 $pay_mode[] = $collect['payment_mode'];
-                                                $collection_by[] = $collect['received_byname']['name'] . " (" . $collect['received_byname']['employee_id'] . ")";
-
+                                            if(is_array($collect['received_byname'])){
+                                                $collection_by[] = $collect['received_byname']['name'] . " (" . $collect['received_byname']['employee_id'] . ")";   
+                                            }
+                                             
                                                 $amountLabel[] = number_format($collect['amount'], 2, '.', '');
-
                                                 $discountLabel[] = number_format($collect['amount_discount'], 2, '.', '');
-
-
                                                 $fineLabel[] = number_format($collect['amount_fine'], 2, '.', '');
                                                 $t = $collect['amount'] + $collect['amount_fine'];
                                                 $TotalLabel[] = number_format($t, 2, '.', '');
@@ -158,7 +184,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 <td>
                                                     <table width="100%"><?php foreach ($payment_id as $p_ides) {
                                                 ?>
-                                                            <tr><td class="text-left-md"><?php echo $p_ides; ?></td></tr>
+                                                            <tr><td style="mso-number-format:'\@'"  class="text-left-md payment_id"><?php echo $p_ides; ?></td></tr>
                                                         <?php }
                                                         ?></table>
                                                 </td>
@@ -194,7 +220,9 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                         ?>
                                                     </table>
                                                 </td>
-                                                <td ><table width="100%"><?php foreach ($collection_by as $collection_by_val) {
+                                                <td ><table width="100%">
+
+                                                    <?php foreach ($collection_by as $collection_by_val) {
                                                             ?>
                                                             <tr><td class="text-left-md"><?php echo $collection_by_val; ?></td></tr>
                                                         <?php }
@@ -245,7 +273,8 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             </tr>
                                             <?php
                                             $count++;
-                                            ?>
+                                            if($subtotal){
+                                            ?> 
                                             <tr>
                                                 <td></td>
                                                 <td></td>
@@ -260,6 +289,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 <td class="text text-right " style="font-weight:bold" ><?php echo array_sum($TotalLabel); ?></td>                                                
                                             </tr>
                                             <?php
+                                        }
                                             $grdamountLabel[] = array_sum($amountLabel);
                                             $grddiscountLabel[] = array_sum($discountLabel);
                                             $grdfineLabel[] = array_sum($fineLabel);
@@ -279,14 +309,15 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             <td class="text text-right" style="font-weight:bold" ><?php echo array_sum($grdfineLabel); ?></td>
                                             <td class="text text-right " style="font-weight:bold" ><?php echo array_sum($grdTotalLabel); ?></td>                                                
                                         </tr>
-                                        <?php
-                                    }
-                                    ?>
+                                       
 
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                     <?php
+                                    }
+                                    ?>
                 </div>
             </div> 
         </div>   
@@ -311,60 +342,68 @@ if ($search_type == 'period') {
 
     document.getElementById("print").style.display = "block";
     document.getElementById("btnExport").style.display = "block";
-    document.getElementById("heading").style.display = "none";
-
+    document.getElementById("printhead").style.display = "none";
+    
     function printDiv() {
         document.getElementById("print").style.display = "none";
         document.getElementById("btnExport").style.display = "none";
-        document.getElementById("heading").style.display = "block";
+         document.getElementById("printhead").style.display = "block";
         var divElements = document.getElementById('transfee').innerHTML;
         var oldPage = document.body.innerHTML;
         document.body.innerHTML =
-                "<html><head><title></title></head><body>" +
+                "<html><head><title>Fee Collection Report</title></head><body>" +
                 divElements + "</body>";
         window.print();
         document.body.innerHTML = oldPage;
-
+        document.getElementById("printhead").style.display = "none";
         location.reload(true);
     }
 
     function fnExcelReport()
     {
-        var tab_text = "<table border='2px'><tr >";
-        var textRange;
-        var j = 0;
-        tab = document.getElementById('headerTable'); // id of table
-
-        for (j = 0; j < tab.rows.length; j++)
-        {
-            tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";
-            //tab_text=tab_text+"</tr>";
-        }
-
-        tab_text = tab_text + "</table>";
-        tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
-        tab_text = tab_text.replace(/<img[^>]*>/gi, ""); // remove if u want images in your table
-        tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
-
-        var ua = window.navigator.userAgent;
-        var msie = ua.indexOf("MSIE ");
-
-        if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
-        {
-            txtArea1.document.open("txt/html", "replace");
-            txtArea1.document.write(tab_text);
-            txtArea1.document.close();
-            txtArea1.focus();
-            sa = txtArea1.document.execCommand("SaveAs", true, "Say Thanks to Sumit.xls");
-        } else                 //other browser not tested on IE 11
-            sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
-
-        return (sa);
+exportToExcel();
+  
+        
     }
 
 
 
 
+function exportToExcel(){
+var htmls = "";
+            var uri = 'data:application/vnd.ms-excel;base64,';
+            var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'; 
+            var base64 = function(s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            };
+
+            var format = function(s, c) {
+                return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+                })
+            };
+        var tab_text = "<tr >";
+                     var textRange;
+         var j = 0;
+          var val="";
+         tab = document.getElementById('headerTable'); // id of table
+
+         for (j = 0; j < tab.rows.length; j++)
+         {
+             
+             tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";
+             //tab_text=tab_text+"</tr>";
+       }
+
+            var ctx = {
+                worksheet : 'Worksheet',
+                table : tab_text
+            }
 
 
+            var link = document.createElement("a");
+            link.download = "studentfee_collection_report.xls";
+            link.href = uri + base64(format(template, ctx));
+            link.click();
+}
 </script>

@@ -41,7 +41,6 @@ class enquiry_model extends MY_Model
 
     public function getComplaintSource()
     {
-
         $this->db->select('*');
         $this->db->from('source');
         $query = $this->db->get();
@@ -226,7 +225,7 @@ class enquiry_model extends MY_Model
         $this->db->where("id", $data["id"])->update("enquiry", $data);
     }
 
-    public function searchEnquiry($source, $status = 'active', $date_from, $date_to)
+    public function searchEnquiry($source, $date_from, $date_to, $status = 'active')
     {
 
         $condition = 0;

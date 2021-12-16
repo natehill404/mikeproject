@@ -24,7 +24,7 @@ class Bulk_sms_lib {
         $messages = array(
             array('to' => $to, 'body' => $message)
         );
-
+       
         $result = $this->send_message(json_encode($messages), 'https://api.bulksms.com/v1/messages', $username, $password);
 
         if ($result['http_status'] != 201) {

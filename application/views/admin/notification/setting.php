@@ -29,6 +29,7 @@
                                     <thead>
                                     <th><?php echo $this->lang->line('event'); ?></th>
                                     <th><?php echo $this->lang->line('option'); ?></th>
+                                      <th><?php echo $this->lang->line('template_id'); ?></th>
                                     <th><?php echo $this->lang->line('sample_message'); ?></th>
                                     </thead>
                                     <tbody>
@@ -74,6 +75,11 @@
                                                     }
                                                     ?>
                                                 </td> 
+                                                <td> <?php
+                                                    if (!empty($note_value)) {
+                                                        echo $note_value->template_id;
+                                                    }
+                                                    ?></td>
                                                
                                                 <td width="60%">
                                                     <?php

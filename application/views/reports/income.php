@@ -19,7 +19,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                         <h3 class="box-title"><i class="fa fa-search"></i> <?php echo $this->lang->line('select_criteria'); ?></h3>
                     </div>
 
-                    <form role="form" action="<?php echo site_url('report/income') ?>" method="post" class="">
+                    <form role="form" action="<?php echo site_url('report/searchreportvalidation') ?>" method="post" class="" id="reportform" >
                         <div class="box-body row">
 
                             <?php echo $this->customlib->getCSRF(); ?>
@@ -39,7 +39,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             ?>><?php echo $search ?></option>
                                                 <?php } ?>
                                     </select>
-                                    <span class="text-danger"><?php echo form_error('search_type'); ?></span>
+                                    <span class="text-danger" id="error_search_type"></span>
                                 </div>
                             </div>
 
@@ -64,68 +64,21 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                             <div class="download_label"><?php echo $this->lang->line('income') . " " . $this->lang->line('report');
                                                 $this->customlib->get_postmessage();
                                                 ?></div>
-                            <table class="table table-striped table-bordered table-hover example">
-                                <thead>
-                                    <tr>
-                                        <th><?php echo $this->lang->line('income_id'); ?></th>
-                                        <th><?php echo $this->lang->line('date'); ?></th>
-                                        <th><?php echo $this->lang->line('income_head'); ?></th>
-                                        <th><?php echo $this->lang->line('name'); ?></th>
-                                        <th><?php echo $this->lang->line('invoice_no'); ?></th>
-                                        <th class="text text-right"><?php echo $this->lang->line('amount'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $count = 1;
-                                    $grand_total = 0;
-                                    if (empty($incomeList)) {
-                                        ?>
-
-                                        <?php
-                                    } else {
-                                        foreach ($incomeList as $key => $values) {
-                                            $grand_total = $grand_total + $values['amount'];
-                                            ?>
+                            
+                                 <table class="table table-striped table-bordered table-hover income-list" data-export-title="<?php echo $this->lang->line('income') . " " . $this->lang->line('report');
+                                                $this->customlib->get_postmessage();   ?>">
+                                        <thead>
                                             <tr>
-                                                <td>
-        <?php echo $values['id']; ?>
-                                                </td>
-                                                <td>
-        <?php echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($values['date'])); ?>
-                                                </td>
-                                                <td>
-        <?php echo $values['income_category']; ?>
-                                                </td>
-                                                <td>
-        <?php echo $values['name']; ?>
-                                                </td>
-                                                <td>
-        <?php echo $values['invoice_no']; ?>
-                                                </td>
-                                                <td class="text text-right">
-        <?php echo ($values['amount']); ?>
-                                                </td>
+                                               <th><?php echo $this->lang->line('name'); ?></th>
+                                                <th><?php echo $this->lang->line('invoice_no'); ?></th>
+                                                <th><?php echo $this->lang->line('income_head'); ?></th>
+                                                <th><?php echo $this->lang->line('date'); ?></th>
+                                                <th class="text text-right"><?php echo $this->lang->line('amount'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
                                             </tr>
-                                            <?php
-                                            $count++;
-                                        }
-                                        ?>
-                                        <tr class="box box-solid total-bg">
-                                            <td align="left"></td>
-                                            <td align="left"></td>
-                                            <td align="left"></td>
-                                            <td align="left"></td>
-                                            <td class="text-right"><?php echo $this->lang->line('grand_total'); ?></td>
-                                            <td class="text text-right">
-    <?php echo ($currency_symbol . number_format($grand_total, 2, '.', '')); ?>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                </table>
                         </div>
                     </div>
                 </div>
@@ -148,4 +101,58 @@ if ($search_type == 'period') {
 }
 ?>
 
+</script>
+<script>
+$(document).ready(function() {
+     emptyDatatable('income-list','data');
+});
+</script>  
+<script>
+$(document).ready(function() {
+     initDatatable('income-list','report/getincomelistbydt',[],[],100);
+
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+$(document).on('submit','#reportform',function(e){
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+    var $this = $(this).find("button[type=submit]:focus");  
+    var form = $(this);
+    var url = form.attr('action');
+    var form_data = form.serializeArray();
+    $.ajax({
+           url: url,
+           type: "POST",
+           dataType:'JSON',
+           data: form_data, // serializes the form's elements.
+              beforeSend: function () {
+                $('[id^=error]').html("");
+                $this.button('loading');
+                
+               },
+              success: function(response) { // your success handler
+                
+                if(!response.status){
+                    $.each(response.error, function(key, value) {
+                    $('#error_' + key).html(value);
+                    });
+                }else{
+                 
+                   initDatatable('income-list','report/getincomelistbydt',response.params,[],100);
+                }
+              },
+             error: function() { // your error handler
+                 $this.button('reset');
+             },
+             complete: function() {
+             $this.button('reset');
+             }
+         });
+
+});
+
+    });
+    
 </script>

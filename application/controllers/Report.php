@@ -345,34 +345,6 @@ class Report extends Admin_Controller
         $searchterm              = '';
         $class                   = $this->class_model->get();
         $data['classlist']       = $class;
-        foreach ($data['classlist'] as $key => $value) {
-            $carray[] = $value['id'];
-        }
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $between_date        = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $search_type = $_POST['search_type'];
-        } else {
-
-            $between_date        = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = $search_type = '';
-        }
-
-        $from_date            = date('Y-m-d', strtotime($between_date['from_date']));
-        $to_date              = date('Y-m-d', strtotime($between_date['to_date']));
-        $condition            = " date_format(admission_date,'%Y-%m-%d') between  '" . $from_date . "' and '" . $to_date . "'";
-        $data['filter_label'] = date($this->customlib->getSchoolDateFormat(), strtotime($from_date)) . " To " . date($this->customlib->getSchoolDateFormat(), strtotime($to_date));
-        $this->form_validation->set_rules('search_type', $this->lang->line('search') . " " . $this->lang->line('type'), 'trim|required|xss_clean');
-
-        if ($this->form_validation->run() == false) {
-
-            $data['resultlist'] = array();
-        } else {
-
-            $data['resultlist'] = $this->student_model->admission_report($searchterm, $carray, $condition);
-
-        }
-
         $this->load->view('layout/header', $data);
         $this->load->view('reports/admission_report', $data);
         $this->load->view('layout/footer', $data);
@@ -455,12 +427,10 @@ class Report extends Admin_Controller
 
             $dates               = $this->customlib->get_betweendate($_POST['search_type']);
             $data['search_type'] = $_POST['search_type'];
-
         } else {
 
             $dates               = $this->customlib->get_betweendate('this_year');
             $data['search_type'] = '';
-
         }
 
         $collection = array();
@@ -491,35 +461,7 @@ class Report extends Admin_Controller
         $this->session->set_userdata('sub_menu', 'Reports/library');
         $this->session->set_userdata('subsub_menu', 'Reports/library/book_issue_report');
         $data['searchlist'] = $this->customlib->get_searchtype();
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-
-        } else {
-
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-
-        }
-
-        if (isset($_POST['members_type']) && $_POST['members_type'] != '') {
-
-            $data['member_id'] = $_POST['members_type'];
-
-        } else {
-
-            $data['member_id'] = '';
-
-        }
-
-        $data['members'] = array('' => $this->lang->line('all'), 'student' => $this->lang->line('student'), 'teacher' => $this->lang->line('teacher'));
-        $start_date      = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date        = date('Y-m-d', strtotime($dates['to_date']));
-        $data['label']   = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-
-        $data['issued_books'] = $this->bookissue_model->studentBookIssue_report($start_date, $end_date);
-        $data['sch_setting']  = $this->sch_setting_detail;
+        $data['members']    = array('' => $this->lang->line('all'), 'student' => $this->lang->line('student'), 'teacher' => $this->lang->line('teacher'));
         $this->load->view('layout/header', $data);
         $this->load->view('reports/studentBookIssueReport', $data);
         $this->load->view('layout/footer', $data);
@@ -531,37 +473,9 @@ class Report extends Admin_Controller
         $this->session->set_userdata('top_menu', 'Reports');
         $this->session->set_userdata('sub_menu', 'Reports/library');
         $this->session->set_userdata('subsub_menu', 'Reports/library/bookduereport');
-        $data['searchlist'] = $this->customlib->get_searchtype();
-
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-
-        } else {
-
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-
-        }
-
-        if (isset($_POST['members_type']) && $_POST['members_type'] != '') {
-
-            $data['member_id'] = $_POST['members_type'];
-
-        } else {
-
-            $data['member_id'] = '';
-
-        }
-
-        $data['members'] = array('' => $this->lang->line('all'), 'student' => $this->lang->line('student'), 'teacher' => $this->lang->line('teacher'));
-
-        $start_date           = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date             = date('Y-m-d', strtotime($dates['to_date']));
-        $data['label']        = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-        $data['issued_books'] = $this->bookissue_model->bookduereport($start_date, $end_date);
-        $data['sch_setting']  = $this->sch_setting_detail;
+        $data['searchlist']  = $this->customlib->get_searchtype();
+        $data['sch_setting'] = $this->sch_setting_detail;
+		$data['members']    = array('' => $this->lang->line('all'), 'student' => $this->lang->line('student'), 'teacher' => $this->lang->line('teacher'));
         $this->load->view('layout/header', $data);
         $this->load->view('reports/bookduereport', $data);
         $this->load->view('layout/footer', $data);
@@ -569,30 +483,10 @@ class Report extends Admin_Controller
 
     public function bookinventory()
     {
-
         $this->session->set_userdata('top_menu', 'Reports');
         $this->session->set_userdata('sub_menu', 'Reports/library');
         $this->session->set_userdata('subsub_menu', 'Reports/library/bookinventory');
         $data['searchlist'] = $this->customlib->get_searchtype();
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-
-        } else {
-
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-
-        }
-
-        $start_date    = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date      = date('Y-m-d', strtotime($dates['to_date']));
-        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-        $listbook      = $this->book_model->bookinventory($start_date, $end_date);
-
-        $data['listbook'] = $listbook;
-
         $this->load->view('layout/header', $data);
         $this->load->view('reports/bookinventory', $data);
         $this->load->view('layout/footer', $data);
@@ -701,39 +595,6 @@ class Report extends Admin_Controller
         $data['searchlist'] = $this->customlib->get_searchtype();
         $data['date_type']  = $this->customlib->date_type();
 
-        $data['date_typeid'] = '';
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-
-        } else {
-
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-
-        }
-
-        $start_date = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
-
-        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-
-        if (isset($_POST['date_type']) && $_POST['date_type'] != '') {
-
-            $data['date_typeid'] = $_POST['date_type'];
-
-            if ($_POST['date_type'] == 'exam_from_date') {
-                $condition = " date_format(exam_from,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
-            } elseif ($_POST['date_type'] == 'exam_to_date') {
-                $condition = " date_format(exam_to,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
-            }
-
-        } else {
-            $condition = " date_format(created_at,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
-        }
-
-        $data['resultlist'] = $this->onlineexam_model->onlineexamReport($condition);
         $this->load->view('layout/header', $data);
         $this->load->view('reports/onlineexams', $data);
         $this->load->view('layout/footer', $data);
@@ -799,51 +660,8 @@ class Report extends Admin_Controller
         $this->session->set_userdata('top_menu', 'Reports');
         $this->session->set_userdata('sub_menu', 'Reports/online_examinations');
         $this->session->set_userdata('subsub_menu', 'Reports/online_examinations/onlineexamattend');
-        $condition = "";
-
         $data['searchlist'] = $this->customlib->get_searchtype();
         $data['date_type']  = $this->customlib->date_type();
-
-        $data['date_typeid'] = '';
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-
-        } else {
-
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-
-        }
-
-        $start_date = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
-
-        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-
-        if (isset($_POST['date_type']) && $_POST['date_type'] != '') {
-
-            $data['date_typeid'] = $_POST['date_type'];
-
-            if ($_POST['date_type'] == 'exam_from_date') {
-
-                $condition = " and date_format(onlineexam.exam_from,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
-
-            } elseif ($_POST['date_type'] == 'exam_to_date') {
-
-                $condition = " and date_format(onlineexam.exam_to,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
-
-            }
-
-        } else {
-
-            $condition = " and  date_format(onlineexam.created_at,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
-
-        }
-
-        $data['resultlist']  = $this->onlineexam_model->onlineexamatteptreport($condition);
-        $data['sch_setting'] = $this->sch_setting_detail;
         $this->load->view('layout/header', $data);
         $this->load->view('reports/onlineexamattend', $data);
         $this->load->view('layout/footer', $data);
@@ -868,8 +686,6 @@ class Report extends Admin_Controller
 
         if ($this->form_validation->run() == false) {
 
-       
-
         } else {
             if (isset($_POST['class_id']) && $_POST['class_id'] != '') {
                 $class_id = $_POST['class_id'];
@@ -882,18 +698,17 @@ class Report extends Admin_Controller
             if (isset($_POST['exam_id']) && $_POST['exam_id'] != '') {
                 $exam_id = $_POST['exam_id'];
             }
-            $exam          = $this->onlineexam_model->get($exam_id);
-            $student_data           = $this->onlineexam_model->searchAllOnlineExamStudents($exam_id, $class_id, $section_id);
-          
+            $exam         = $this->onlineexam_model->get($exam_id);
+            $student_data = $this->onlineexam_model->searchAllOnlineExamStudents($exam_id, $class_id, $section_id,1);
+
             if (!empty($student_data)) {
                 foreach ($student_data as $student_key => $student_value) {
                     $student_data[$student_key]['questions_results'] = $this->onlineexamresult_model->getResultByStudent($student_value['onlineexam_student_id'], $exam_id);
                 }
             }
-        
 
-        $data['exam']=$exam;
-        $data['student_data']=$student_data;
+            $data['exam']         = $exam;
+            $data['student_data'] = $student_data;
         }
         $data['sch_setting'] = $this->sch_setting_detail;
         $this->load->view('layout/header', $data);
@@ -907,26 +722,9 @@ class Report extends Admin_Controller
         $this->session->set_userdata('top_menu', 'Reports');
         $this->session->set_userdata('sub_menu', 'Reports/inventory');
         $this->session->set_userdata('subsub_menu', 'Reports/inventory/inventorystock');
-        $data['stockresult1'] = $this->itemstock_model->get_currentstock();
-        $data['stockresult']  = array();
-        foreach ($data['stockresult1'] as $key => $value) {
-
-            $available_stock = $this->getAvailQuantity($value['id']);
-            $data['stockresult'][] = array(
-                'available_stock'    => $value['available_stock'],
-                'available'          => $this->getAvailQuantity($value['id']),
-                'name'               => $value['name'],
-                'des'                => $value['des'],
-                'item_category'      => $value['item_category'],
-                'item_supplier'      => $value['item_supplier'],
-                'item_store'         => $value['item_store'],
-                'total_not_returned' => $value['total_not_returned'],
-            );
-        }
-
-        $this->load->view('layout/header', $data);
-        $this->load->view('reports/inventorystock', $data);
-        $this->load->view('layout/footer', $data);
+        $this->load->view('layout/header');
+        $this->load->view('reports/inventorystock');
+        $this->load->view('layout/footer');
     }
 
     public function additem()
@@ -938,28 +736,53 @@ class Report extends Admin_Controller
         $data['searchlist']  = $this->customlib->get_searchtype();
         $data['date_type']   = $this->customlib->date_type();
         $data['date_typeid'] = '';
+        $this->load->view('layout/header', $data);
+        $this->load->view('reports/additem', $data);
+        $this->load->view('layout/footer', $data);
+    }
+
+    public function getadditemlistbydt()
+    {
 
         if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
             $dates               = $this->customlib->get_betweendate($_POST['search_type']);
             $data['search_type'] = $_POST['search_type'];
-
         } else {
-
             $dates               = $this->customlib->get_betweendate('this_year');
             $data['search_type'] = '';
-
         }
 
         $start_date = date('Y-m-d', strtotime($dates['from_date']));
         $end_date   = date('Y-m-d', strtotime($dates['to_date']));
 
-        $data['label']      = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-        $data['itemresult'] = $this->itemstock_model->get_ItemByBetweenDate($start_date, $end_date);
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+        $itemresult    = $this->itemstock_model->get_ItemByBetweenDate($start_date, $end_date);
 
-        $this->load->view('layout/header', $data);
-        $this->load->view('reports/additem', $data);
-        $this->load->view('layout/footer', $data);
+        $resultlist      = json_decode($itemresult);
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data         = array();
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $key => $value) {
+
+                $row       = array();
+                $row[]     = $value->name;
+                $row[]     = $value->item_category;
+                $row[]     = $value->item_supplier;
+                $row[]     = $value->item_store;
+                $row[]     = $value->quantity;
+                $row[]     = $currency_symbol . $value->purchase_price;
+                $row[]     = date($this->customlib->getSchoolDateFormat(), strtotime($value->date));
+                $dt_data[] = $row;
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
     }
 
     public function issueinventory()
@@ -995,15 +818,70 @@ class Report extends Admin_Controller
         $this->load->view('layout/footer', $data);
     }
 
+    public function getissueinventorylistbydt()
+    {
+
+        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+        } else {
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+        }
+
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+
+        $data['label']   = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+        $itemresult      = $this->itemissue_model->get_IssueInventoryReport($start_date, $end_date);
+        $resultlist      = json_decode($itemresult);
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data         = array();
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $key => $value) {
+
+                if ($value->note == "") {
+                    $condition = "<p class='text text-danger no-print'>" . $this->lang->line('no_description') . " </p>";
+                } else {
+                    $condition = "<p class='text text-info no-print' >" . $value->note . "</p>";
+                }
+
+                $title = "<a href='#' data-toggle='popover' class='detail_popover'>" . $value->item_name . "</a> <div class='fee_detail_popover' style='display: none'> " . $condition . " </div> ";
+
+                $row   = array();
+                $row[] = $title;
+                $row[] = $value->item_category;
+                if ($value->return_date == "0000-00-00") {
+                    $return_date = "";
+                } else {
+                    $return_date = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->return_date));
+                }
+                $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->issue_date)) . " - " . $return_date;
+
+                $row[]     = $value->staff_name . " " . $value->surname . "(" . $value->employee_id . ")";
+                $row[]     = $value->issue_by;
+                $row[]     = $value->quantity;
+                $dt_data[] = $row;
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
     public function finance()
     {
         $this->session->set_userdata('top_menu', 'Reports');
         $this->session->set_userdata('sub_menu', 'Reports/finance');
         $this->session->set_userdata('subsub_menu', '');
-        $data['stockresult'] = $this->itemstock_model->get_currentstock();
-        $this->load->view('layout/header', $data);
-        $this->load->view('reports/finance', $data);
-        $this->load->view('layout/footer', $data);
+        $this->load->view('layout/header');
+        $this->load->view('reports/finance');
+        $this->load->view('layout/footer');
     }
 
     public function income()
@@ -1011,26 +889,7 @@ class Report extends Admin_Controller
         $this->session->set_userdata('top_menu', 'Reports');
         $this->session->set_userdata('sub_menu', 'Reports/finance');
         $this->session->set_userdata('subsub_menu', 'Reports/finance/income');
-        $data['searchlist']  = $this->customlib->get_searchtype();
-        $data['date_type']   = $this->customlib->date_type();
-        $data['date_typeid'] = '';
-        $this->form_validation->set_rules('search_type', $this->lang->line('search') . " " . $this->lang->line('type'), 'trim|required|xss_clean');
-
-        if ($this->form_validation->run() == false) {
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-        } else {
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-        }
-
-        $start_date = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
-
-        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-        $incomeList    = $this->income_model->search("", $start_date, $end_date);
-
-        $data['incomeList'] = $incomeList;
+        $data['searchlist'] = $this->customlib->get_searchtype();
         $this->load->view('layout/header', $data);
         $this->load->view('reports/income', $data);
         $this->load->view('layout/footer', $data);
@@ -1059,9 +918,6 @@ class Report extends Admin_Controller
         $end_date   = date('Y-m-d', strtotime($dates['to_date']));
 
         $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-        $expenseList   = $this->expense_model->search("", $start_date, $end_date);
-
-        $data['expenseList'] = $expenseList;
         $this->load->view('layout/header', $data);
         $this->load->view('reports/expense', $data);
         $this->load->view('layout/footer', $data);
@@ -1110,35 +966,12 @@ class Report extends Admin_Controller
         $data['searchlist']  = $this->customlib->get_searchtype();
         $data['date_type']   = $this->customlib->date_type();
         $data['date_typeid'] = '';
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-
-        } else {
-
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-
-        }
-        $data['head_id'] = $head_id = "";
-        if (isset($_POST['head']) && $_POST['head'] != '') {
-            $data['head_id'] = $head_id = $_POST['head'];
-        }
-
-        $start_date = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
-
-        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-        $incomeList    = $this->income_model->searchincomegroup($start_date, $end_date, $head_id);
-
-        $data['headlist'] = $this->incomehead_model->get();
-
-        $data['incomeList'] = $incomeList;
+        $data['headlist']    = $this->incomehead_model->get();
         $this->load->view('layout/header', $data);
         $this->load->view('reports/incomegroup', $data);
         $this->load->view('layout/footer', $data);
     }
+
     public function expensegroup()
     {
 
@@ -1148,32 +981,7 @@ class Report extends Admin_Controller
         $data['searchlist']  = $this->customlib->get_searchtype();
         $data['date_type']   = $this->customlib->date_type();
         $data['date_typeid'] = '';
-
-        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
-
-            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
-            $data['search_type'] = $_POST['search_type'];
-
-        } else {
-
-            $dates               = $this->customlib->get_betweendate('this_year');
-            $data['search_type'] = '';
-
-        }
-
-        $data['head_id'] = $head_id = "";
-        if (isset($_POST['head']) && $_POST['head'] != '') {
-            $data['head_id'] = $head_id = $_POST['head'];
-        }
-
-        $start_date = date('Y-m-d', strtotime($dates['from_date']));
-        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
-
-        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
-
-        $result              = $this->expensehead_model->searchexpensegroup($start_date, $end_date, $head_id);
         $data['headlist']    = $this->expensehead_model->get();
-        $data['expenselist'] = $result;
         $this->load->view('layout/header', $data);
         $this->load->view('reports/expensegroup', $data);
         $this->load->view('layout/footer', $data);
@@ -1933,4 +1741,1014 @@ class Report extends Admin_Controller
 
     }
 
+    public function getinventorylist()
+    {
+
+        $dstockresult1 = $this->itemstock_model->get_currentstock();
+        $m             = json_decode($dstockresult1);
+        $dt_data       = array();
+        if (!empty($m->data)) {
+            foreach ($m->data as $key => $value) {
+                $available_stock = $this->getAvailQuantity($value->id);
+                $row             = array();
+                $row[]           = $value->name;
+                $row[]           = $value->item_category;
+                $row[]           = $value->item_supplier;
+                $row[]           = $value->item_store;
+                $row[]           = $available_stock;
+                $row[]           = $value->available_stock;
+                $row[]           = $value->total_not_returned;
+                $dt_data[]       = $row;
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /*-----------------function to check search validation for admission report ---*/
+
+    public function searchreportvalidation()
+    {
+
+        $this->form_validation->set_rules('search_type', $this->lang->line('search') . " " . $this->lang->line('type'), 'trim|required|xss_clean');
+
+        if ($this->form_validation->run() == false) {
+            $error = array();
+
+            $error['search_type'] = form_error('search_type');
+
+            $array = array('status' => 0, 'error' => $error);
+            echo json_encode($array);
+        } else {
+            $search_type = $this->input->post('search_type');
+            $date_from   = "";
+            $date_to     = "";
+            if ($search_type == 'period') {
+
+                $date_from = $this->input->post('date_from');
+                $date_to   = $this->input->post('date_to');
+            }
+
+            $params = array('search_type' => $search_type, 'date_from' => $date_from, 'date_to' => $date_to);
+            $array  = array('status' => 1, 'error' => '', 'params' => $params);
+            echo json_encode($array);
+        }
+    }
+
+    public function dtadmissionreport()
+    {
+        $sch_setting = $this->sch_setting_detail;
+        $searchterm  = '';
+        $class       = $this->class_model->get();
+        $classlist   = $class;
+        $count       = 0;
+
+        foreach ($classlist as $key => $value) {
+            $carray[] = $value['id'];
+        }
+        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
+
+            $between_date        = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $search_type = $_POST['search_type'];
+        } else {
+
+            $between_date        = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = $search_type = '';
+        }
+
+        $from_date    = date('Y-m-d', strtotime($between_date['from_date']));
+        $to_date      = date('Y-m-d', strtotime($between_date['to_date']));
+        $condition    = " date_format(admission_date,'%Y-%m-%d') between  '" . $from_date . "' and '" . $to_date . "'";
+        $filter_label = date($this->customlib->getSchoolDateFormat(), strtotime($from_date)) . " To " . date($this->customlib->getSchoolDateFormat(), strtotime($to_date));
+
+        $result     = $this->student_model->admission_report($searchterm, $carray, $condition);
+        $resultlist = json_decode($result);
+        $dt_data    = array();
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $resultlist_key => $student) {
+
+                $count++;
+                $viewbtn = "<a  href='" . base_url() . "student/view/" . $student->id . "'>" . $this->customlib->getFullName($student->firstname, $student->middlename, $student->lastname, $sch_setting->middlename, $sch_setting->lastname) . "</a>";
+
+                $row = array();
+
+                $row[] = $student->admission_no;
+                $row[] = $viewbtn;
+                $row[] = $student->class . " (" . $student->section . ")";
+                if ($sch_setting->father_name) {
+                    $row[] = $student->father_name;
+                }
+                if ($student->dob != null && $student->dob != '0000-00-00') {
+                    $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student->dob));
+                } else {
+                    $row[] = "";
+                }
+
+                if ($sch_setting->admission_date) {
+                    if ($student->admission_date != null && $student->admission_date != '0000-00-00') {
+
+                        $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student->admission_date));
+                    } else {
+                        $row[] = "";
+                    }
+                }
+
+                $row[] = $student->gender;
+
+                if ($sch_setting->category) {
+                    $row[] = $student->category;
+                }
+                if ($sch_setting->mobile_no) {
+                    $row[] = $student->mobileno;
+                }
+
+                $dt_data[] = $row;
+            }
+
+            $footer_row   = array();
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = $this->lang->line('total_admission_in_this_duration');
+            $footer_row[] = $filter_label;
+            $footer_row[] = $count;
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $dt_data[]    = $footer_row;
+
+        }
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /*
+    function to get formparateter */
+    public function getformparameter()
+    {
+
+        $search_type = $this->input->post('search_type');
+        $date_type   = $this->input->post("date_type");
+        $date_from   = "";
+        $date_to     = "";
+        if ($search_type == 'period') {
+
+            $date_from = $this->input->post('date_from');
+            $date_to   = $this->input->post('date_to');
+        }
+
+        $params = array('search_type' => $search_type, 'date_type' => $date_type, 'date_from' => $date_from, 'date_to' => $date_to);
+        $array  = array('status' => 1, 'error' => '', 'params' => $params);
+        echo json_encode($array);
+
+    }
+
+    public function dtexamreportlist()
+    {
+
+        $search_type = $this->input->post('search_type');
+        $date_type   = $this->input->post('date_type');
+        $date_from   = $this->input->post('date_from');
+        $date_to     = $this->input->post('date_to');
+
+        $data['date_typeid'] = '';
+        if (isset($search_type) && $search_type != '') {
+
+            $dates               = $this->customlib->get_betweendate($search_type);
+            $data['search_type'] = $search_type;
+
+        } else {
+
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+
+        }
+
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+
+        if (isset($date_type) && $date_type != '') {
+
+            $data['date_typeid'] = $date_type;
+
+            if ($date_type == 'exam_from_date') {
+                $condition = " date_format(exam_from,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
+            } elseif ($date_type == 'exam_to_date') {
+                $condition = " date_format(exam_to,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
+            }
+
+        } else {
+            $condition = " date_format(created_at,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
+        }
+
+        $sch_setting = $this->sch_setting_detail;
+        $results     = $this->onlineexam_model->onlineexamReport($condition);
+
+        $resultlist = json_decode($results);
+        $dt_data    = array();
+
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $resultlist_key => $subject_value) {
+
+                if ($subject_value->is_active == 1) {
+                    $publish_btn = " <i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>";
+                } else {
+                    $publish_btn = " <i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>";
+                }
+
+                if ($subject_value->is_active == 1) {
+                    $result_publish = " <i class='fa fa-check-square-o'></i><span style='display:none'>Yes</span>";
+                } else {
+                    $result_publish = "<i class='fa fa-exclamation-circle'></i><span style='display:none'>No</span>";
+                }
+
+                $row   = array();
+                $row[] = $subject_value->exam;
+                $row[] = $subject_value->attempt;
+                $row[] = $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_from, false);
+                $row[] = $this->customlib->dateyyyymmddToDateTimeformat($subject_value->exam_to, false);
+                $row[] = $subject_value->duration;
+                $row[] = $subject_value->assign;
+                $row[] = $subject_value->questions;
+                $row[] = $publish_btn;
+                $row[] = $result_publish;
+
+                $dt_data[] = $row;
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /* function to get exam attempt report using datatable*/
+
+    public function dtexamattemptreport()
+    {
+        $condition          = "";
+        $search_type        = $this->input->post('search_type');
+        $date_type          = $this->input->post('date_type');
+        $date_from          = $this->input->post('date_from');
+        $date_to            = $this->input->post('date_to');
+        $data['searchlist'] = $this->customlib->get_searchtype();
+        $data['date_type']  = $this->customlib->date_type();
+
+        $data['date_typeid'] = '';
+        if (isset($search_type) && $search_type != '') {
+            $dates               = $this->customlib->get_betweendate($search_type);
+            $data['search_type'] = $search_type;
+        } else {
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+        }
+
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+
+        if (isset($_POST['date_type']) && $_POST['date_type'] != '') {
+
+            $data['date_typeid'] = $_POST['date_type'];
+
+            if ($search_type == 'exam_from_date') {
+
+                $condition .= " and date_format(onlineexam.exam_from,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
+
+            } elseif ($date_type == 'exam_to_date') {
+                $condition .= " and date_format(onlineexam.exam_to,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
+            }
+
+        } else {
+
+            $condition .= " and  date_format(onlineexam.created_at,'%Y-%m-%d') between '" . $start_date . "' and '" . $end_date . "'";
+
+        }
+
+        $result      = $this->onlineexam_model->onlineexamatteptreport($condition);
+        $sch_setting = $this->sch_setting_detail;
+        $resultlist  = json_decode($result);
+        $dt_data     = array();
+
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $resultlist_key => $student_value) {
+
+                $exams = explode(',', $student_value->exams);
+
+                $exam_name               = '';
+                $exam_from               = '';
+                $exam_to                 = '';
+                $exam_duration           = '';
+                $exam_publish            = "";
+                $exam_resultpublish      = "";
+                $exam_publishprint       = "";
+                $exam_resultpublishprint = "";
+                foreach ($exams as $exams_key => $exams_value) {
+                    $exam_details = explode('@', $exams_value);
+
+                    if (count($exam_details) == 9) {
+
+                        $exam_name .= $exam_details[1];
+                        $exam_from .= date($this->customlib->getSchoolDateFormat(), $this->customlib->dateYYYYMMDDtoStrtotime($exam_details[3]));
+                        $exam_to .= date($this->customlib->getSchoolDateFormat(), $this->customlib->dateYYYYMMDDtoStrtotime($exam_details[4]));
+                        $exam_duration .= $exam_details[5];
+                        $exam_publish .= ($exam_details[7] == 1) ? "<i class='fa fa-check-square-o'></i>" : "<i class='fa fa-exclamation-circle'></i>";
+                        $exam_resultpublish .= ($exam_details[8] == 1) ? "<i class='fa fa-check-square-o'></i>" : "<i class='fa fa-exclamation-circle'></i>";
+
+                        $exam_publishprint .= ($exam_details[7] == 1) ? "<span style='display:none'>Yes</span>" : "<span style='display:none'>No</span>";
+                        $exam_resultpublishprint .= ($exam_details[8] == 1) ? "<span style='display:none'>Yes</span>" : "<span style='display:none'>No</span>";
+
+                        $exam_name .= '<br>';
+                        $exam_from .= "<br>";
+                        $exam_to .= "<br>";
+                        $exam_duration .= "<br>";
+                        $exam_publish .= "<br>";
+                        $exam_resultpublish .= "<br>";
+                        $exam_publishprint .= "<br>";
+                        $exam_resultpublishprint .= "<br>";
+                    }
+                }
+
+                $row   = array();
+                $row[] = $this->customlib->getFullName($student_value->firstname, $student_value->middlename, $student_value->lastname, $sch_setting->middlename, $sch_setting->lastname);
+                $row[] = $student_value->admission_no;
+
+                $row[] = $student_value->class;
+                $row[] = $student_value->section;
+                $row[] = $exam_name;
+                $row[] = $exam_from;
+                $row[] = $exam_to;
+                $row[] = $exam_duration;
+                $row[] = $exam_publish . $exam_publishprint;
+                $row[] = $exam_resultpublish . $exam_resultpublishprint;
+
+                $dt_data[] = $row;
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /*
+    function to get formparateter */
+    public function getbookissueparameter()
+    {
+
+        $search_type  = $this->input->post('search_type');
+        $members_type = $this->input->post("members_type");
+        $date_from    = "";
+        $date_to      = "";
+        if ($search_type == 'period') {
+
+            $date_from = $this->input->post('date_from');
+            $date_to   = $this->input->post('date_to');
+        }
+
+        $params = array('search_type' => $search_type, 'members_type' => $members_type, 'date_from' => $date_from, 'date_to' => $date_to);
+        $array  = array('status' => 1, 'error' => '', 'params' => $params);
+        echo json_encode($array);
+
+    }
+
+    /* function to get book issue report by using datatable */
+    public function dtbookissuereportlist()
+    {
+
+        $search_type = $this->input->post('search_type');
+        $member_type = $this->input->post('date_type');
+        $date_from   = $this->input->post('date_from');
+        $date_to     = $this->input->post('date_to');
+
+        $data['searchlist'] = $this->customlib->get_searchtype();
+        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
+
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+
+        } else {
+
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+
+        }
+
+        $data['members'] = array('' => $this->lang->line('all'), 'student' => $this->lang->line('student'), 'teacher' => $this->lang->line('teacher'));
+        $start_date      = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date        = date('Y-m-d', strtotime($dates['to_date']));
+        $data['label']   = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+
+        $result = $this->bookissue_model->studentBookIssue_report($start_date, $end_date);
+
+        $sch_setting = $this->sch_setting_detail;
+
+        $resultlist = json_decode($result);
+        $dt_data    = array();
+
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $resultlist_key => $value) {
+
+                $row   = array();
+                $row[] = $value->book_title;
+                $row[] = $value->book_no;
+                $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->issue_date));
+                $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->duereturn_date));
+                $row[] = $value->members_id;
+                $row[] = $value->library_card_no;
+                if ($value->admission != 0) {
+                    $row[] = $value->admission;
+                } else {
+                    $row[] = "";
+                }
+                if ($value->member_type == 'student') {
+                    $row[] = $this->customlib->getFullName($value->firstname, $value->middlename, $value->lastname, $sch_setting->middlename, $sch_setting->lastname);
+                } else {
+                    $row[] = ucwords($value->staff_name);
+                }
+                $row[] = ucwords($value->member_type);
+
+                $dt_data[] = $row;
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /* function to get book due report by using datatable */
+    public function dtbookduereportlist()
+    {
+        $search_type = $this->input->post('search_type');
+        $member_type = $this->input->post('date_type');
+        $date_from   = $this->input->post('date_from');
+        $date_to     = $this->input->post('date_to');
+
+        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
+
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+
+        } else {
+
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+
+        }
+
+        if (isset($_POST['members_type']) && $_POST['members_type'] != '') {
+
+            $data['member_id'] = $_POST['members_type'];
+
+        } else {
+
+            $data['member_id'] = '';
+
+        }
+
+        $data['members'] = array('' => $this->lang->line('all'), 'student' => $this->lang->line('student'), 'teacher' => $this->lang->line('teacher'));
+
+        $start_date    = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date      = date('Y-m-d', strtotime($dates['to_date']));
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+        $issued_books  = $this->bookissue_model->bookduereport($start_date, $end_date);
+        $sch_setting   = $this->sch_setting_detail;
+
+        $resultlist = json_decode($issued_books);
+        $dt_data    = array();
+
+        if (!empty($resultlist->data)) {
+            foreach ($resultlist->data as $resultlist_key => $value) {
+
+                $row   = array();
+                $row[] = $value->book_title;
+                $row[] = $value->book_no;
+                $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->issue_date));
+                $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->duereturn_date));
+                $row[] = $value->members_id;
+                $row[] = $value->library_card_no;
+                if ($value->admission != 0) {
+                    $row[] = $value->admission;
+                } else {
+                    $row[] = "";
+                }
+                if ($value->member_type == 'student') {
+                    $row[] = $this->customlib->getFullName($value->firstname, $value->middlename, $value->lastname, $sch_setting->middlename, $sch_setting->lastname);
+                } else {
+                    $row[] = ucwords($value->fname) . " " . ucwords($value->lname);
+                }
+                $row[] = ucwords($value->member_type);
+
+                $dt_data[] = $row;
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /* function to get book issue return report by using datatable */
+    public function dtbookinventoryreportlist()
+    {
+        $search_type = $this->input->post('search_type');
+
+        $date_from = $this->input->post('date_from');
+        $date_to   = $this->input->post('date_to');
+
+        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
+
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+
+        } else {
+
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+
+        }
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+
+        $start_date    = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date      = date('Y-m-d', strtotime($dates['to_date']));
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+        $listbook      = $this->book_model->bookinventory($start_date, $end_date);
+
+        $resultlist = json_decode($listbook);
+        $dt_data    = array();
+
+        if (!empty($resultlist->data)) {
+
+            $editbtn   = "";
+            $deletebtn = "";
+            foreach ($resultlist->data as $resultlist_key => $value) {
+
+                if ($value->description == "") {
+                    $condition = "<p class='text text-danger no-print'>" . $this->lang->line('no_description') . " </p>";
+                } else {
+                    $condition = "<p class='text text-info no-print' >" . $value->description . "</p>";
+                }
+
+                $title = "<a href='#' data-toggle='popover' class='detail_popover'>" . $value->description . "</a> <div class='fee_detail_popover' style='display: none'> " . $condition . " </div> ";
+
+                if ($this->rbac->hasPrivilege('books', 'can_edit')) {
+                    $editbtn = "<a href='" . base_url() . "admin/book/edit/" . $value->id . "'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('edit') . "'><i class='fa fa-pencil'></i></a>";
+                }
+                if ($this->rbac->hasPrivilege('books', 'delete')) {
+
+                    $deletebtn = "<a href='" . base_url() . "admin/book/delete/" . $value->id . "'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('edit') . "'><i class='fa fa-remove'></i></a>";
+                }
+
+                $row   = array();
+                $row[] = $title;
+                $row[] = $value->book_no;
+                $row[] = $value->isbn_no;
+                $row[] = $value->publish;
+                $row[] = $value->author;
+                $row[] = $value->subject;
+                $row[] = $value->rack_no;
+                $row[] = $value->qty;
+                $row[] = $value->qty - $value->total_issue;
+
+                $row[]     = $value->qty - ($value->qty - $value->total_issue);
+                $row[]     = ($currency_symbol . $value->perunitcost);
+                $row[]     = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->postdate));
+                $row[]     = $editbtn . " " . $deletebtn;
+                $dt_data[] = $row;
+            }
+
+        }
+        $json_data = array(
+            "draw"            => intval($resultlist->draw),
+            "recordsTotal"    => intval($resultlist->recordsTotal),
+            "recordsFiltered" => intval($resultlist->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /*
+    this function is used to get and return  form parameter without applying any validation  */
+    public function getsearchtypeparam()
+    {
+
+        $search_type = $this->input->post('search_type');
+        $date_from   = "";
+        $date_to     = "";
+        if ($search_type == 'period') {
+
+            $date_from = $this->input->post('date_from');
+            $date_to   = $this->input->post('date_to');
+        }
+
+        $params = array('search_type' => $search_type, 'date_from' => $date_from, 'date_to' => $date_to);
+        $array  = array('status' => 1, 'error' => '', 'params' => $params);
+        echo json_encode($array);
+    }
+
+    public function getincomelistbydt()
+    {
+        $search_type = $this->input->post('search_type');
+        $date_from   = $this->input->post('date_from');
+        $date_to     = $this->input->post('date_to');
+
+        if ($search_type == "") {
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+        } else {
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+        }
+
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+
+        $incomeList = $this->income_model->search("", $start_date, $end_date);
+
+        $incomeList      = json_decode($incomeList);
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data         = array();
+        $grand_total     = 0;
+        if (!empty($incomeList->data)) {
+            foreach ($incomeList->data as $key => $value) {
+                $grand_total += $value->amount;
+
+                $row   = array();
+                $row[] = $value->name;
+                $row[] = $value->invoice_no;
+                $row[] = $value->income_category;
+                $row[] = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->date));
+                $row[] = $currency_symbol . $value->amount;
+
+                $dt_data[] = $row;
+            }
+            $footer_row   = array();
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "<b>" . $this->lang->line('grand_total') . "</b>";
+            $footer_row[] = ($currency_symbol . number_format($grand_total, 2, '.', ''));
+            $dt_data[]    = $footer_row;
+        }
+
+        $json_data = array(
+            "draw"            => intval($incomeList->draw),
+            "recordsTotal"    => intval($incomeList->recordsTotal),
+            "recordsFiltered" => intval($incomeList->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+
+    }
+
+    public function getexpenselistbydt()
+    {
+        $search_type = $this->input->post('search_type');
+        $date_from   = $this->input->post('date_from');
+        $date_to     = $this->input->post('date_to');
+
+        if ($search_type == "") {
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+        } else {
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+        }
+
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+        $expenseList   = $this->expense_model->search($start_date, $end_date,"");
+
+        $m               = json_decode($expenseList);
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data         = array();
+        $grand_total     = 0;
+        if (!empty($m->data)) {
+            foreach ($m->data as $key => $value) {
+                $grand_total += $value->amount;
+
+                $row       = array();
+                $row[]     = $value->name;
+                $row[]     = $value->invoice_no;
+                $row[]     = $value->exp_category;
+                $row[]     = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->date));
+                $row[]     = $currency_symbol . $value->amount;
+                $dt_data[] = $row;
+            }
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = $this->lang->line('grand_total');
+            $footer_row[] = ($currency_symbol . number_format($grand_total, 2, '.', ''));
+            $dt_data[]    = $footer_row;
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /* this function is used to get and return income group report parameter without applying any validation */
+    public function getgroupreportparam()
+    {
+
+        $search_type = $this->input->post('search_type');
+        $head        = $this->input->post('head');
+
+        $date_from = "";
+        $date_to   = "";
+        if ($search_type == 'period') {
+
+            $date_from = $this->input->post('date_from');
+            $date_to   = $this->input->post('date_to');
+        }
+
+        $params = array('search_type' => $search_type, 'head' => $head, 'date_from' => $date_from, 'date_to' => $date_to);
+        $array  = array('status' => 1, 'error' => '', 'params' => $params);
+        echo json_encode($array);
+    }
+
+    /* this function is used to get income group report by using datatable */
+
+    public function dtincomegroupreport()
+    {
+        $search_type = $this->input->post('search_type');
+        $date_from   = $this->input->post('date_from');
+        $date_to     = $this->input->post('date_to');
+        $head        = $this->input->post('head');
+
+        if (isset($search_type) && $search_type != '') {
+
+            $dates               = $this->customlib->get_betweendate($search_type);
+            $data['search_type'] = $_POST['search_type'];
+
+        } else {
+
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+
+        }
+        $data['head_id'] = $head_id = "";
+        if (isset($_POST['head']) && $_POST['head'] != '') {
+            $data['head_id'] = $head_id = $_POST['head'];
+        }
+
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+
+        $data['label']   = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+        $incomeList      = $this->income_model->searchincomegroup($start_date, $end_date, $head_id);
+        $m               = json_decode($incomeList);
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data         = array();
+        $grand_total     = 0;
+        if (!empty($m->data)) {
+            $grd_total = 0;
+            foreach ($m->data as $key => $value) {
+
+                $incomedata    = explode(',', $value->income);
+                $income_id     = "";
+                $income_name   = "";
+                $income_date   = "";
+                $invoice_no    = "";
+                $income_amount = "";
+                $total_amount  = 0;
+                foreach ($incomedata as $incomevalue) {
+                    $incomeexpload = explode('@', $incomevalue);
+                    $income_id .= $incomeexpload[0];
+                    $income_id .= "<br>";
+                    $income_name .= $incomeexpload[1];
+                    $income_name .= "<br>";
+                    $income_date .= date($this->customlib->getSchoolDateFormat(), strtotime($incomeexpload[3]));
+                    $income_date .= "<br>";
+                    $invoice_no .= $incomeexpload[2];
+                    $invoice_no .= "<br>";
+                    $income_amount .= $incomeexpload[4];
+                    $income_amount .= "<br>";
+                }
+                $total_amount = "<b>" . $value->total_amount . "</b>";
+                $grd_total += $value->total_amount;
+                $row       = array();
+                $row[]     = $value->income_category;
+                $row[]     = $income_id;
+                $row[]     = $income_name;
+                $row[]     = $income_date;
+                $row[]     = $invoice_no;
+                $row[]     = $income_amount;
+                $dt_data[] = $row;
+
+                $amount_row   = array();
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = $total_amount;
+                $dt_data[]    = $amount_row;
+            }
+
+            $grand_total  = "<b>" . $currency_symbol . $grd_total . "</b>";
+            $footer_row   = array();
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "<b>" . $this->lang->line('total') . "</b>";
+            $footer_row[] = $grand_total;
+            $dt_data[]    = $footer_row;
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    /* this function is used to get expense group report by using datatable */
+
+    public function dtexpensegroupreport()
+    {
+        $search_type = $this->input->post('search_type');
+        $date_from   = $this->input->post('date_from');
+        $date_to     = $this->input->post('date_to');
+        $head        = $this->input->post('head');
+
+        $data['date_type']   = $this->customlib->date_type();
+        $data['date_typeid'] = '';
+
+        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
+
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+
+        } else {
+
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+
+        }
+
+        $data['head_id'] = $head_id = "";
+        if (isset($_POST['head']) && $_POST['head'] != '') {
+            $data['head_id'] = $head_id = $_POST['head'];
+        }
+
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+
+        $data['label'] = date($this->customlib->getSchoolDateFormat(), strtotime($start_date)) . " " . $this->lang->line('to') . " " . date($this->customlib->getSchoolDateFormat(), strtotime($end_date));
+        $result        = $this->expensehead_model->searchexpensegroup($start_date, $end_date, $head_id);
+
+        $m               = json_decode($result);
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data         = array();
+        $grand_total     = 0;
+        if (!empty($m->data)) {
+            $grd_total = 0;
+            foreach ($m->data as $key => $value) {
+
+                $expensedata    = explode(',', $value->expense);
+                $expense_id     = "";
+                $expense_name   = "";
+                $expense_date   = "";
+                $invoice_no     = "";
+                $expense_amount = "";
+                foreach ($expensedata as $expensevalue) {
+                    $expenseexpload = explode('@', $expensevalue);
+
+                    $expense_id .= $expenseexpload[0];
+                    $expense_id .= "<br>";
+                    $expense_date .= date($this->customlib->getSchoolDateFormat(), strtotime($expenseexpload[1]));
+                    $expense_date .= "<br>";
+                    $expense_name .= $expenseexpload[2];
+                    $expense_name .= "<br>";
+                    $invoice_no .= $expenseexpload[3];
+                    $invoice_no .= "<br>";
+                    $expense_amount .= $expenseexpload[4];
+                    $expense_amount .= "<br>";
+                }
+
+                $total_amount = "<b>" . $value->total_amount . "</b>";
+                $grd_total += $value->total_amount;
+                $row       = array();
+                $row[]     = $value->exp_category;
+                $row[]     = $expense_id;
+                $row[]     = $expense_name;
+                $row[]     = $expense_date;
+                $row[]     = $invoice_no;
+                $row[]     = $expense_amount;
+                $dt_data[] = $row;
+
+                $amount_row   = array();
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = "";
+                $amount_row[] = $total_amount;
+                $dt_data[]    = $amount_row;
+            }
+
+            $grand_total  = "<b>" . $currency_symbol . $grd_total . "</b>";
+            $footer_row   = array();
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "";
+            $footer_row[] = "<b>" . $this->lang->line('total') . "</b>";
+            $footer_row[] = $grand_total;
+            $dt_data[]    = $footer_row;
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
+
+    public function onlineadmission()
+    {
+
+        $this->session->set_userdata('top_menu', 'Reports');
+        $this->session->set_userdata('sub_menu', 'Reports/finance');
+        $this->session->set_userdata('subsub_menu', 'Reports/finance/onlineadmission');
+        $data['searchlist'] = $this->customlib->get_searchtype();
+        $data['group_by']   = $this->customlib->get_groupby();
+
+        if (isset($_POST['search_type']) && $_POST['search_type'] != '') {
+
+            $dates               = $this->customlib->get_betweendate($_POST['search_type']);
+            $data['search_type'] = $_POST['search_type'];
+        } else {
+
+            $dates               = $this->customlib->get_betweendate('this_year');
+            $data['search_type'] = '';
+        }
+
+        $collection = array();
+        $start_date = date('Y-m-d', strtotime($dates['from_date']));
+        $end_date   = date('Y-m-d', strtotime($dates['to_date']));
+        $this->form_validation->set_rules('search_type', $this->lang->line('search') . " " . $this->lang->line('type'), 'trim|required|xss_clean');
+
+        if ($this->form_validation->run() == false) {
+
+            $data['collectlist'] = array();
+
+        } else {
+
+            $data['collectlist'] = $this->onlinestudent_model->getOnlineAdmissionFeeCollectionReport($start_date, $end_date);
+
+        } 
+        $data['sch_setting'] = $this->sch_setting_detail;
+        $this->load->view('layout/header', $data);
+        $this->load->view('reports/onlineadmission', $data);
+        $this->load->view('layout/footer', $data);
+    }
 }

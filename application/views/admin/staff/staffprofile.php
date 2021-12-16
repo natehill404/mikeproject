@@ -523,9 +523,10 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         <h5><?php echo $this->lang->line('total'); ?> <?php echo $this->lang->line('net_salary'); ?> <?php echo $this->lang->line('paid'); ?></h5>
                                         <h4><?php
                                             if (!empty($salary["net_salary"])) {
-                                                echo $currency_symbol . $salary["net_salary"];
+                                                echo $currency_symbol . number_format($salary["net_salary"],2) ;	
+												
                                             } else {
-                                                echo $currency_symbol . "0";
+                                                echo $currency_symbol . "0.00";
                                             }
                                             ?></h4> 
                                         <div class="icon mt12font40">
@@ -540,9 +541,11 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         <h5><?php echo $this->lang->line('total'); ?> <?php echo $this->lang->line('gross_salary'); ?></h5>
                                         <h4><?php
                                             if (!empty($salary["basic_salary"])) {
-                                                echo $currency_symbol . ($salary["basic_salary"] + $salary["earnings"]);
+                                                $basic_salary = $salary["basic_salary"] + $salary["earnings"];
+												
+												echo $currency_symbol . number_format($basic_salary,2) ;
                                             } else {
-                                                echo $currency_symbol . "0";
+                                                echo $currency_symbol . "0.00";
                                             }
                                             ?></h4> 
                                         <div class="icon mt12font40">
@@ -557,9 +560,9 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         <h5><?php echo $this->lang->line('total'); ?> <?php echo $this->lang->line('earning'); ?></h5>
                                         <h4><?php
                                             if (!empty($salary["earnings"])) {
-                                                echo $currency_symbol . $salary["earnings"];
+                                                echo $currency_symbol . number_format($salary["earnings"],2) ;
                                             } else {
-                                                echo $currency_symbol . "0";
+                                                echo $currency_symbol . "0.00";
                                             }
                                             ?></h4> 
                                         <div class="icon mt12font40">
@@ -570,7 +573,9 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                 <div class="col-md-3 col-sm-6">
                                     <div class="staffprofile"> 
                                         <h5><?php echo $this->lang->line('total'); ?> <?php echo $this->lang->line('deduction'); ?></h5>
-                                        <h4><?php echo $currency_symbol . ($salary["deduction"] + $salary["tax"]); ?> </h4> 
+                                        <h4><?php 
+										$deduction	=	$salary["deduction"] + $salary["tax"];				
+										echo $currency_symbol . number_format($deduction,2); ?> </h4> 
                                         <div class="icon mt12font40">
                                             <i class="fa fa-money"></i>
                                         </div>
@@ -876,7 +881,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                 </div>
                             </div>
                             <div>
-                                <?php //echo "<pre>"; print_r($monthlist); echo "</pre>";die;?>
                                 <div id="ajaxattendance" class="table-responsive">
 <div class="download_label"><?php echo $this->lang->line('details_fors'); ?> <?php echo $staff["name"] . " " . $staff["surname"]; ?></div>
                                     <table class="table table-striped table-bordered table-hover" id="attendancetable">
@@ -907,9 +911,13 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                      
                                                         ?>
                                                         <td>
-                                                            <span data-toggle="popover" class="detail_popover" data-original-title="" title=""><a href="#" style="color:#333"><?php
+                                                            <span data-toggle="popover" class="detail_popover" data-original-title="" title=""><a href="#" style="color:#333"><?php															
                                                                     if (array_key_exists($att_dates, $resultlist)) {
-                                                                        echo $resultlist[$att_dates]["key"];
+                                                                        if(!empty($resultlist[$att_dates]["key"])){
+																				echo $resultlist[$att_dates]["key"]; 
+																		}else{
+																			
+																		}
                                                                     }
                                                                     ?></a></span>                                                        
                                                         </td>
@@ -1238,7 +1246,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
             show: true
 
         });
-
     }
 
     $(".myTransportFeeBtn").click(function () {
@@ -1269,7 +1276,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
         });
     });
 
-
     $(document).ready(function (e) {
         $("#timelineform").on('submit', (function (e) {
             var staff_id = $("#staff_id").val();
@@ -1284,29 +1290,15 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                 cache: false,
                 processData: false,
                 success: function (data) {
-
                     if (data.status == "fail") {
-
                         var message = "";
                         $.each(data.error, function (index, value) {
-
                             message += value;
                         });
                         errorMsg(message);
                     } else {
 
-                        successMsg(data.message);
-
-                        $.ajax({
-                            url: '<?php echo base_url(); ?>admin/timeline/staff_timeline/' + staff_id,
-                            success: function (res) {
-                                $('#timeline_list').html(res);
-                                $('#myTimelineModal').modal('toggle');
-                            },
-                            error: function () {
-                                alert("Fail")
-                            }
-                        });
+                        successMsg(data.message);                        
                         window.location.reload(true);
                     }
 
@@ -1319,11 +1311,9 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
         }));
     });
 
-
     $(document).ready(function (e) {
         $("#disablebtn").on('submit', (function (e) {
             var staff_id = $("#staff_id").val();
-
             e.preventDefault();
             $.ajax({ 
                 url: "<?php echo site_url('admin/staff/disablestaff/') ?>" + staff_id,
@@ -1363,7 +1353,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
      $(document).ready(function (e) {
         $("#changepassbtn").on('submit', (function (e) {
             var staff_id = $("#staff_id").val();
-
             e.preventDefault();
             $.ajax({
                 url: "<?php echo site_url('admin/staff/change_password/') ?>" + staff_id,
@@ -1387,19 +1376,16 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                         successMsg(data.message);
                         window.location.reload(true);
                     }
-
                 },
                 error: function (e) {
                     alert("Fail");
                     console.log(e);
                 }
             });
-
         }));
     });
 
     function delete_timeline(id) {
-
         var staff_id = $("#staff_id").val();
         if (confirm('<?php echo $this->lang->line("delete_confirm") ?>')) {
 
@@ -1423,7 +1409,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                 }
             });
         }
-
     }
 
     $(document).ready(function () {
@@ -1431,7 +1416,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 
             $('#changepwdmodal').modal('show');
         });
-
 
         $("#attendancetable").DataTable({
             searching: false,
@@ -1539,11 +1523,11 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 
                 $('inputs[name="leave_request_id"]').val(result.id);
                 $('#name').html(result.name + ' ' + result.surname);
-                $('#leave_from').html(new Date(result.leave_from).toString("MM/dd/yyyy"));
-                $('#leave_to').html(new Date(result.leave_to).toString("MM/dd/yyyy"));
+                $('#leave_from').html(result.leavefrom);
+                $('#leave_to').html(result.leaveto);
                 $('#leave_type').html(result.type);
                 $('#reason').html(result.employee_remark);
-                $('#applied_date').html(new Date(result.date).toString("MM/dd/yyyy"));
+                $('#applied_date').html(result.date);
                 $('#days').html(result.leave_days + ' Days');
                 $("#remark").html(result.admin_remark);
                 $("#employee_id").html(' ' + result.employee_id);

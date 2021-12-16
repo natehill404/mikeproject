@@ -136,7 +136,8 @@ class Examresult_model extends CI_Model {
 
         foreach ($students as $student_key => $student_value) {
 
-            $student = $this->examstudent_model->getStudentdetailByExam($student_value, $exam_id);
+            $student = $this->examstudent_model->getExamStudentByID($student_value);
+         
             $student['exam_result'] = array();
             if ($exam_connection) {
                 foreach ($exam_connections as $exam_connection_key => $exam_connection_value) {
@@ -144,19 +145,18 @@ class Examresult_model extends CI_Model {
 
                     $exam = $this->examgroup_model->getExamByID($exam_connection_value->exam_group_class_batch_exams_id);
 
-                    $student['exam_result']['exam_roll_no_' . $exam_connection_value->exam_group_class_batch_exams_id] = $exam_group_class_batch_exam_student->roll_no;
+                    $student['exam_result']['exam_roll_no_' . $exam_connection_value->exam_group_class_batch_exams_id] =  $student['roll_no'];
 
 
-                    $student['exam_result']['exam_result_' . $exam_connection_value->exam_group_class_batch_exams_id] = $this->getStudentResultByExam($exam_connection_value->exam_group_class_batch_exams_id, $exam_group_class_batch_exam_student->id);
+                    $student['exam_result']['exam_result_' . $exam_connection_value->exam_group_class_batch_exams_id] =$this->getStudentResultByExam($exam_id, $student['id']);
 
 
                     $result['exams']['exam_' . $exam_connection_value->exam_group_class_batch_exams_id] = $exam;
                 }
                 $result['students'][] = $student;
-            } else {
-                $exam_group_class_batch_exam_student = $this->examstudent_model->getStudentByExamAndStudentID($student_value, $exam_id);
-                $student['exam_roll_no'] = $exam_group_class_batch_exam_student->roll_no;
-                $student['exam_result'] = $this->getStudentResultByExam($exam_id, $exam_group_class_batch_exam_student->id);
+            } else {                
+                $student['exam_roll_no'] = $student['roll_no'];
+                $student['exam_result'] = $this->getStudentResultByExam($exam_id, $student['id']);
                 $result['students'][] = $student;
             }
         }
@@ -184,15 +184,20 @@ class Examresult_model extends CI_Model {
         }
         $result['exam_connection_list'] = $exam_connections;
         if ($exam_connection) {
-            $new_array = array();
+            $new_array = array(); 
+			
             foreach ($exam_connections as $exam_connection_key => $exam_connection_value) {
 
                 $exam_group_class_batch_exam_student = $this->examstudent_model->getStudentByExamAndStudentID($student_id, $exam_connection_value->exam_group_class_batch_exams_id);
+				
                 $exam = $this->examgroup_model->getExamByID($exam_connection_value->exam_group_class_batch_exams_id);
-                $result['exam_result']['exam_result_' . $exam_connection_value->exam_group_class_batch_exams_id] = $this->getStudentResultByExam($exam_connection_value->exam_group_class_batch_exams_id, $exam_group_class_batch_exam_student->id);
+				if(!empty($exam_group_class_batch_exam_student->id)){
+                $result['exam_result']['exam_result_' . $exam_connection_value->exam_group_class_batch_exams_id] 
+				= $this->getStudentResultByExam($exam_connection_value->exam_group_class_batch_exams_id, $exam_group_class_batch_exam_student->id);
+				}
                 $result['exams']['exam_' . $exam_connection_value->exam_group_class_batch_exams_id] = $exam;
             }
-//            $result['result'] = $new_array;
+
         } else {
 
             $result['exam_connection_list'] = $exam_connections;

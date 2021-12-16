@@ -458,6 +458,29 @@ class Systemfield extends Admin_Controller {
             }
            
         }
+
+        // is used to edit data in online admission form fields
+        if($this->findSelected($this->onlinestudent_model->getformfields(),$role)){
+
+            if($status=='no'){
+                 $insert = array(
+                'name'   => $role,
+                'status' => 0,
+                );
+
+                $this->onlinestudent_model->addformfields($insert);
+            }
+
+            if($role=='guardian_name'){
+                $insert = array(
+                'name'   => 'if_guardian_is',
+                'status' => 0,
+            );
+                
+            $this->onlinestudent_model->addformfields($insert);
+            }
+           
+        } 
        
         $this->setting_model->add($data);
     }

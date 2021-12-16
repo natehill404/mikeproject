@@ -245,44 +245,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 
                             <?php
                         }
-                    } else {
-                        ?>
-                        <div class="box-body table-responsive">
-                            <div class="tab-pane active table-responsive no-padding" >
-                                <div class="download_label"><?php
-                        echo $this->lang->line('balance_fees_report') . "<br>";
-                        $this->customlib->get_postmessage();
-                        ?></div>
-                                <table class="table table-striped table-bordered table-hover example" cellspacing="0" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-left"><?php echo $this->lang->line('class'); ?></th>
-                                            <th class="text-left"><?php echo $this->lang->line('section'); ?></th>
-                                            <th class="text text-left"><?php echo $this->lang->line('student_name'); ?></th>
-
-                                            <th class="text text-left"><?php echo $this->lang->line('admission_no'); ?></th>
-                                            <?php if ($sch_setting->roll_no) { ?>
-                                                <th class="text text-left"><?php echo $this->lang->line('roll_no'); ?></th>
-    <?php } if ($sch_setting->father_name) { ?>
-                                                <th class="text text-left"><?php echo $this->lang->line('father_name'); ?></th>
-    <?php } ?>
-                                            <th class="text-right"><?php echo $this->lang->line('total_fees'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-                                            <th class="text-right"><?php echo $this->lang->line('paid_fees'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-
-                                            <th class="text text-right"><?php echo $this->lang->line('discount'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-                                            <th class="text text-right"><?php echo $this->lang->line('fine'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-
-
-
-                                            <th class="text-right"><?php echo $this->lang->line('balance'); ?> <span><?php echo "(" . $currency_symbol . ")"; ?></span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-<?php }
+                    } 
 ?>
 
 

@@ -21,7 +21,6 @@ class Member extends Admin_Controller {
         $data['title'] = 'Member';
         $data['title_list'] = 'Members';
         $memberList = $this->librarymember_model->get();
-       
         $data['memberList'] = $memberList;
         $data['sch_setting'] = $this->sch_setting_detail;
         $this->load->view('layout/header');

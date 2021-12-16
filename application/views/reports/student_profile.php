@@ -366,8 +366,18 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 <?php if ($sch_setting->bank_account_no) { ?>
                                                     <td><?php echo $value['bank_account_no']; ?></td>
                                                 <?php } ?>
-                                                <td><?php echo $value['bank_name']; ?></td>
-                                                <td><?php echo $value['ifsc_code']; ?></td>
+                                                        
+                                                    <?php if ($sch_setting->bank_name) {
+                                                         ?>
+                                                                 <td><?php echo $value['bank_name']; ?></td>
+                                                             <?php
+                                                     }?>
+                                                    <?php if ($sch_setting->ifsc_code) {
+                                                         ?>
+                                                                 <td><?php echo $value['ifsc_code']; ?></td>
+                                                             <?php
+                                                     }?>
+                                                     
                                                 <?php if ($sch_setting->national_identification_no) { ?>
                                                     <td><?php echo $value['samagra_id']; ?></td>
                                                 <?php } if ($sch_setting->local_identification_no) { ?>

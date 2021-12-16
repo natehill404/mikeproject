@@ -129,7 +129,15 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="exampleInputEmail1"><?php echo $this->lang->line('date_of_birth'); ?></label><small class="req"> *</small>
-                                                <input id="dob" name="dob" placeholder="" type="text" class="form-control date"  value="<?php echo set_value('dob', date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student['dob']))); ?>" />
+                                                <?php
+                                                $dob="";
+                                                if($student['dob']!='0000-00-00' && $student['dob']!=''){
+                                                    $dob=date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student['dob']));
+                                                    }
+                                                 ?>
+                                                
+                                                <input id="dob" name="dob" placeholder="" type="text" class="form-control date"  value="<?php echo set_value('dob', $dob) ?>" />
+                                           
                                                 <span class="text-danger"><?php echo form_error('dob'); ?></span>
                                             </div>
                                         </div>
@@ -195,7 +203,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                     <div class="row">
                                         <?php if ($sch_setting->admission_date) { 
                                             $admission_date="";
-                                            if($student['admission_date']!='0000-00-00'){
+                                            if($student['admission_date']!='0000-00-00' && $student['admission_date']!=''){
                                                 $admission_date=date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student['admission_date']));
                                             }
                                             
@@ -260,7 +268,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 
                                                 <?php }if ($sch_setting->student_height) {
                                                     ?>
-                                            <div class="col-md-2 col-xs-12">
+                                            <div class="col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('height'); ?></label>
                                             <?php ?>
@@ -270,7 +278,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             </div>
                                                 <?php }if ($sch_setting->student_weight) {
                                                     ?>
-                                            <div class="col-md-2 col-xs-12">
+                                            <div class="col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('weight'); ?></label>
                                             <?php ?>
@@ -280,11 +288,11 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             </div>
 <?php }if ($sch_setting->measurement_date) {
         $measurement_date="";
-                                            if($student['admission_date']!='0000-00-00'){
-                                                $measurement_date=date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student['measurement_date']));
+                                            if($student['admission_date'] != '0000-00-00' && $student['admission_date'] != ''){
+                                                $measurement_date=$this->customlib->dateformat($student['measurement_date']);
                                             }
      ?>
-                                            <div class="col-md-2 col-xs-12">
+                                            <div class="col-md-3 col-xs-12">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('measurement_date'); ?></label>
 
@@ -293,15 +301,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 </div>
                                             </div>
 <?php } ?>
-                                                 
-                                           <div class="col-md-2 col-xs-12">
-                                                <div class="form-group">
-                                                    <label for="">ID Card Validity</label>
-                                                    <?php $id_card_validity=date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student['id_card_validity']));?>
-                                                    <input type="text" id="idcardvalidity" value="<?php echo set_value('id_card_validity', $student['id_card_validity']); ?>" name="id_card_validity" class="form-control date">
-                                                    <span class="text-danger">
-                                                </div>
-                                            </div>
                                         <div class="col-md-3 pt25">
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-3 col-xs-5">
@@ -809,20 +808,14 @@ if (!empty($siblings)) {
             getSectionByClass(class_id, 0, 'section_id');
         });
 
-        $('.datetime').datetimepicker({
-        });
-
         $(document).on('click', '#sibiling_class_id', function () {
             var class_id = $(this).val();
             getSectionByClass(class_id, 0, 'sibiling_section_id');
         });
 
-
-
         $("#btnreset").click(function () {
             $("#form1")[0].reset();
         });
-
 
         $(document).on('change', '#hostel_id', function (e) {
             var hostel_id = $(this).val();
@@ -968,15 +961,17 @@ if (!empty($siblings)) {
                 if ($(this).is(':checked')) {
                     var value = $(this).val();
                     if (value == "father") {
+                        var father_relation = "<?php echo $this->lang->line('father'); ?>";
                         $('#guardian_name').val($('#father_name').val());
                         $('#guardian_phone').val($('#father_phone').val());
                         $('#guardian_occupation').val($('#father_occupation').val());
-                        $('#guardian_relation').val("Father")
+                        $('#guardian_relation').val(father_relation);
                     } else if (value == "mother") {
+                        var mother_relation = "<?php echo $this->lang->line('mother'); ?>";
                         $('#guardian_name').val($('#mother_name').val());
                         $('#guardian_phone').val($('#mother_phone').val());
                         $('#guardian_occupation').val($('#mother_occupation').val());
-                        $('#guardian_relation').val("Mother")
+                        $('#guardian_relation').val(mother_relation);
                     } else {
                         $('#guardian_name').val("");
                         $('#guardian_phone').val("");

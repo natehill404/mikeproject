@@ -51,6 +51,7 @@
                         <h3 class="box-title titlefix pt5"><?php echo $this->lang->line('question') . " " . $this->lang->line('bank'); ?></h3>
                       
 <div class="pull-right">  
+     <button class="btn btn-primary btn-sm deleteSelected" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Please wait..."><i class="fa fa-trash"></i> <?php echo $this->lang->line('bulk_delete'); ?></button>
     <?php 
     if ($this->rbac->hasPrivilege('import_question', 'can_view')) {
     ?>
@@ -71,12 +72,13 @@ if ($this->rbac->hasPrivilege('question_bank', 'can_add')) {
                             </div>
                         </div>
                         <div class="mailbox-messages table-responsive">
-                            <div class="download_label"><?php echo $this->lang->line('question') . " " . $this->lang->line('bank'); ?></div>
+                          
 
                             <!-- <textarea class="form-control question" id="question" name="question"></textarea> -->
-                            <table class="table table-striped table-bordered table-hover all-list">
+                            <table class="table table-striped table-bordered table-hover all-list" data-export-title="<?php echo $this->lang->line('question') . " " . $this->lang->line('bank'); ?>">
                                 <thead>
                                     <tr>
+                                        <th><input type="checkbox" id="masterCheck" value="checkUncheckAll"></th>
                                         <th><?php echo $this->lang->line('q_id'); ?></th>
                                         <th><?php echo $this->lang->line('subject') ?></th>
                                         <th><?php echo $this->lang->line('question_type')?></th>
@@ -244,12 +246,12 @@ if (set_value('class_id') == $class['id']) {
         </form>
     </div>
 </div>
-
+  
 <script type="text/javascript">
     (function ($) {
         'use strict';
         $(document).ready(function () {
-            initDatatable('all-list', 'admin/question/getDatatable', [], 100);
+            initDatatable('all-list', 'admin/question/getDatatable', [],[], 20,[{ "bSortable": false, "aTargets": [ 0 ]},{ "bSortable": false, "aTargets": [ -1 ] ,'sClass': 'dt-body-right'}]);
         });
     }(jQuery))
 </script>
@@ -628,4 +630,54 @@ $(document).on('change', '#class_id', function (e) {
 
       }
     });
+</script>
+
+<script type="text/javascript">
+    $(document).on('click','#masterCheck',function(){
+     if ($(this).prop("checked")) {
+       $("input:checkbox[name^='question_']").prop("checked", true);
+     } else {
+       $("input:checkbox[name^='question_']").prop("checked", false);
+     }
+    });
+
+     $(document).on('click', '.deleteSelected', function () {
+            var array_delete = [];
+             var $this = $(this);
+            $.each($("input[name^='question_']:checked"), function () {
+                var question_id = $(this).data('questionId');
+                   
+                array_delete.push(question_id);
+            });
+            if (array_delete.length === 0) {
+                alert("<?php echo $this->lang->line('no_record_selected'); ?>");
+            } else {
+                if(confirm("<?php echo $this->lang->line('delete_confirm') ?>")) {
+                $.ajax({
+                type: 'POST',
+                url: baseurl + "admin/question/bulkdelete",
+                data: {'recordid': array_delete},
+                dataType: 'JSON',
+                beforeSend: function () {
+                    $this.button('loading');
+                },
+                success: function (data) {
+                    if(data.status){
+                        successMsg(data.message);
+                     table.ajax.reload( null, false );
+                    }
+                    $this.button('reset');
+                },
+                error: function (xhr) { // if error occured
+                    alert("Error occured.please try again");
+                    $this.button('reset');
+                },
+                complete: function () {
+                    $this.button('reset');
+                }
+            });
+  }
+    
+            }
+        });     
 </script>

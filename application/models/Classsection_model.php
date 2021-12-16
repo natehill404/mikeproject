@@ -6,10 +6,11 @@ if (!defined('BASEPATH')) {
 
 class Classsection_model extends MY_Model {
 
-    public function __construct() {
+      public function __construct()
+    {
         parent::__construct();
+        $this->current_session = $this->setting_model->getCurrentSession();
     }
-
     /**
      * This funtion takes id as a parameter and will fetch the record.
      * If id is not provided, then it will fetch all the records form the table.
@@ -35,7 +36,7 @@ class Classsection_model extends MY_Model {
     }
 
     public function add($data, $sections) {
-       
+
         $this->db->trans_start(); # Starting Transaction
         $this->db->trans_strict(false); # See Note 01. If you wish can remove as well
         //=======================Code Start===========================
@@ -132,7 +133,6 @@ class Classsection_model extends MY_Model {
         }
 
         $query = $this->db->get();
-        
         if ($id != null) {
             $vehicle_routes = $query->result_array();
 
@@ -143,7 +143,6 @@ class Classsection_model extends MY_Model {
                     $vec_route->id = $vehicle_value['id'];
 
                     $vec_route->route_id = $vehicle_value['class'];
-                    $vec_route->school = $vehicle_value['school'];
                     $vec_route->vehicles = $this->getVechileByRoute($vehicle_value['id']);
                     $array[] = $vec_route;
                 }
@@ -158,14 +157,11 @@ class Classsection_model extends MY_Model {
                     $vec_route = new stdClass();
                     $vec_route->id = $vehicle_value['id'];
                     $vec_route->class = $vehicle_value['class'];
-                    $vec_route->school = $vehicle_value['school'];
+
                     $vec_route->vehicles = $this->getVechileByRoute($vehicle_value['id']);
                     $array[] = $vec_route;
                 }
             }
-
-           
-
             return $array;
         }
     }
@@ -197,5 +193,19 @@ class Classsection_model extends MY_Model {
         }
         return $classes;
     }
+
+
+
+
+    public function getClassSectionStudentCount()
+    {
+        $query = "SELECT class_sections.*,classes.class,sections.section,(SELECT COUNT(*) FROM student_session INNER JOIN students on students.id=student_session.student_id WHERE student_session.class_id=classes.id and student_session.section_id=sections.id and students.is_active='yes' and student_session.session_id=".$this->current_session." )  as student_count FROM `class_sections` INNER JOIN classes on classes.id=class_sections.class_id INNER JOIN sections on sections.id=class_sections.section_id ORDER by classes.class ASC, sections.section asc";
+
+        $query = $this->db->query($query);
+        return $query->result();
+
+    }
+
+
 
 }

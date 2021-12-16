@@ -51,7 +51,18 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                         </div>
                     </form>
 
-
+<?php
+                                    $grd_total = 0;
+                                    $allamount = 0;
+                                    $alldiscount = 0;
+                                    $finetotal = 0;
+                                    $alltotal = 0;
+                                    if (empty($collectlist)) { ?>
+									<br/>
+									<div class="box-header ptbnull">
+										<div class="alert alert-info"><?php echo $this->lang->line('no_record_found'); ?></div>
+                                    </div> 
+                                 <?php    } else { ?>
                     <div class="">
                         <div class="box-header ptbnull"></div>
                         <div class="box-header ptbnull">
@@ -81,15 +92,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                 <tbody>
 
                                     <?php
-                                    $grd_total = 0;
-                                    $allamount = 0;
-                                    $alldiscount = 0;
-                                    $finetotal = 0;
-                                    $alltotal = 0;
-                                    //$amountLabel="";
-                                    if (empty($collectlist)) {
-                                        
-                                    } else {
                                         $count = 1;
 
                                         foreach ($collectlist as $key => $collect) {
@@ -114,7 +116,6 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             $fineLabel .= number_format($collect['amount_fine'], 2, '.', '') . "</br>";
                                             $t = $collect['amount'] + $collect['amount_fine'];
                                             $TotalLabel .= number_format($t, 2, '.', '') . "</br>";
-
 
                                             $amountLabeltot = number_format($amount, 2, '.', '');
                                             $discountLabeltot = number_format($discount, 2, '.', '');
@@ -169,7 +170,10 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             <?php
                                         }
                                         ?>
-                                        <tr>
+                                        
+
+                                </tbody>
+                                <tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -182,15 +186,14 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                             <td class="text text-right" style="font-weight:bold"><?php echo number_format($finetotal, 2, '.', ''); ?></td>
                                             <td class="text text-right" style="font-weight:bold"><?php echo number_format($alltotal, 2, '.', ''); ?></td>                                                
                                         </tr>
-                                        <?php
-                                    }
-                                    ?>
-
-                                </tbody>
+                                      
                             </table>
                         </div>
                     </div>
                 </div>
+                 <?php
+                                    }
+                                    ?>
             </div>
         </div>   
 </div>  

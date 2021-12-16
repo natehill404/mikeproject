@@ -318,8 +318,8 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                 <p><?php echo $this->lang->line('are_you_sure_assign_fees_discount') ?></p>
             </div>
             <div class="modal-footer">
-                <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-danger btn secondary">No</a>
-                <a href="#" id="delete-btn" class="btn btn-confirm confirm">Yes</a>
+                <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-danger btn secondary"><?php echo $this->lang->line('no') ?></a>
+                <a href="#" id="delete-btn" class="btn btn-confirm confirm"><?php echo $this->lang->line('yes') ?></a>
 
             </div>
         </div>

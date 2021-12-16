@@ -40,7 +40,7 @@
                                         <th><?php echo $this->lang->line('phone'); ?></th>
 
 
-                                        <th class="text-right no-print"><?php echo $this->lang->line('action'); ?>
+                                        <th class="text-right noExport"><?php echo $this->lang->line('action'); ?>
                                         </th>
                                     </tr>
                                 </thead>

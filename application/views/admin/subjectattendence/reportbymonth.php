@@ -120,8 +120,9 @@
                                 <?php
                                 if (!empty($resultlist)) {
                                     ?>
+									<div class="download_label"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('list'); ?></div>
                                     <div class="table-responsive">
-                                        <table class="table table-hover table stripped attendance_table example">
+                                        <table class="table table-hover table stripped attendance_table example" >
                                             <thead>
                                                 <tr>
                                                     <th>Student</th>

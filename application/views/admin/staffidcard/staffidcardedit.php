@@ -43,12 +43,12 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('school_name'); ?></label><small class="req"> *</small>
-                                    <input autofocus="" id="school_name" name="school_name" placeholder="" type="text" class="form-control" value="<?php echo set_value('background_image', $editstaffidcard[0]->school_name); ?>" />
+                                    <input autofocus="" id="school_name" name="school_name" placeholder="" type="text" class="form-control" value="<?php echo set_value('school_name', $editstaffidcard[0]->school_name); ?>" />
                                     <span class="text-danger"><?php echo form_error('school_name'); ?></span>
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1"><?php echo $this->lang->line('address'); ?> / <?php echo $this->lang->line('phone'); ?> / <?php echo $this->lang->line('email'); ?></label>
-                                    <textarea class="form-control" id="address" name="address" placeholder="" rows="3" placeholder=""><?php echo set_value('background_image', $editstaffidcard[0]->school_address); ?></textarea>
+                                    <label for="exampleInputEmail1"><?php echo $this->lang->line('address'); ?> / <?php echo $this->lang->line('phone'); ?> / <?php echo $this->lang->line('email'); ?></label><small class="req"> *</small>
+                                    <textarea class="form-control" id="address" name="address" placeholder="" rows="3" placeholder=""><?php echo set_value('address', $editstaffidcard[0]->school_address); ?></textarea>
                                     <span class="text-danger"><?php echo form_error('address'); ?></span>
                                 </div>
                                 <div class="form-group">
@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('header'); ?> <?php echo $this->lang->line('color'); ?></label>
-                                    <input id="header_color" name="header_color" placeholder="" type="text" class="form-control my-colorpicker1" value="<?php echo set_value('background_image', $editstaffidcard[0]->header_color); ?>" />
+                                    <input id="header_color" name="header_color" placeholder="" type="text" class="form-control my-colorpicker1" value="<?php echo set_value('header_color', $editstaffidcard[0]->header_color); ?>" />
                                 </div>
                                 <div class="form-group switch-inline">
                                     <label><?php echo $this->lang->line('staff'); ?> <?php echo $this->lang->line('name'); ?></label>
@@ -77,7 +77,7 @@
                                    <div class="form-group switch-inline">
                                     <label><?php echo $this->lang->line('designation'); ?></label>
                                     <div class="material-switch switchcheck">
-                                        <input id="enable_designation" name="is_active_designation" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_staff_id', '1', (set_value('is_active_designation', $editstaffidcard[0]->enable_designation) == 1) ? TRUE : FALSE); ?>>
+                                        <input id="enable_designation" name="is_active_designation" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_designation', '1', (set_value('is_active_designation', $editstaffidcard[0]->enable_designation) == 1) ? TRUE : FALSE); ?>>
                                         <label for="enable_designation" class="label-success"></label>
                                     </div>
                                 </div>
@@ -105,14 +105,14 @@
                                 <div class="form-group switch-inline">
                                     <label><?php echo $this->lang->line('date_of_joining'); ?></label>
                                     <div class="material-switch switchcheck">
-                                        <input id="enable_date_of_joining" name="is_active_date_of_joining" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_date_of_joining', '1', (set_value('is_active_student_name', $editstaffidcard[0]->enable_date_of_joining) == 1) ? TRUE : FALSE); ?>>
+                                        <input id="enable_date_of_joining" name="is_active_date_of_joining" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_date_of_joining', '1', (set_value('is_active_date_of_joining', $editstaffidcard[0]->enable_date_of_joining) == 1) ? TRUE : FALSE); ?>>
                                         <label for="enable_date_of_joining" class="label-success"></label>
                                     </div>
                                 </div>
                                 <div class="form-group switch-inline">
                                     <label><?php echo $this->lang->line('current'); ?> <?php echo $this->lang->line('address'); ?></label>
                                     <div class="material-switch switchcheck">
-                                        <input id="enable_staff_permanent_address" name="is_active_staff_permanent_address" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_staff_permanent_address', '1', (set_value('is_active_student_name', $editstaffidcard[0]->enable_permanent_address) == 1) ? TRUE : FALSE); ?>>
+                                        <input id="enable_staff_permanent_address" name="is_active_staff_permanent_address" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_staff_permanent_address', '1', (set_value('is_active_staff_permanent_address', $editstaffidcard[0]->enable_permanent_address) == 1) ? TRUE : FALSE); ?>>
                                         <label for="enable_staff_permanent_address" class="label-success"></label>
                                     </div>
                                 </div>
@@ -126,8 +126,15 @@
                                 <div class="form-group switch-inline">
                                     <label><?php echo $this->lang->line('date_of_birth'); ?></label>
                                     <div class="material-switch switchcheck">
-                                        <input id="enable_staff_dob" name="is_active_staff_dob" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_staff_dob', '1', (set_value('is_active_student_name', $editstaffidcard[0]->enable_staff_dob) == 1) ? TRUE : FALSE); ?>>
+                                        <input id="enable_staff_dob" name="is_active_staff_dob" type="checkbox" class="chk" value="1" <?php echo set_checkbox('is_active_staff_dob', '1', (set_value('is_active_staff_dob', $editstaffidcard[0]->enable_staff_dob) == 1) ? TRUE : FALSE); ?>>
                                         <label for="enable_staff_dob" class="label-success"></label>
+                                    </div>
+                                </div>
+                                    <div class="form-group switch-inline">
+                                    <label><?php echo $this->lang->line('design').' '.$this->lang->line('type'); ?> </label>
+                                    <div class="material-switch switchcheck">
+                                        <input id="enable_vertical_card" name="enable_vertical_card" type="checkbox" class="chk" value="1" <?php echo set_checkbox('enable_vertical_card', '1', (set_value('enable_vertical_card', $editstaffidcard[0]->enable_vertical_card) == 1) ? TRUE : FALSE); ?>>
+                                        <label for="enable_vertical_card" class="label-success"></label>
                                     </div>
                                 </div>
                             </div><!-- /.box-body -->
@@ -162,6 +169,7 @@
                                         <th><?php echo $this->lang->line('icard'); ?> <?php echo $this->lang->line('title'); ?></th>
                                         <!-- <th>Certificate Text</th> -->
                                         <th><?php echo $this->lang->line('background_image'); ?></th>
+                                         <th class="text text-center"><?php echo $this->lang->line('design').' '.$this->lang->line('type'); ?> </th>
                                         <th class="text-right"><?php echo $this->lang->line('action'); ?></th>
                                     </tr>
                                 </thead>
@@ -186,8 +194,11 @@
                                                     <?php } ?>
 
                                                 </td>
-                                                <td class="mailbox-date pull-right no-print">
-                                                    <a data-placement="left" id="<?php echo $staffidcards_value->id ?>" class="btn btn-default btn-xs view_data" data-toggle="tooltip" title="<?php echo $this->lang->line('view'); ?>">
+                                                  <td class="mailbox-name text text-center">
+                                                    <?php echo ($staffidcards_value->enable_vertical_card) ? $this->lang->line('vertical') : $this->lang->line('horizontal')?>
+                                                </td>
+                                                <td class="mailbox-date pull-right no-print white-space-nowrap">
+                                                  <a data-id="<?php echo $staffidcards_value->id ?>" class="btn btn-default btn-xs view_data"  data-toggle="tooltip" title="<?php echo $this->lang->line('view'); ?>">    
                                                         <i class="fa fa-reorder"></i>
                                                     </a>
                                                     <?php if ($this->rbac->hasPrivilege('staff_id_card', 'can_edit')) { ?>
@@ -225,7 +236,7 @@
     </section><!-- /.content -->
 </div><!-- /.content-wrapper -->
 <!-- Modal -->
-<div class="modal fade" id="myModal" role="dialog">
+<div class="modal fade" id="certificateModal" role="dialog">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
@@ -233,80 +244,46 @@
                 <h4 class="modal-title"><?php echo $this->lang->line('view'); ?> <?php echo $this->lang->line('icard'); ?></h4>
             </div>
             <div class="modal-body" id="certificate_detail">
+            <div class="modal-inner-loader"></div>
+            <div class="modal-inner-content">
+          
+            </div>             
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    var base_url = '<?php echo base_url() ?>';
-    function printDiv(elem) {
-        Popup(jQuery(elem).html());
-    }
-    function Popup(data)
-    {
-        var frame1 = $('<iframe />');
-        frame1[0].name = "frame1";
-        frame1.css({"position": "absolute", "top": "-1000000px"});
-        $("body").append(frame1);
-        var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
-        frameDoc.document.open();
-        //Create a new HTML document.
-        frameDoc.document.write('<html>');
-        frameDoc.document.write('<head>');
-        frameDoc.document.write('<title></title>');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/bootstrap/css/bootstrap.min.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/dist/css/font-awesome.min.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/dist/css/ionicons.min.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/dist/css/AdminLTE.min.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/dist/css/skins/_all-skins.min.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/plugins/iCheck/flat/blue.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/plugins/morris/morris.css">');
-
-
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/plugins/jvectormap/jquery-jvectormap-1.2.2.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/plugins/datepicker/datepicker3.css">');
-        frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'backend/plugins/daterangepicker/daterangepicker-bs3.css">');
-        frameDoc.document.write('</head>');
-        frameDoc.document.write('<body>');
-        frameDoc.document.write(data);
-        frameDoc.document.write('</body>');
-        frameDoc.document.write('</html>');
-        frameDoc.document.close();
-        setTimeout(function () {
-            window.frames["frame1"].focus();
-            window.frames["frame1"].print();
-            frame1.remove();
-        }, 500);
-        return true;
-    }
-</script>
-<script type="text/javascript">
     $(document).ready(function () {
-        $('.view_data').click(function () {
-            var certificateid = $(this).attr("id");
-            $.ajax({
+          $("#header_color").colorpicker();
+        $(document).on('click','.view_data',function(){
+    
+           $('#certificateModal').modal("show");
+          var certificateid = $(this).data('id');
+           $.ajax({
                 url: "<?php echo base_url('admin/staffidcard/view') ?>",
                 method: "post",
                 data: {certificateid: certificateid},
+                 beforeSend: function() {
+      
+                  },
                 success: function (data) {
-                    $('#certificate_detail').html(data);
-                    $('#myModal').modal("show");
+                 $('#certificateModal .modal-inner-content').html(data);
+                 $('#certificateModal .modal-inner-loader').addClass('displaynone');
+
+                 },
+                error: function(xhr) { // if error occured
+                 alert("Error occured.please try again");
+                },
+                complete: function() {
+                 
                 }
             });
         });
+       
     });
-</script>
-<script>
-    $(document).ready(function () {
-        $('.detail_popover').popover({
-            placement: 'right',
-            trigger: 'hover',
-            container: 'body',
-            html: true,
-            content: function () {
-                return $(this).closest('td').find('.fee_detail_popover').html();
-            }
-        });
-        $("#header_color").colorpicker();
-    });
+
+    $('#certificateModal').on('hidden.bs.modal', function (e) {
+        $('#certificateModal .modal-inner-content').html("");
+        $('#certificateModal .modal-inner-loader').removeClass('displaynone');
+     });
 </script>

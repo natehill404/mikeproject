@@ -1,4 +1,3 @@
-
 <div class="content-wrapper">
     <section class="content-header">
         <h1>
@@ -32,7 +31,7 @@
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('admission_no'); ?></label> <small class="req"> *</small> 
 
-                                                    <input autofocus="" id="admission_no" name="admission_no" placeholder="" type="text" class="form-control"  value="<?php echo set_value('admission_no'); ?>" />
+                                                    <input autofocus="" id="admission_no" name="admission_no" placeholder="" type="text" class="form-control"  value="<?php echo set_value('admission_no', $student['admission_no']); ?>" />
                                                     <span class="text-danger"><?php echo form_error('admission_no'); ?></span>
                                                 </div>
                                             </div>
@@ -62,7 +61,7 @@
                                                             echo "selected =selected";
                                                         }
                                                         ?>><?php echo $class['class'] ?></option>
-<?php } ?>
+                                                    <?php } ?>
                                                 </select>
                                                 <span class="text-danger"><?php echo form_error('class_id'); ?></span>
                                             </div>
@@ -254,7 +253,7 @@
                                         <div class="col-md-3 col-xs-12">
                                             <div class="form-group">
                                                 <label for="exampleInputEmail1"><?php echo $this->lang->line('measurement_date'); ?></label>
-                                                <input id="measure_date" name="measure_date" placeholder="" type="text" class="form-control date"  value="<?php echo set_value('measure_date', $this->customlib->dateformat($student['measurement_date'])); ?>" readonly="readonly"/>
+                                                <input id="measure_date" name="measure_date" placeholder="" type="text" class="form-control date"  value="<?php if($student['measurement_date']!='0000-00-00' && $student['measurement_date']!="" && $student['measurement_date']!='1970-01-01' ){ echo set_value('measure_date', $this->customlib->dateformat($student['measurement_date'])); }  ?>" readonly="readonly"/>
 
                                                 <span class="text-danger"><?php echo form_error('measure_date'); ?></span>
                                             </div>
@@ -262,6 +261,24 @@
                                     <?php } ?>
 
                                     </div>
+                                    
+                                    <?php if ($sch_setting->student_photo) { ?>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="exampleInputFile"><?php echo $this->lang->line('student') . "  " . $this->lang->line('photo'); ?></label>
+                                                    <input class="filestyle form-control" type='file' name='file' id="file" size='20' <?php if($student['image']!=""){ ?> data-default-file="<?php echo base_url().$student['image'] ?>" <?php } ?> />
+                                                </div>
+                                                <span class="text-danger"><?php echo form_error('file'); ?></span>
+                                            </div>
+                                            </div>
+                                        <?php } ?>
+
+                                    <div class="row">
+                                       <?php
+                                        echo display_admission_custom_fields('students', $id);
+                                        ?>
+                                     </div>
 
                                 </div>
                             </div>
@@ -400,7 +417,16 @@
                                             </div>
                                         </div>
                                     <?php } ?>
-
+                                    <?php  if ($sch_setting->father_pic) { ?>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1"><?php echo $this->lang->line('father')." ". $this->lang->line('photo'); ?></label>
+                                                <div><input class="filestyle form-control" type='file' name='father_pic'  size='20' <?php if($student['father_pic']!=""){ ?> data-default-file="<?php echo base_url(). $student['father_pic']; ?>" <?php } ?> />
+                                                    </div>
+                                                <span class="text-danger"><?php echo form_error('father_pic'); ?></span>
+                                            </div>
+                                        </div>
+                                        <?php } ?>
 
                                     </div>
 
@@ -429,7 +455,18 @@
                                                 <span class="text-danger"><?php echo form_error('mother_occupation'); ?></span>
                                             </div>
                                         </div>
- <?php } ?>
+                                        <?php } ?>
+
+                                        <?php  if ($sch_setting->mother_pic) { ?>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1"><?php echo $this->lang->line('mother')." ". $this->lang->line('photo'); ?></label>
+                                                 <div><input class="filestyle form-control" type='file' name='mother_pic'  size='20' <?php if($student['mother_pic']!=""){ ?> data-default-file="<?php echo base_url(). $student['mother_pic']; ?>" <?php } ?> />
+                                                    </div>
+                                                <span class="text-danger"><?php echo form_error('mother_occupation'); ?></span>
+                                            </div>
+                                        </div>
+                                        <?php } ?>
                                     </div>
                                       <?php if ($sch_setting->guardian_name) { ?>
                                     <div class="row">
@@ -461,10 +498,10 @@
                                     </div>
                                 <?php } ?>
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="row">
+                                        
+                                           
                                                   <?php if ($sch_setting->guardian_name) { ?>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="exampleInputEmail1"><?php echo $this->lang->line('guardian_name'); ?></label><small class="req"> *</small>
                                                         <input id="guardian_name" name="guardian_name" placeholder="" type="text" class="form-control"  value="<?php echo set_value('guardian_name', $student['guardian_name']); ?>" />
@@ -472,7 +509,7 @@
                                                     </div>
                                                 </div>
                                                 <?php } if ($sch_setting->guardian_relation) { ?>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="exampleInputEmail1"><?php echo $this->lang->line('guardian_relation'); ?></label>
                                                         <input id="guardian_relation" name="guardian_relation" placeholder="" type="text" class="form-control"  value="<?php echo set_value('guardian_relation', $student['guardian_relation']); ?>" />
@@ -480,10 +517,29 @@
                                                     </div>
                                                 </div>
                                                   <?php } ?>
+                                                  <?php if ($sch_setting->guardian_email) { ?>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="exampleInputEmail1"><?php echo $this->lang->line('guardian_email'); ?></label>
+                                                        <input id="guardian_email" name="guardian_email" placeholder="" type="text" class="form-control"  value="<?php echo set_value('guardian_email', $student['guardian_email']); ?>" />
+                                                        <span class="text-danger"><?php echo form_error('guardian_email'); ?></span>
+                                                    </div>
+
+                                                </div>
+                                                <?php } if ($sch_setting->guardian_pic) { ?>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="exampleInputFile"><?php echo $this->lang->line('guardian') . " " . $this->lang->line('photo'); ?></label>
+                                                    <div><input class="filestyle form-control" type='file' name='guardian_pic' id="file" size='20' <?php if($student['guardian_pic']!=""){ ?> data-default-file="<?php echo base_url(). $student['guardian_pic']; ?>" <?php } ?>  />
+                                                    </div>
+                                                    <span class="text-danger"><?php echo form_error('guardian_pic'); ?></span>
+                                                </div>
                                             </div>
+                                            <?php }  ?>
+                                            
                                             <div class="row">
                                                  <?php if ($sch_setting->guardian_phone) { ?>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="exampleInputEmail1"><?php echo $this->lang->line('guardian_phone'); ?></label><small class="req"> *</small>
                                                         <input id="guardian_phone" name="guardian_phone" placeholder="" type="text" class="form-control"  value="<?php echo set_value('guardian_phone', $student['guardian_phone']); ?>" />
@@ -491,7 +547,7 @@
                                                     </div>
                                                 </div>
                                                  <?php } if ($sch_setting->guardian_occupation) { ?>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="exampleInputEmail1"><?php echo $this->lang->line('guardian_occupation'); ?></label>
                                                         <input id="guardian_occupation" name="guardian_occupation" placeholder="" type="text" class="form-control"  value="<?php echo set_value('guardian_occupation', $student['guardian_occupation']); ?>" />
@@ -499,25 +555,16 @@
                                                     </div>
                                                 </div>
                                             <?php } ?>
-                                            </div>
-                                        </div>
-
-<?php if ($sch_setting->guardian_email) { ?>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="exampleInputEmail1"><?php echo $this->lang->line('guardian_email'); ?></label>
-                                                <input id="guardian_email" name="guardian_email" placeholder="" type="text" class="form-control"  value="<?php echo set_value('guardian_email', $student['guardian_email']); ?>" />
-                                                <span class="text-danger"><?php echo form_error('guardian_email'); ?></span>
-                                            </div>
-
-                                        </div>
-<?php } if ($sch_setting->guardian_address) { ?>
+                                            <?php if ($sch_setting->guardian_address) { ?>
                                         <div class="col-md-6">
                                             <label for="exampleInputEmail1"><?php echo $this->lang->line('guardian_address'); ?></label>
                                             <textarea id="guardian_address" name="guardian_address" placeholder="" class="form-control" rows="4"><?php echo set_value('guardian_address', $student['guardian_address']); ?></textarea>
                                             <span class="text-danger"><?php echo form_error('guardian_address'); ?></span>
                                         </div>
-<?php } ?>
+                                        <?php } ?>
+                                             
+                                            </div>
+                                      
                                     </div>
                                 </div>
                             </div>
@@ -818,15 +865,17 @@
                 if ($(this).is(':checked')) {
                     var value = $(this).val();
                     if (value == "father") {
+                        var father_relation = "<?php echo $this->lang->line('father'); ?>";
                         $('#guardian_name').val($('#father_name').val());
                         $('#guardian_phone').val($('#father_phone').val());
                         $('#guardian_occupation').val($('#father_occupation').val());
-                        $('#guardian_relation').val("Father")
+                        $('#guardian_relation').val(father_relation);
                     } else if (value == "mother") {
+                        var mother_relation = "<?php echo $this->lang->line('mother'); ?>";
                         $('#guardian_name').val($('#mother_name').val());
                         $('#guardian_phone').val($('#mother_phone').val());
                         $('#guardian_occupation').val($('#mother_occupation').val());
-                        $('#guardian_relation').val("Mother")
+                        $('#guardian_relation').val(mother_relation);
                     } else {
                         $('#guardian_name').val("");
                         $('#guardian_phone').val("");

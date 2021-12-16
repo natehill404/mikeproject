@@ -30,17 +30,6 @@
                                 }
                                 ?>
                                 <?php echo $this->customlib->getCSRF(); ?>
-                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">School</label><small class="req"> *</small>
-                                    
-                                        <select name="school" id="school" class="form-control">
-                                        <?php
-                                         foreach ($schoollist as $school) {?>
-                                            <option value="<?=$school['id'] ?>"><?=$school['house_name'] ?></option>
-                                        <?php } ?>
-                                     </select>
-                                    <span class="text-danger"><?php echo form_error('school'); ?></span>
-                                </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1"><?php echo $this->lang->line('class'); ?></label><small class="req"> *</small>
                                     <input autofocus="" id="class" name="class" placeholder="" type="text" class="form-control"  value="<?php echo set_value('class'); ?>" />
@@ -102,8 +91,6 @@
                                         </th>
                                         <th><?php echo $this->lang->line('sections'); ?>
                                         </th>
-                                        <th>School
-                                        </th>
 
                                         <th class="text-right"><?php echo $this->lang->line('action'); ?></th>
                                     </tr>
@@ -134,14 +121,6 @@
                                                 ?>
 
                                             </td>
-                                            <td>
-                                                <?php
-                                                  $school_name = $this->db->where('id',$vehroute->school)->get('school_houses')->row();
-                                                if($school_name){?>
-                                                    <div><?=$school_name->house_name?></div>
-
-                                            <?php } ?>
-                                            </td>
                                             <td class="mailbox-date pull-right">
                                                 <?php
                                                 if ($this->rbac->hasPrivilege('class', 'can_edit')) {
@@ -153,7 +132,7 @@
                                                 }
                                                 if ($this->rbac->hasPrivilege('class', 'can_delete')) {
                                                     ?>  
-                                                    <a data-placement="left" href="<?php echo base_url(); ?>classes/delete/<?php echo $vehroute->id; ?>"class="btn btn-default btn-xs"  data-toggle="tooltip" title="<?php echo $this->lang->line('delete'); ?>" onclick="return confirm('<?php echo $this->lang->line('delete_confirm') ?>');">
+            <a data-placement="left" href="<?php echo base_url(); ?>classes/delete/<?php echo $vehroute->id; ?>"class="btn btn-default btn-xs"  data-toggle="tooltip" title="<?php echo $this->lang->line('delete'); ?>" onclick="return confirm('<?php echo $this->lang->line('deleting_class'); ?>');">
                                                         <i class="fa fa-remove"></i>
                                                     </a>
                                                 <?php } ?>

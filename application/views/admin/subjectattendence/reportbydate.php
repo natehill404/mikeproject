@@ -1,4 +1,4 @@
-<div class="content-wrapper" style="min-height: 946px;">
+<div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
@@ -86,6 +86,7 @@
                                 </div>
                             </div>
                             <div class="box-body">
+                              <div class="table-responsive">   
                                 <?php
                                 if (!empty($resultlist)) {
 
@@ -148,6 +149,7 @@
                                 }
                                 ?>
                             </div>
+                         </div>    
                         </div>
                     </div>  
                     <?php

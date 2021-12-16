@@ -53,9 +53,10 @@
         <script src="<?php echo base_url(); ?>backend/js/school-custom.js"></script>
         <script src="<?php echo base_url(); ?>backend/js/school-admin-custom.js"></script>
         <script src="<?php echo base_url(); ?>backend/js/sstoast.js"></script>         
+        <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script>          -->
         <!-- fullCalendar -->
         <link rel="stylesheet" href="<?php echo base_url() ?>backend/fullcalendar/dist/fullcalendar.min.css">
-        <link rel="stylesheet" href="<?php echo base_url() ?>backend/fullcalendar/dist/fullcalendar.print.min.css" media="print"> 
+        <link rel="stylesheet" href="<?php echo base_url() ?>backend/fullcalendar/dist/fullcalendar.print.min.css" media="print">	
         <script type="text/javascript">
             var baseurl = "<?php echo base_url(); ?>";
             var start_week=<?php echo $this->customlib->getStartWeek();?>;
@@ -128,12 +129,12 @@ if ($this->config->item('SSLK') == "") {
                         <div class="pull-right">
                             <?php if ($this->rbac->hasPrivilege('student', 'can_view')) {?>
                               
-                                <form class="navbar-form navbar-left search-form" role="search"  action="<?php echo site_url('admin/admin/search'); ?>" method="POST">
+                                <form id="header_search_form" class="navbar-form navbar-left search-form" role="search"  action="<?php echo site_url('admin/admin/search'); ?>" method="POST">
                                     <?php echo $this->customlib->getCSRF(); ?>
                                     <div class="input-group">
-                                        <input type="text" value="<?php echo set_value('search_text1');?>" name="search_text1" class="form-control search-form search-form3" placeholder="<?php echo $this->lang->line('search_by_student_name'); ?>">
+                                        <input type="text" value="<?php echo set_value('search_text1');?>" name="search_text1" id="search_text1" class="form-control search-form search-form3" placeholder="<?php echo $this->lang->line('search_by_student_name'); ?>">
                                         <span class="input-group-btn">
-                                            <button type="submit" name="search" id="search-btn" style="" class="btn btn-flat topsidesearchbtn"><i class="fa fa-search"></i></button>
+                                            <button type="submit" name="search" id="search-btn" onclick="getstudentlist()" style="" class="btn btn-flat topsidesearchbtn"><i class="fa fa-search"></i></button>
                                         </span>
                                     </div>
  
@@ -296,4 +297,6 @@ if (!empty($image)) {
         });
 
     }
-            </script>
+ </script>
+
+ 

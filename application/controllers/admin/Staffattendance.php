@@ -267,7 +267,7 @@ class Staffattendance extends Admin_Controller {
                 $datemonth = date("m", strtotime($value));
                 $att_dates = date("Y") . "-" . $datemonth . "-" . sprintf("%02d", $i);
                 $date_array[] = $att_dates;
-                $res[$att_dates] = $this->staffattendancemodel->searchStaffattendance($staff_id = 8, $att_dates);
+                $res[$att_dates] = $this->staffattendancemodel->searchStaffattendance($att_dates, $staff_id = 8);
             }
 
             $j++;

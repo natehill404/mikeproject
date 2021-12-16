@@ -210,12 +210,14 @@
                 },
             });
         }
-
-
-
-
     });
 
+
+  $(document).on("click", ".pagination li a", function (event) {
+            event.preventDefault();
+            var page = $(this).data("ci-pagination-page");
+            load_country_data(page);
+        });
 </script>
 
 

@@ -29,7 +29,6 @@
 <?php
 if (!empty($student_details)) {
     foreach ($student_details as $student_key => $student_value) {
-
         ?>
         <div class="mark-container">
             <?php
@@ -120,7 +119,11 @@ if ($admitcard->exam_name) {
 if ($admitcard->is_roll_no) {
             ?>
                                                 <td valign="top" width="25%" style="padding-bottom: 10px;"><?php echo $this->lang->line('roll_no') ?></td>
-                                                <td valign="top" width="30%" style="font-weight: bold;padding-bottom: 10px;"><?php echo $student_value->roll_no; ?></td>
+                                                <td valign="top" width="30%" style="font-weight: bold;padding-bottom: 10px;">
+                                                     <?php 
+                                                      echo ($exam->use_exam_roll_no)?$student_value->roll_no:$student_value->profile_roll_no; ?>
+
+                                                </td>
                                                 <?php
 }
         ?>

@@ -90,14 +90,10 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 ?>
                                             </div>
                                             <div class="row col-xs-12">
-
-                                                <div class="col-md-4">
-                                                   
+                                                <div class="col-md-4">                                            
 
                                                 </div>
-
                                             </div>
-
                                             <div class="col-xs-12 table-responsive">
                                                 <div class="download_label"><?php echo $this->lang->line('previous_session_balance_fees'); ?></div>
                                                 <table class="table table-striped example">

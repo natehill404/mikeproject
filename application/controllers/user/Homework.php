@@ -49,9 +49,7 @@ class Homework extends Student_Controller
         $student_id          = $userdata["student_id"];
         $data['homework_id'] = $homework_id;
         $data['student_id']  = $student_id;
-
-        // $data['id']=$_POST['assigment_id'];
-        $is_required = $this->homework_model->check_assignment($homework_id, $student_id);
+        $is_required         = $this->homework_model->check_assignment($homework_id, $student_id);
         $this->form_validation->set_rules('message', $this->lang->line('message'), 'trim|required|xss_clean');
         if (isset($_FILES["file"]) && !empty($_FILES['file']['name'])) {
 

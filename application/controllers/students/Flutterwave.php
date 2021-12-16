@@ -21,6 +21,7 @@ class Flutterwave extends Student_Controller {
         $data['setting'] = $this->setting;
         $data['api_error'] = array();
         $data['student_data'] = $this->student_model->get($data['params']['student_id']);
+        $data['student_fees_master_array']=$data['params']['student_fees_master_array'];
         $this->load->view('student/flutterwave/index', $data);
     }
 
@@ -44,24 +45,15 @@ class Flutterwave extends Student_Controller {
 
             $params = $this->session->userdata('params');
             $data = array();
-            $student_fees_master_id = $params['student_fees_master_id'];
-            $fee_groups_feetype_id = $params['fee_groups_feetype_id'];
             $student_id = $params['student_id'];
-            $total = $params['total'];
- 
-            $data['student_fees_master_id'] = $student_fees_master_id;
-            $data['fee_groups_feetype_id'] = $fee_groups_feetype_id;
-            $data['student_id'] = $student_id;
             $data['total'] =number_format((float)($params['fine_amount_balance']+$params['total']), 2, '.', '');
             $data['symbol'] = $params['invoice']->symbol;
             $data['currency_name'] = $params['invoice']->currency_name;
             $data['name'] = $params['name'];
             $data['guardian_phone'] = $params['guardian_phone'];
-            $amount = $data['total'];
-            $curl = curl_init();
 
+            $curl = curl_init();
             $customer_email = $_POST['email'];
-           
             $currency = $data['currency_name'];
             $txref = "rave" . uniqid(); // ensure you generate unique references per transaction.
             // get your public key from the dashboard.
@@ -74,7 +66,7 @@ class Flutterwave extends Student_Controller {
               CURLOPT_RETURNTRANSFER => true,
               CURLOPT_CUSTOMREQUEST => "POST",
               CURLOPT_POSTFIELDS => json_encode([
-                'amount'=>$amount,
+                'amount'=>$data['total'],
                 'customer_email'=>$customer_email,
                 'currency'=>$currency,
                 'txref'=>$txref,
@@ -108,12 +100,15 @@ class Flutterwave extends Student_Controller {
             
         }
     }
-
+ 
     public function success() {
         $details = $this->paymentsetting_model->getActiveMethod();
         $api_secret_key = $details->api_secret_key;
         $params = $this->session->userdata('params');
-       if (isset($_GET['txref']) && $_GET['cancelled']!='true') {
+       if (isset($_GET['txref'])) {
+        if(isset($_GET['cancelled']) && $_GET['cancelled']=='true'){
+redirect(base_url("students/payment/paymentfailed"));
+        }else{
         $ref = $_GET['txref'];
         $amount=number_format((float)($params['fine_amount_balance']+$params['total']), 2, '.', ''); //Get the correct amount of your product
         $currency = $params['invoice']->currency_name;; //Correct Currency from Server
@@ -139,26 +134,56 @@ class Flutterwave extends Student_Controller {
         $body = substr($response, $header_size);
 
         curl_close($ch);
-
+ 
         $resp = json_decode($response, true);
 
         $paymentStatus = $resp['data']['status'];
         $chargeResponsecode = $resp['data']['chargecode'];
         $chargeAmount = $resp['data']['amount'];
         $chargeCurrency = $resp['data']['currency'];
-
+        $txid= $resp['data']['txref'];
         if (($chargeResponsecode == "00" || $chargeResponsecode == "0") && ($chargeAmount == $amount)  && ($chargeCurrency == $currency)) {
           // transaction was successful...
           // please check other things like whether you already gave value for this ref
           // if the email matches the customer who owns the product etc
           //Give Value and return to Success page
-          //   var_dump($resp);
-        echo "Thanks";
+            $payment_id = $txid; 
+            $bulk_fees=array();
+            $params     = $this->session->userdata('params');
+         
+            foreach ($params['student_fees_master_array'] as $fee_key => $fee_value) {
+           
+             $json_array = array(
+                'amount'          =>  $fee_value['amount_balance'],
+                'date'            => date('Y-m-d'),
+                'amount_discount' => 0,
+                'amount_fine'     => $fee_value['fine_balance'],
+                'description'     => "Online fees deposit through Flutterwave TXN ID: " . $payment_id,
+                'received_by'     => '',
+                'payment_mode'    => 'Flutter_wave',
+            );
+
+            $insert_fee_data = array(
+                'student_fees_master_id' => $fee_value['student_fees_master_id'],
+                'fee_groups_feetype_id'  => $fee_value['fee_groups_feetype_id'],
+                'amount_detail'          => $json_array,
+            );                 
+           $bulk_fees[]=$insert_fee_data;
+            //========
+            }
+            $send_to     = $params['guardian_phone'];
+            $inserted_id = $this->studentfeemaster_model->fee_deposit_bulk($bulk_fees, $send_to);
+            if ($inserted_id) {
+                  redirect(base_url("students/payment/successinvoice"));                     
+            } else {
+              redirect(base_url('students/payment/paymentfailed'));
+            }
+             
         } else {
-          //Dont Give Value and return to Failure page
-          // var_dump($resp);
-         echo "faild";
+           redirect(base_url("students/payment/paymentfailed"));
+        } 
         }
+       
     }
         else {
       die('No reference supplied');

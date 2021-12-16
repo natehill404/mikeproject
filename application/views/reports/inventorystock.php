@@ -1,83 +1,8 @@
 <?php
 $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 ?>
-<style type="text/css">
-    /*REQUIRED*/
-    .carousel-row {
-        margin-bottom: 10px;
-    }
-    .slide-row {
-        padding: 0;
-        background-color: #ffffff;
-        min-height: 150px;
-        border: 1px solid #e7e7e7;
-        overflow: hidden;
-        height: auto;
-        position: relative;
-    }
-    .slide-carousel {
-        width: 20%;
-        float: left;
-        display: inline-block;
-    }
-    .slide-carousel .carousel-indicators {
-        margin-bottom: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, .5);
-    }
-    .slide-carousel .carousel-indicators li {
-        border-radius: 0;
-        width: 20px;
-        height: 6px;
-    }
-    .slide-carousel .carousel-indicators .active {
-        margin: 1px;
-    }
-    .slide-content {
-        position: absolute;
-        top: 0;
-        left: 20%;
-        display: block;
-        float: left;
-        width: 80%;
-        max-height: 76%;
-        padding: 1.5% 2% 2% 2%;
-        overflow-y: auto;
-    }
-    .slide-content h4 {
-        margin-bottom: 3px;
-        margin-top: 0;
-    }
-    .slide-footer {
-        position: absolute;
-        bottom: 0;
-        left: 20%;
-        width: 78%;
-        height: 20%;
-        margin: 1%;
-    }
-    /* Scrollbars */
-    .slide-content::-webkit-scrollbar {
-        width: 5px;
-    }
-    .slide-content::-webkit-scrollbar-thumb:vertical {
-        margin: 5px;
-        background-color: #999;
-        -webkit-border-radius: 5px;
-    }
-    .slide-content::-webkit-scrollbar-button:start:decrement,
-    .slide-content::-webkit-scrollbar-button:end:increment {
-        height: 5px;
-        display: block;
-    }
-    .removeboxmius{    margin-top: -10px;
-                       box-shadow: none !important;
-                       border-top: 0 !important;
-                       position: relative;
-                       z-index: 1;border: 1px solid #dde4eb;}
-    </style>
 
-    <div class="content-wrapper" style="min-height: 946px;">
+<div class="content-wrapper">
 
     <section class="content-header">
         <h1>
@@ -105,38 +30,23 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                             <h3 class="box-title titlefix"><i class="fa fa-money"></i> <?php echo $this->lang->line('stock') . " " . $this->lang->line('report'); ?></h3>
                         </div>
                         <div class="box-body">
-                            <div class="download_label"> <?php echo $this->lang->line('stock') . " " . $this->lang->line('report'); ?></div>
-                            <table class="table table-striped table-bordered table-hover example">
-                                <thead>
-                                    <tr>
-                                        <th><?php echo $this->lang->line('name'); ?></th>
-                                        <th><?php echo $this->lang->line('category'); ?></th>
-                                        <th><?php echo $this->lang->line('supplier'); ?></th>
-                                        <th><?php echo $this->lang->line('store'); ?></th>
-                                        <th><?php echo $this->lang->line('available') . " " . $this->lang->line('quantity'); ?></th>
-                                        <th><?php echo $this->lang->line('total') . " " . $this->lang->line('quantity'); ?></th>
-                                        <th><?php echo $this->lang->line('total') . " " . $this->lang->line('issued'); ?></th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-foreach ($stockresult as $key => $value) {
-    ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover inventory-list" data-export-title="<?php echo $this->lang->line('stock') . " " . $this->lang->line('report'); ?>">
+                                    <thead>
                                         <tr>
-                                            <td><?php echo $value['name']; ?></td>
-                                            <td><?php echo $value['item_category']; ?></td>
-                                            <td><?php echo $value['item_supplier']; ?></td>
-                                            <td><?php echo $value['item_store']; ?></td>
-                                            <td><?php echo $value['available']; ?></td>
-                                            <td><?php echo $value['available_stock']; ?></td>
-                                            <td><?php echo $value['total_not_returned']; ?></td>
+                                            <th><?php echo $this->lang->line('name'); ?></th>
+                                            <th><?php echo $this->lang->line('category'); ?></th>
+                                            <th><?php echo $this->lang->line('supplier'); ?></th>
+                                            <th><?php echo $this->lang->line('store'); ?></th>
+                                            <th><?php echo $this->lang->line('available') . " " . $this->lang->line('quantity'); ?></th>
+                                            <th><?php echo $this->lang->line('total') . " " . $this->lang->line('quantity'); ?></th>
+                                            <th><?php echo $this->lang->line('total') . " " . $this->lang->line('issued'); ?></th>
                                         </tr>
-                                        <?php
-}
-?>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>    
                         </div>
                     </div>
                 </div>
@@ -157,4 +67,12 @@ if ($search_type == 'period') {
     <?php
 }
 ?>
+</script>
+<script>
+    ( function ( $ ) {
+    'use strict';
+    $(document).ready(function () {
+        initDatatable('inventory-list','report/getinventorylist',[],[],100);
+    });
+} ( jQuery ) )
 </script>

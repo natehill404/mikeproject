@@ -34,15 +34,16 @@ foreach ($unread_notifications as $notice_key => $notice_value) {
          <div class="col-md-3">
             <div class="box box-primary">
                <div class="box-body box-profile">
-                <?php if($sch_setting->student_photo){?>
+                <?php if ($sch_setting->student_photo) {
+    ?>
                   <img class="profile-user-img img-responsive img-circle" src="<?php
 if (!empty($student['image'])) {
-    echo base_url() . $student['image'];
-} else {
-    echo base_url() . "uploads/student_images/no_image.png";
-}
-?>" alt="User profile picture">
-<?php } ?>
+        echo base_url() . $student['image'];
+    } else {
+        echo base_url() . "uploads/student_images/no_image.png";
+    }
+    ?>" alt="User profile picture">
+<?php }?>
                   <h3 class="profile-username text-center"><?php echo $this->customlib->getFullname($student['firstname'], $student['middlename'], $student['lastname'], $sch_setting->middlename, $sch_setting->lastname); ?></h3>
                   <ul class="list-group list-group-unbordered">
                      <li class="list-group-item">
@@ -75,9 +76,9 @@ if (!empty($student['image'])) {
                   <?php if ($this->studentmodule_lib->hasActive('fees')) {?>
                   <li class=""><a href="#fee" data-toggle="tab" aria-expanded="true"><?php echo $this->lang->line('fees'); ?></a></li>
                   <li><a href="#exam" data-toggle="tab" aria-expanded="true"><?php echo $this->lang->line('exam'); ?></a></li>
-                  <?php } if($sch_setting->upload_documents){?>
+                  <?php }if ($sch_setting->upload_documents) {?>
                   <li class=""><a href="#documents" data-toggle="tab" aria-expanded="true"><?php echo $this->lang->line('documents'); ?></a></li>
-                <?php } ?>
+                <?php }?>
                   <li class=""><a href="#timelineh" data-toggle="tab" aria-expanded="true"><?php echo $this->lang->line('timeline'); ?></a></li>
                   <?php
 if ($sch_setting->student_profile_edit) {
@@ -88,7 +89,7 @@ if ($sch_setting->student_profile_edit) {
                   </li>
                   <?php
 }
-?> 
+?>
                </ul>
                <div class="tab-content">
                   <div class="tab-pane active" id="activity">
@@ -102,7 +103,7 @@ if ($sch_setting->student_profile_edit) {
                                     <td class="col-md-4"><?php echo $this->lang->line('admission_date'); ?></td>
                                     <td class="col-md-5">
                                        <?php
-if (!empty($student['admission_date'])) {
+if (!empty($student['admission_date']) && $student['admission_date'] != '0000-00-00') {
         echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student['admission_date']));
     }
     ?>
@@ -207,25 +208,26 @@ if (is_string($field_value->field_value) && is_array(json_decode($field_value->f
                            </table>
                         </div>
                      </div>
-                      <?php  if(($sch_setting->father_name) || ($sch_setting->father_phone) || ($sch_setting->father_occupation) || ($sch_setting->father_pic) || ($sch_setting->mother_name) || ($sch_setting->mother_phone) || ($sch_setting->mother_occupation) || ($sch_setting->mother_pic) || ($sch_setting->guardian_name) || ($sch_setting->guardian_occupation) || ($sch_setting->guardian_relation) || ($sch_setting->guardian_phone) || ($sch_setting->guardian_email) || ($sch_setting->guardian_pic) || ($sch_setting->guardian_address)){ ?>
+                      <?php if (($sch_setting->father_name) || ($sch_setting->father_phone) || ($sch_setting->father_occupation) || ($sch_setting->father_pic) || ($sch_setting->mother_name) || ($sch_setting->mother_phone) || ($sch_setting->mother_occupation) || ($sch_setting->mother_pic) || ($sch_setting->guardian_name) || ($sch_setting->guardian_occupation) || ($sch_setting->guardian_relation) || ($sch_setting->guardian_phone) || ($sch_setting->guardian_email) || ($sch_setting->guardian_pic) || ($sch_setting->guardian_address)) {
+    ?>
                      <div class="tshadow mb25 bozero">
                         <h3 class="pagetitleh2"><?php echo $this->lang->line('parent'); ?> / <?php echo $this->lang->line('guardian_details'); ?> </h3>
                         <div class="table-responsive around10 pt0">
                            <table class="table table-hover table-striped">
                               <?php if ($sch_setting->father_name) {
-    ?>
+        ?>
                               <tr>
                                  <td  class="col-md-4"><?php echo $this->lang->line('father_name'); ?></td>
                                  <td  class="col-md-5"><?php echo $student['father_name']; ?></td>
                  <?php if ($sch_setting->father_pic) {
-        ?>
+            ?>
                                  <td rowspan="3"><img class="profile-user-img img-responsive img-circle" src="<?php
 if (!empty($student["father_pic"])) {
-            echo base_url() . $student["father_pic"];
-        } else {
-            echo base_url() . "uploads/student_images/no_image.png";
-        }
-        ?>" ></td>
+                echo base_url() . $student["father_pic"];
+            } else {
+                echo base_url() . "uploads/student_images/no_image.png";
+            }
+            ?>" ></td>
                  <?php }?>
                               </tr>
                               <?php }if ($sch_setting->father_phone) {?>
@@ -241,9 +243,9 @@ if (!empty($student["father_pic"])) {
                               <?php }
     ?>
                               <tr>
-                                 <td><?php if ($sch_setting->mother_name) { echo $this->lang->line('mother_name'); } ?></td>
-                                 <td><?php if ($sch_setting->mother_name) { echo $student['mother_name']; } ?></td>
-                 
+                                 <td><?php if ($sch_setting->mother_name) {echo $this->lang->line('mother_name');}?></td>
+                                 <td><?php if ($sch_setting->mother_name) {echo $student['mother_name'];}?></td>
+
                                  <td rowspan="3"> <?php if ($sch_setting->mother_pic) {
         ?><img class="profile-user-img img-responsive img-circle" src="<?php
 if (!empty($student["mother_pic"])) {
@@ -252,7 +254,7 @@ if (!empty($student["mother_pic"])) {
             echo base_url() . "uploads/student_images/no_image.png";
         }
         ?>" > <?php }?></td>
-                 
+
                               </tr>
                               <?php if ($sch_setting->mother_phone) {?>
                               <tr>
@@ -266,16 +268,17 @@ if (!empty($student["mother_pic"])) {
                               </tr>
                               <?php }?>
                               <tr>
-                                 <td><?php if ($sch_setting->guardian_name) { echo $this->lang->line('guardian_name'); } ?></td>
-                                 <td><?php if ($sch_setting->guardian_name) { echo $student['guardian_name']; } ?></td>
-                                  <td rowspan="3"><?php if($sch_setting->guardian_pic){ ?><img class="profile-user-img img-responsive img-circle" src="<?php
+                                 <td><?php if ($sch_setting->guardian_name) {echo $this->lang->line('guardian_name');}?></td>
+                                 <td><?php if ($sch_setting->guardian_name) {echo $student['guardian_name'];}?></td>
+                                  <td rowspan="3"><?php if ($sch_setting->guardian_pic) {
+        ?><img class="profile-user-img img-responsive img-circle" src="<?php
 if (!empty($student["guardian_pic"])) {
-        echo base_url() . $student["guardian_pic"];
-    } else {
-        echo base_url() . "uploads/student_images/no_image.png";
-    }
-    ?>" > <?php } ?></td>
-                 
+            echo base_url() . $student["guardian_pic"];
+        } else {
+            echo base_url() . "uploads/student_images/no_image.png";
+        }
+        ?>" > <?php }?></td>
+
                               </tr>
                               <?php if ($sch_setting->guardian_email) {?>
                               <tr>
@@ -287,17 +290,17 @@ if (!empty($student["guardian_pic"])) {
                                  <td><?php echo $this->lang->line('guardian_relation'); ?></td>
                                  <td><?php echo $student['guardian_relation']; ?></td>
                               </tr>
-                               <?php } if ($sch_setting->guardian_phone) {?>
+                               <?php }if ($sch_setting->guardian_phone) {?>
                               <tr>
                                  <td><?php echo $this->lang->line('guardian_phone'); ?></td>
                                  <td><?php echo $student['guardian_phone']; ?></td>
                               </tr>
-                          <?php } if ($sch_setting->guardian_occupation) {?>
+                          <?php }if ($sch_setting->guardian_occupation) {?>
                               <tr>
                                  <td><?php echo $this->lang->line('guardian_occupation'); ?></td>
                                  <td><?php echo $student['guardian_occupation']; ?></td>
                               </tr>
-                              <?php } if ($sch_setting->guardian_address) {?>
+                              <?php }if ($sch_setting->guardian_address) {?>
                               <tr>
                                  <td><?php echo $this->lang->line('guardian_address'); ?></td>
                                  <td><?php echo $student['guardian_address']; ?></td>
@@ -307,7 +310,7 @@ if (!empty($student["guardian_pic"])) {
                            </table>
                         </div>
                      </div>
-                     <?php } if ($sch_setting->route_list) {
+                     <?php }if ($sch_setting->route_list) {
     ?>
                      <?php if ($student['vehroute_id'] != 0) {?>
                      <div class="tshadow mb25  bozero">
@@ -398,8 +401,8 @@ if ($student['hostel_room_id'] != 0) {
     ?>
                                  <tr>
                                     <td  class="col-md-4"><?php echo $this->lang->line('measurement_date'); ?></td>
-                                    <td  class="col-md-5"><?php
-if (!empty($student['measurement_date'])) {
+                                    <td  class="col-md-5"><?php 
+if (!empty($student['measurement_date']) && $student['measurement_date'] != '0000-00-00') {
         echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($student['measurement_date']));
     }
     ?></td>
@@ -434,7 +437,7 @@ if (!empty($student['measurement_date'])) {
                                     <td><?php echo $this->lang->line('ifsc_code'); ?></td>
                                     <td><?php echo $student['ifsc_code']; ?></td>
                                  </tr>
-                                 
+
                                  <?php }?>
                               </tbody>
                            </table>
@@ -480,20 +483,19 @@ if (empty($student_due_fee) && empty($student_discount_fee)) {
             ?>
                            <tbody>
                               <?php
-$total_amount          = "0";
-            $total_deposite_amount = "0";
-            $total_fine_amount     = "0";
-            $total_discount_amount = "0";
-            $total_balance_amount  = "0";
-            $alot_fee_discount     = 0;
-                 $total_fees_fine_amount = 0;
+$total_amount           = "0";
+            $total_deposite_amount  = "0";
+            $total_fine_amount      = "0";
+            $total_discount_amount  = "0";
+            $total_balance_amount   = "0";
+            $alot_fee_discount      = 0;
+            $total_fees_fine_amount = 0;
             foreach ($student_due_fee as $key => $fee) {
 
                 foreach ($fee->fees as $fee_key => $fee_value) {
                     $fee_paid     = 0;
                     $fee_discount = 0;
                     $fee_fine     = 0;
-
 
                     if (!empty($fee_value->amount_detail)) {
                         $fee_deposits = json_decode(($fee_value->amount_detail));
@@ -510,10 +512,10 @@ $total_amount          = "0";
                     $total_fine_amount     = $total_fine_amount + $fee_fine;
                     $feetype_balance       = $fee_value->amount - ($fee_paid + $fee_discount);
                     $total_balance_amount  = $total_balance_amount + $feetype_balance;
- if (($fee_value->due_date != "0000-00-00" && $fee_value->due_date != NULL) && (strtotime($fee_value->due_date) < strtotime(date('Y-m-d')))) {
-                                           
-                                                $total_fees_fine_amount=$total_fees_fine_amount+$fee_value->fine_amount;
-                                           }
+                    if (($fee_value->due_date != "0000-00-00" && $fee_value->due_date != null) && (strtotime($fee_value->due_date) < strtotime(date('Y-m-d')))) {
+
+                        $total_fees_fine_amount = $total_fees_fine_amount + $fee_value->fine_amount;
+                    }
 
                     ?>
                               <?php
@@ -553,16 +555,16 @@ if ($feetype_balance == 0) {
                     ?>
                                  </td>
                                  <td class="text text-right">
-                                      
-                                      <?php echo $fee_value->amount;
- if (($fee_value->due_date != "0000-00-00" && $fee_value->due_date != NULL) && (strtotime($fee_value->due_date) < strtotime(date('Y-m-d')))) {
-    ?>
-<span class="text text-danger"><?php echo " + ".($fee_value->fine_amount); ?></span>
-    <?php
-          
-            }
 
-                                                     ?>
+                                      <?php echo $fee_value->amount;
+                    if (($fee_value->due_date != "0000-00-00" && $fee_value->due_date != null) && (strtotime($fee_value->due_date) < strtotime(date('Y-m-d')))) {
+                        ?>
+<span class="text text-danger"><?php echo " + " . ($fee_value->fine_amount); ?></span>
+    <?php
+
+                    }
+
+                    ?>
                                   </td>
                                  <td></td>
                                  <td></td>
@@ -692,8 +694,8 @@ $alot_fee_discount = $alot_fee_discount;
                                  <td class="text text-right" colspan="2"><?php echo $this->lang->line('grand_total'); ?></td>
                                  <td class="text text-right">
                                   <?php
-                                  echo $currency_symbol . number_format($total_amount, 2, '.', '')."<span class='text text-danger'>+".  number_format($total_fees_fine_amount, 2, '.', '')."</span>";
-                                            ?></td>
+echo $currency_symbol . number_format($total_amount, 2, '.', '') . "<span class='text text-danger'>+" . number_format($total_fees_fine_amount, 2, '.', '') . "</span>";
+            ?></td>
                                  <td></td>
                                  <td></td>
                                  <td></td>
@@ -761,10 +763,11 @@ echo date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmd
                      </div>
                   </div>
                   <div class="tab-pane" id="documents">
+                      <div class="download_label"><?php echo "Uploaded Documents" ?></div>
                      <div class="timeline-header no-border">
                         <button type="button"  data-student-session-id="<?php echo $student['student_session_id'] ?>" class="btn btn-xs btn-primary pull-right myTransportFeeBtn mb10"> <i class="fa fa-upload"></i>  <?php echo $this->lang->line('upload_documents'); ?></button>
                         <div class="table-responsive" style="clear: both;">
-                           <table class="table table-striped table-bordered table-hover example">
+                           <table class="table table-striped table-bordered table-hover ">
                               <thead>
                                  <tr>
                                     <th>
@@ -1392,7 +1395,11 @@ $consolidate_each                = getCalculatedExam($exam_value->exam_result['e
                     ?>
                   <td>
                   <?php
-$consolidate_percentage_grade = ($consolidate_get_total * 100) / $consolidate_max_total;
+					if($consolidate_max_total > 0){
+						$consolidate_percentage_grade = ($consolidate_get_total * 100) / $consolidate_max_total;
+					}else{
+						$consolidate_percentage_grade = 0;
+					}
                     echo $consolidate_get_total . "/" . $consolidate_max_total . " [" . findExamGrade($exam_grade, $exam_value->exam_type, $consolidate_percentage_grade) . "]";
                     $consolidate_exam_result_percentage = $consolidate_percentage_grade;
                     ?></td>
@@ -1444,7 +1451,11 @@ $consolidate_each                = getCalculatedExam($exam_value->exam_result['e
                     }
                     ?>
                   <td><?php
-$consolidate_percentage_grade = ($consolidate_get_total * 100) / $consolidate_max_total;
+				  if($consolidate_max_total > 0){
+					$consolidate_percentage_grade = ($consolidate_get_total * 100) / $consolidate_max_total;
+				  }else{
+					$consolidate_percentage_grade = 0; 
+				  }
                     echo $consolidate_get_total . "/" . $consolidate_max_total . " [" . findExamGrade($exam_grade, $exam_value->exam_type, $consolidate_percentage_grade) . "]";
                     $consolidate_exam_result_percentage = $consolidate_percentage_grade;
                     ?></td>
@@ -1676,7 +1687,6 @@ function getCalculatedExamGradePoints($array, $exam_id, $exam_grade, $exam_type)
     $return_total_exams  = 0;
     if (!empty($array)) {
 
-        // print_r($array['exam_result_' . $exam_id]);
         if (!empty($array['exam_result_' . $exam_id])) {
             foreach ($array['exam_result_' . $exam_id] as $exam_key => $exam_value) {
                 $return_total_exams++;
@@ -1695,8 +1705,6 @@ function getCalculatedExamGradePoints($array, $exam_id, $exam_grade, $exam_type)
 
 function getCalculatedExam($array, $exam_id)
 {
-    // echo "<pre/>";
-    //                                                                                                    print_r($array);
     $object              = new stdClass();
     $return_max_marks    = 0;
     $return_get_marks    = 0;
@@ -1704,7 +1712,6 @@ function getCalculatedExam($array, $exam_id)
     $return_exam_status  = false;
     if (!empty($array)) {
         $return_exam_status = 'pass';
-        // print_r($array['exam_result_' . $exam_id]);
         if (!empty($array['exam_result_' . $exam_id])) {
             foreach ($array['exam_result_' . $exam_id] as $exam_key => $exam_value) {
 
@@ -1818,88 +1825,6 @@ function getCalculatedExam($array, $exam_id)
    /*--end dropify--*/
 </script>
 <script type="text/javascript">
-   // $(document).ready(function () {
-   //     $.extend($.fn.dataTable.defaults, {
-   //         searching: false,
-   //         ordering: false,
-   //         paging: false,
-   //         bSort: false,
-   //         info: false
-   //     });
-
-   //     $("#feetable").DataTable({
-   //         searching: false,
-   //         ordering: false,
-   //         paging: false,
-   //         bSort: false,
-   //         info: false,
-   //         dom: "Bfrtip",
-   //         buttons: [
-   //             {
-   //                 extend: 'copyHtml5',
-   //                 text: '<i class="fa fa-files-o"></i>',
-   //                 titleAttr: 'Copy',
-   //                 title: $('.download_label').html(),
-   //                 exportOptions: {
-   //                     columns: ':visible'
-   //                 }
-   //             },
-   //             {
-   //                 extend: 'excelHtml5',
-   //                 text: '<i class="fa fa-file-excel-o"></i>',
-   //                 titleAttr: 'Excel',
-   //                 title: $('.download_label').html(),
-   //                 exportOptions: {
-   //                     columns: ':visible'
-   //                 }
-   //             },
-   //             {
-   //                 extend: 'csvHtml5',
-   //                 text: '<i class="fa fa-file-text-o"></i>',
-   //                 titleAttr: 'CSV',
-   //                 title: $('.download_label').html(),
-   //                 exportOptions: {
-   //                     columns: ':visible'
-   //                 }
-   //             },
-   //             {
-   //                 extend: 'pdfHtml5',
-   //                 text: '<i class="fa fa-file-pdf-o"></i>',
-   //                 titleAttr: 'PDF',
-   //                 title: $('.download_label').html(),
-   //                 exportOptions: {
-   //                     columns: ':visible'
-
-   //                 }
-   //             },
-   //             {
-   //                 extend: 'print',
-   //                 text: '<i class="fa fa-print"></i>',
-   //                 titleAttr: 'Print',
-   //                 title: $('.download_label').html(),
-   //                 customize: function (win) {
-   //                     $(win.document.body)
-   //                             .css('font-size', '10pt');
-
-   //                     $(win.document.body).find('table')
-   //                             .addClass('compact')
-   //                             .css('font-size', 'inherit');
-   //                 },
-   //                 exportOptions: {
-   //                     columns: ':visible'
-   //                 }
-   //             },
-   //             {
-   //                 extend: 'colvis',
-   //                 text: '<i class="fa fa-columns"></i>',
-   //                 titleAttr: 'Columns',
-   //                 title: $('.download_label').html(),
-   //                 postfixButtons: ['colvisRestore']
-   //             },
-   //         ]
-   //     });
-   // });
-
 
    $(document).ready(function () {
        $('.detail_popover').popover({
@@ -1918,7 +1843,6 @@ function getCalculatedExam($array, $exam_id)
        $('table.display').DataTable();
    });
 
-
 </script>
 <script type="text/javascript">
    $(".myTransportFeeBtn").click(function () {
@@ -1936,11 +1860,8 @@ function getCalculatedExam($array, $exam_id)
        });
    });
 
- 
-
 
    function printDiv() {
-       // document.getElementById("no-print").style.display = "none";
 
        $('.bg-green').removeClass('label');
        $('.label-danger').removeClass('label');
@@ -1957,7 +1878,7 @@ function getCalculatedExam($array, $exam_id)
    }
 
    $(document).ready(function () {
- 
+
        $(document).on('click', '.close_notice', function () {
            var data = $(this).data();
 

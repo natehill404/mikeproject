@@ -115,7 +115,7 @@ class Lessonplan_model extends MY_model {
         return $this->db->select('*')->from('topic')->where('lesson_id', $lessonid)->where('session_id', $session)->get()->result_array();
     }
 
-    public function gettopic($id = null, $session) {
+    public function gettopic($session, $id = null) {
 
         $this->db->select('topic.*,subject_groups.name as sgname,subjects.name as subname,sections.section as sname,sections.id as sectionid,subject_groups.id as subjectgroupsid,subjects.id as subjectid,class_sections.id as csectionid,classes.class as cname,classes.id as classid,lesson.name as lessonname,lesson.subject_group_class_sections_id,lesson.subject_group_subject_id')->from('topic');
 
@@ -243,7 +243,7 @@ class Lessonplan_model extends MY_model {
         }
     }
 
-    public function get($id = null, $session, $subject_group_subject_id = null) {
+    public function get($session, $id = null, $subject_group_subject_id = null) {
 
         $this->db->select('lesson.*,subject_groups.name as sgname,subjects.name as subname,sections.section as sname,sections.id as sectionid,subject_groups.id as subjectgroupsid,subjects.id as subjectid,class_sections.id as csectionid,classes.class as cname,classes.id as classid')->from('lesson');
 
@@ -333,4 +333,46 @@ class Lessonplan_model extends MY_model {
         }
     }
 
+    public function gettopiclist($session) {
+
+       
+        $this->datatables
+            ->select('topic.*,subject_groups.name as sgname,subjects.name as subname,sections.section as sname,sections.id as sectionid,subject_groups.id as subjectgroupsid,subjects.id as subjectid,class_sections.id as csectionid,classes.class as cname,classes.id as classid,lesson.name as lessonname,lesson.subject_group_class_sections_id,lesson.subject_group_subject_id')
+            ->searchable('classes.class,sections.section,subjects.name,subject_groups.name,classes.class,lesson.name')
+            ->orderable('cname,sname,sgname,subname,lessonname," " ')
+        ->join("lesson", "lesson.id = topic.lesson_id")
+        ->join("subject_group_subjects", "subject_group_subjects.id = lesson.subject_group_subject_id")
+        ->join("subject_groups", "subject_groups.id = subject_group_subjects.subject_group_id")
+        ->join("subjects", "subjects.id = subject_group_subjects.subject_id")
+        ->join("subject_group_class_sections", "subject_group_class_sections.id = lesson.subject_group_class_sections_id", 'inner')
+        ->join("class_sections", "class_sections.id = subject_group_class_sections.class_section_id")
+        ->join("sections", "sections.id = class_sections.section_id")
+        ->join("classes", "classes.id = class_sections.class_id")
+        ->where('topic.session_id', $session)
+        ->group_by("lesson.subject_group_subject_id")
+        ->group_by("topic.lesson_id")
+        ->from('topic');
+         return $this->datatables->generate('json');
+        
+    }
+    public function getlessonlist($session, $id = null) 
+    {
+
+         $this->datatables
+            ->select('lesson.*,subject_groups.name as sgname,subjects.name as subname,sections.section as sname,sections.id as sectionid,subject_groups.id as subjectgroupsid,subjects.id as subjectid,class_sections.id as csectionid,classes.class as cname,classes.id as classid')
+            ->searchable('classes.class,sections.section,subject_groups.name,subjects.name,lesson.name')
+            ->orderable('classes.class,sections.section,subject_groups.name,subjects.name,lesson.name')
+        ->join("subject_group_subjects", "subject_group_subjects.id = lesson.subject_group_subject_id")
+        ->join("subject_groups", "subject_groups.id = subject_group_subjects.subject_group_id")
+        ->join("subjects", "subjects.id = subject_group_subjects.subject_id")
+        ->join("subject_group_class_sections", "subject_group_class_sections.id = lesson.subject_group_class_sections_id", 'inner')
+        ->join("class_sections", "class_sections.id = subject_group_class_sections.class_section_id")
+        ->join("sections", "sections.id = class_sections.section_id")
+        ->join("classes", "classes.id = class_sections.class_id")
+        ->where('lesson.session_id', $session)
+        ->group_by("lesson.subject_group_subject_id")
+        ->group_by("lesson.subject_group_class_sections_id")
+        ->from('lesson');
+         return $this->datatables->generate('json');
+    }
 }

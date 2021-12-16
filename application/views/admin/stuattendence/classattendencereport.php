@@ -152,7 +152,7 @@
                                             <div class="pull-right">
                                             </div>
                                         </div>
-                                        <div class="download_label"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?> <?php echo $this->lang->line('report') . "<br>";
+                                        <div class="download_label"><?php echo $this->lang->line('student'); ?> <?php echo $this->lang->line('attendance'); ?> <?php echo $this->lang->line('report') . " ";
                             $this->customlib->get_postmessage();
                                         ?></div>
                                         <table class="table table-striped table-bordered table-hover example">
@@ -164,12 +164,10 @@
                                                     <th><br/><span data-toggle="tooltip" title="<?php echo "Gross Present Percentage(%)"; ?>">%</span></th>
 
                                                     <?php
-                                                    foreach ($attendencetypeslist as $key => $value) {
-                                                        //   echo "<pre>";
-                                                        // print_r($value);
+                                                    foreach ($attendencetypeslist as $key => $value) {                                                       
                                                         if (strip_tags($value["key_value"]) != "E") {
                                                             ?>
-                                                            <th colspan="" ><br/><span data-toggle="tooltip" title="<?php echo "Total " . $value["type"]; ?>"><?php echo strip_tags($value["key_value"]); ?>
+                                                            <th colspan="" ><span data-toggle="tooltip" title="<?php echo "Total " . $value["type"]; ?>"><?php echo strip_tags($value["key_value"]); ?>
 
                                                                 </span></th>
 

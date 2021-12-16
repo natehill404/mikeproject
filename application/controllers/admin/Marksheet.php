@@ -96,7 +96,16 @@ class Marksheet extends Admin_Controller {
             } else {
                 $is_section = 0;
             }
-
+            if (isset($_POST['is_dob'])) {
+                $is_dob = 1;
+            } else {
+                $is_dob = 0;
+            }
+            if (isset($_POST['is_teacher_remark'])) {
+                $is_teacher_remark = 1;
+            } else {
+                $is_teacher_remark = 0;
+            }
             $insert_data = array(
                 'template' => $this->input->post('template'),
                 'heading' => $this->input->post('heading'),
@@ -112,8 +121,10 @@ class Marksheet extends Admin_Controller {
                 'is_roll_no' => $is_roll_no,
                 'is_photo' => $is_photo,
                 'is_class' => $is_class,
-                'is_section' => $is_section,
                 'is_division' => $is_division,
+                'is_section' => $is_section,
+                'is_dob' => $is_dob,
+                'is_teacher_remark' => $is_teacher_remark,
                 'content' => $this->input->post('content'),
                 'content_footer' => $this->input->post('content_footer'),
                 'exam_session' => $exam_session,
@@ -165,7 +176,7 @@ class Marksheet extends Admin_Controller {
                 move_uploaded_file($_FILES["background_img"]["tmp_name"], "./uploads/marksheet/" . $img_name);
                 $insert_data['background_img'] = $img_name;
             }
-
+            
             $this->marksheet_model->add($insert_data);
 
             $this->session->set_flashdata('msg', '<div class="alert alert-success text-left">' . $this->lang->line('success_message') . '</div>');
@@ -309,6 +320,17 @@ class Marksheet extends Admin_Controller {
                 $is_section = 0;
             }
 
+            if (isset($_POST['is_dob'])) {
+                $is_dob = 1;
+            } else {
+                $is_dob = 0;
+            }
+            if (isset($_POST['is_teacher_remark'])) {
+                $is_teacher_remark = 1;
+            } else {
+                $is_teacher_remark = 0;
+            }
+
             $insert_data = array(
                 'id' => $this->input->post('id'),
                 'template' => $this->input->post('template'),
@@ -320,6 +342,8 @@ class Marksheet extends Admin_Controller {
                 'content' => $this->input->post('content'),
                 'content_footer' => $this->input->post('content_footer'),
                 'date' => $this->input->post('date'),
+                'is_dob' => $is_dob,
+                'is_teacher_remark' => $is_teacher_remark,
                 'is_name' => $is_name,
                 'is_father_name' => $is_father_name,
                 'is_mother_name' => $is_mother_name,
@@ -373,6 +397,7 @@ class Marksheet extends Admin_Controller {
                 $insert_data['background_img'] = $img_name;
             }
 
+            
             $this->marksheet_model->add($insert_data);
 
             $this->session->set_flashdata('msg', '<div class="alert alert-success text-left">' . $this->lang->line('update_message') . '</div>');

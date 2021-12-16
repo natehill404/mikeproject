@@ -118,14 +118,7 @@ class Feesforward extends Admin_Controller {
                 $obj->father_name = $student_list_value->father_name;
                 $obj->student_session_id = $student_list_value->current_student_session_id;
                 $obj->student_previous_session_id = $student_list_value->previous_student_session_id;
-               
-                if (strtotime($student_list_value->admission_date) == 0) {
-                    $obj->admission_date = "";
-                } else {
-                    $obj->admission_date = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateYYYYMMDDtoStrtotime($student_list_value->admission_date));
-                }
-
-
+                $obj->admission_date = $this->customlib->dateformat($student_list_value->admission_date);
                 $student_Array[] = $obj;
                 $student_comma_seprate[] = $student_list_value->current_student_session_id;
             }

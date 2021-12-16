@@ -1,26 +1,3 @@
-<style type="text/css">
-    .scrollit {
-        height:210px;
-        overflow-y:scroll;
-        list-style-type: none;
-    }
-    .dual-list .list-group {
-        margin-top: 8px;
-    }
-
-    .list-left li, .list-right li {
-        cursor: pointer;
-    }
-
-    .list-arrows {
-        padding-top: 100px;
-    }
-
-    .list-arrows button {
-        margin-bottom: 20px;
-    }
-</style>
-
 <link rel="stylesheet" href="<?php echo base_url(); ?>backend/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 <script src="<?php echo base_url(); ?>backend/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
 <div class="content-wrapper">
@@ -66,6 +43,10 @@
                                                 </label>
 
                                                 <span class="text-danger"><?php echo form_error('message'); ?></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label><?php echo $this->lang->line('template_id'); ?>  </label> (<?php echo $this->lang->line('this_field_is_reqiured_only_for_indian_sms_gateway');?>) 
+                                                <input type="text" name="group_template_id" id="group_template_id" class="form-control" autocomplete="off">
                                             </div>
                                             <div class="form-group">
                                                 <label><?php echo $this->lang->line('message'); ?></label><small class="req"> *</small>
@@ -146,6 +127,11 @@
                                                 </label>
 
                                                 <span class="text-danger"><?php echo form_error('message'); ?></span>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label><?php echo $this->lang->line('template_id'); ?> </label> (<?php echo $this->lang->line('this_field_is_reqiured_only_for_indian_sms_gateway');?>)
+                                                <input type="text" name="individual_template_id" id="individual_template_id" class="form-control" autocomplete="off">
                                             </div>
 
                                             <div class="form-group">
@@ -247,6 +233,11 @@
 
                                                 <span class="text-danger"><?php echo form_error('message'); ?></span>
                                             </div>
+
+                                            <div class="form-group">
+                                                <label><?php echo $this->lang->line('template_id'); ?></label> (<?php echo $this->lang->line('this_field_is_reqiured_only_for_indian_sms_gateway');?>)
+                                                <input type="text" name="class_template_id" id="class_template_id" class="form-control" autocomplete="off">
+                                            </div>
                                             <div class="form-group">
                                                 <label><?php echo $this->lang->line('message'); ?></label><small class="req"> *</small>
                                                 <textarea id="class_msg_text" name="class_message" class="form-control compose-textarea" rows="12"><?php echo set_value('message'); ?></textarea>
@@ -318,7 +309,10 @@
 
                                                 <span class="text-danger"><?php echo form_error('message'); ?></span>
                                             </div>
-
+                                             <div class="form-group">
+                                                <label><?php echo $this->lang->line('template_id'); ?></label> (<?php echo $this->lang->line('this_field_is_reqiured_only_for_indian_sms_gateway');?>)
+                                                <input type="text" name="birthday_template_id" id="birthday_template_id" class="form-control" autocomplete="off">
+                                            </div>
                                             <div class="form-group">
                                                 <label><?php echo $this->lang->line('message'); ?></label><small class="req"> *</small>
 
@@ -338,7 +332,7 @@
 
                                                     <?php
                                                     if (!empty($birthDaysList)) {
-                                                        // print_r($birthDaysList['students']);
+                                                        
 
                                                         if (isset($birthDaysList['students'])) {
                                                             ?>

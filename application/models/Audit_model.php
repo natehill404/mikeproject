@@ -34,5 +34,10 @@ class Audit_model extends MY_Model {
         $query = $this->db->select('count(*) as total')->get('logs')->row_array();
         return $query['total'];
     }
+	
+	public function audittrail_delete()
+    {         
+        $this->db->truncate('logs');        
+    }
 
 }

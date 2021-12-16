@@ -96,18 +96,20 @@ class Homework_model extends MY_model {
     public function get_homeworkDocById($homework_id) {
 
           $this->datatables
-                ->select('students.*,submit_assignment.docs,submit_assignment.message')->from('submit_assignment')
+                ->select('students.*,submit_assignment.docs,submit_assignment.message,submit_assignment.student_id')
                 ->join('students','students.id=submit_assignment.student_id', 'inner')
-                ->searchable('firstname')
+                ->searchable('students.firstname')
                 ->from('submit_assignment')
                 ->where(array('submit_assignment.homework_id'=> $homework_id));
         return $this->datatables->generate('json');
       
     }
- public function get_homeworkDocByIdStdid($homework_id,$student_id) {
+    
+    public function get_homeworkDocByIdStdid($homework_id,$student_id) {
         $query = $this->db->select('students.*,submit_assignment.docs,submit_assignment.message')->from('submit_assignment')->join('students', 'students.id=submit_assignment.student_id', 'inner')->where(array('submit_assignment.homework_id'=> $homework_id,'submit_assignment.student_id'=>$student_id))->get();
         return $query->result_array();
     }
+    
     public function search_homework($class_id, $section_id, $subject_group_id, $subject_id) {
         if ((!empty($class_id)) && (!empty($section_id)) && (!empty($subject_id)) && (!empty($subject_group_id))) {
 
@@ -133,6 +135,37 @@ class Homework_model extends MY_model {
         $this->db->order_by('homework.homework_date', 'DESC');
         $query = $this->db->get("homework");
         return $query->result_array();
+    }
+
+        public function search_dthomework($class_id, $section_id, $subject_group_id, $subject_id) {
+        if ((!empty($class_id)) && (!empty($section_id)) && (!empty($subject_id)) && (!empty($subject_group_id))) {
+
+            $this->datatables->where(array('homework.class_id' => $class_id, 'homework.section_id' => $section_id, 'subject_groups.id' => $subject_group_id, 'subject_group_subjects.id' => $subject_id));
+        } else if ((!empty($class_id)) && (!empty($section_id)) && (!empty($subject_group_id))) {
+
+            $this->datatables->where(array('homework.class_id' => $class_id, 'homework.section_id' => $section_id, 'subject_groups.id' => $subject_group_id));
+        } else if ((!empty($class_id)) && (empty($section_id)) && (empty($subject_id))) {
+
+            $this->datatables->where(array('homework.class_id' => $class_id));
+        } else if ((!empty($class_id)) && (!empty($section_id)) && (empty($subject_id))) {
+
+            $this->datatables->where(array('homework.class_id' => $class_id, 'homework.section_id' => $section_id));
+        }
+
+        $this->datatables->select('`homework`.*,classes.class,sections.section,subject_group_subjects.subject_id,subject_group_subjects.id as `subject_group_subject_id`,subjects.name as subject_name,subject_groups.id as subject_groups_id,subject_groups.name,(select count(*) as total from submit_assignment where submit_assignment.homework_id=homework.id) as assignments,staff.name as staff_name,staff.surname as staff_surname')
+        ->searchable('classes.class,sections.section,subject_groups.name,subjects.name,homework_date,submit_date,evaluation_date,staff.name')
+        ->join("classes", "classes.id = homework.class_id")
+        ->join("sections", "sections.id = homework.section_id")
+        ->join("subject_group_subjects", "subject_group_subjects.id = homework.subject_group_subject_id")
+        ->join("subjects", "subjects.id = subject_group_subjects.subject_id")
+        ->join("subject_groups", "subject_group_subjects.subject_group_id=subject_groups.id")
+        ->join("staff","homework.created_by=staff.id")
+        ->orderable('classes.class,sections.section,subject_groups.name,subjects.name,homework_date,submit_date,evaluation_date,staff.name')
+        ->where('subject_groups.session_id', $this->current_session)           
+        ->sort('homework.homework_date', 'DESC')
+        ->from('homework');
+        return $this->datatables->generate('json');
+
     }
 
     public function getRecord($id = null) {

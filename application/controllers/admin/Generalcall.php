@@ -108,4 +108,50 @@ class Generalcall extends Admin_Controller {
         }
     }
 
+    public function getcalllist()
+    {
+        $callList = $this->general_call_model->getcalllist();
+        $m       = json_decode($callList);
+        $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
+        $dt_data = array();
+        if (!empty($m->data)) {
+            foreach ($m->data as $key => $value) {
+                $editbtn   = '';
+                $deletebtn = '';
+                $viewbtn = '' ;
+                
+                $viewbtn = "<a data-placement='left' onclick='getRecord(".$value->id.")' class='btn btn-default btn-xs' data-target='#calldetails' data-toggle='modal'  title='".$this->lang->line('view')."'><i class='fa fa-reorder'></i></a>";
+
+                if($this->rbac->hasPrivilege('phone_call_log', 'can_edit')) {
+                    $editbtn = "<a href='".base_url()."admin/generalcall/edit/".$value->id."'   class='btn btn-default btn-xs'  data-toggle='tooltip' data-placement='left' title='" . $this->lang->line('edit') . "'><i class='fa fa-pencil'></i></a>";
+                }
+                if ($this->rbac->hasPrivilege('phone_call_log', 'can_delete')) {
+                    $deletebtn = '';
+                    $deletebtn = "<a onclick='return confirm(" . '"' . $this->lang->line('delete_confirm') . '"' . "  )' href='".base_url()."admin/generalcall/delete/".$value->id."' class='btn btn-default btn-xs' data-placement='left' title='" . $this->lang->line('delete') . "' data-toggle='tooltip'><i class='fa fa-trash'></i></a>";
+                }
+                $row       = array();
+                $row[]     = $value->name;
+                $row[]     = $value->contact; 
+                $row[]     = date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->date));
+                 if($value->follow_up_date!='' && $value->follow_up_date!='0000-00-00'){
+                    $row[]= date($this->customlib->getSchoolDateFormat(), $this->customlib->dateyyyymmddTodateformat($value->date));
+                }else{
+                    $row[]="" ;
+                }
+                $row[]     = $value->call_type;
+
+               
+                $row[]     = $viewbtn.' '.$editbtn . ' ' . $deletebtn;
+                $dt_data[] = $row;
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($m->draw),
+            "recordsTotal"    => intval($m->recordsTotal),
+            "recordsFiltered" => intval($m->recordsFiltered),
+            "data"            => $dt_data,
+        );
+        echo json_encode($json_data);
+    }
 }

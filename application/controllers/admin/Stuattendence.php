@@ -119,6 +119,7 @@ class Stuattendence extends Admin_Controller {
                 }
                 $absent_config = $this->config_attendance['absent'];
                 if (!empty($absent_student_list)) {
+
                     $this->mailsmsconf->mailsms('absent_attendence', $absent_student_list, $date);
                 }
 

@@ -16,7 +16,7 @@ class Timetable extends Admin_Controller
 
     public function index()
     {
-     
+
         if (!$this->rbac->hasPrivilege('class_time_table', 'can_view')) {
             access_denied();
         }
@@ -186,10 +186,10 @@ class Timetable extends Admin_Controller
             $this->load->view('layout/footer', $data);
         } else {
 
-            $getDaysnameList         	= $this->customlib->getDaysname();
-            $data['getDaysnameList'] 	= $getDaysnameList;
-            $subject                 	= $this->subjectgroup_model->getGroupsubjects($subject_group_id);
-            $data['subject'] 			= $subject;
+            $getDaysnameList         = $this->customlib->getDaysname();
+            $data['getDaysnameList'] = $getDaysnameList;
+            $subject                 = $this->subjectgroup_model->getGroupsubjects($subject_group_id);
+            $data['subject']         = $subject;
             $this->load->view('layout/header', $data);
             $this->load->view('admin/timetable/timetableCreate', $data);
             $this->load->view('layout/footer', $data);
@@ -204,16 +204,16 @@ class Timetable extends Admin_Controller
 
         $this->session->set_userdata('top_menu', 'Academics');
         $this->session->set_userdata('sub_menu', 'Academics/timetable');
-        $session            = $this->setting_model->getCurrentSession();
-        $data['title']      = 'Exam Schedule';
-        $data['subject_id'] = "";
-        $data['class_id']   = "";
-        $data['section_id'] = "";
-        $exam               = $this->exam_model->get();
-        $class              = $this->class_model->get('', $classteacher = 'yes');
-        $data['examlist']   = $exam;
-        $data['classlist']  = $class;
-        $userdata           = $this->customlib->getUserData();
+        $session                 = $this->setting_model->getCurrentSession();
+        $data['title']           = 'Exam Schedule';
+        $data['subject_id']      = "";
+        $data['class_id']        = "";
+        $data['section_id']      = "";
+        $exam                    = $this->exam_model->get();
+        $class                   = $this->class_model->get('', $classteacher = 'yes');
+        $data['examlist']        = $exam;
+        $data['classlist']       = $class;
+        $userdata                = $this->customlib->getUserData();
         $staff                   = $this->staff_model->getStaffbyrole(2);
         $data['staff']           = $staff;
         $data['subject']         = array();
@@ -417,8 +417,7 @@ class Timetable extends Admin_Controller
 
             $json_array = array('status' => '0', 'error' => $json);
         } else {
-            $staff_id = $this->input->post('teacher');
-            // $staff_id          = $this->customlib->getStaffID();
+            $staff_id          = $this->input->post('teacher');
             $data['timetable'] = array();
             $days              = $this->customlib->getDaysname();
 

@@ -212,3 +212,7 @@ function array_insert(&$array, $position, $insert)
         );
     }
 }
+
+function amountFormat($amount){
+    return number_format((float)$amount, 2, '.', '');
+}
